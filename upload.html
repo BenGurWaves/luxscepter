@@ -1,0 +1,270 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Ascend — Upload Edict / Dominion / Throne</title>
+<style>
+  :root{--black:#000000;--gold:#D4AF37;--indigo:#4B0082;--red:#8B0000}
+  html,body{height:100%;margin:0;background:var(--black);color:#eee;font-family:"Chomsky","Times New Roman",serif}
+  .wrap{max-width:940px;margin:28px auto;padding:26px}
+  h1{color:var(--gold);margin:0 0 6px 0}
+  label{display:block;margin-top:12px;color:#ccc;font-size:13px}
+  input[type="text"],textarea,select{width:100%;padding:10px;border-radius:6px;border:1px solid #222;background:#0c0c0c;color:#ddd}
+  input[type="file"]{margin-top:12px}
+  .row{display:flex;gap:12px}
+  .col{flex:1}
+  .btn{background:transparent;border:1px solid var(--gold);color:var(--gold);padding:9px 14px;border-radius:8px;cursor:pointer;margin-top:12px}
+  .note{font-size:13px;color:#bbb;margin-top:10px}
+  pre.config{background:#070707;padding:10px;border-radius:6px;color:#ddd;font-size:12px}
+  .status{margin-top:14px;padding:12px;border-radius:8px;background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);border-left:3px solid var(--indigo)}
+  .small{font-size:12px;color:#bbb}
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <h1>Ascend — Upload</h1>
+    <div class="note">Use this to upload Edicts/Dominions/Thrones. Supply Cloudflare R2 access key + secret below if you want direct browser PUT to R2. If you prefer server-signed URLs, replace the signing section with your server endpoint.</div>
+
+    <div style="margin-top:14px">
+      <label>Content Kind</label>
+      <select id="kind">
+        <option value="edict">Edict (vertical short)</option>
+        <option value="dominion">Dominion (horizontal short)</option>
+        <option value="throne">Throne (long-form)</option>
+      </select>
+
+      <label>Title</label>
+      <input id="title" type="text" placeholder="Title — cinematic, minimal" />
+
+      <label>Description</label>
+      <textarea id="description" rows="3" placeholder="Short description"></textarea>
+
+      <label>Author UUID (paste a profiles.id value)</label>
+      <input id="author" type="text" placeholder="Author UUID" />
+
+      <label>Choose video file</label>
+      <input id="file" type="file" accept="video/*" />
+
+      <label>Cloudflare R2 Settings (PUT will target bucket path)</label>
+      <pre class="config">
+R2_BASE_URL = https://4aefdc871e931f0ca228941ee1599c02.r2.cloudflarestorage.com
+R2_BUCKET_PATH = /luxscepter-uploads
+R2_ACCOUNT_ID = 4aefdc871e931f0ca228941ee1599c02
+R2_ACCESS_KEY = (paste here if you want browser signing)
+R2_SECRET_KEY = (paste here if you want browser signing)
+      </pre>
+
+      <label>R2 Access Key (paste here if desired)</label>
+      <input id="r2_key" type="text" placeholder="R2 ACCESS KEY (optional)" />
+      <label>R2 Secret Key (paste here if desired)</label>
+      <input id="r2_secret" type="text" placeholder="R2 SECRET (optional)" />
+
+      <div class="row">
+        <button class="btn" id="uploadBtn">Upload to R2 + Save metadata</button>
+        <button class="btn" onclick="location.href='index.html'">Back to Realm</button>
+      </div>
+
+      <div id="status" class="status" style="display:none"></div>
+    </div>
+  </div>
+
+<script>
+/*
+  UPLOAD.HTML
+  - Upload flow:
+    1) User chooses file + metadata.
+    2) Client prepares object key: <kind>/<timestamp>_<random>_<filename>
+    3) If R2 keys provided in the inputs, client signs PUT request (AWS SigV4) and uploads file to R2.
+       If not provided, client will attempt an unsigned PUT (works only if bucket allows public PUT/CORS).
+    4) After successful upload, client writes a row to Supabase REST /rest/v1/contents with the file URL in description or other fields.
+*/
+
+const SUPabase = {
+  url: 'https://uewvmldolwgihfkxwlsl.supabase.co',
+  anonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVld3ZtbGRvbHdnaWhma3h3bHNsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjM5MzQ1MjksImV4cCI6MjA3OTUxMDUyOX0.b9C00OjIkAUDPztC8RtdHcwjdgX4OrShNW_pp6r-_qI'
+};
+
+const R2 = {
+  base: 'https://4aefdc871e931f0ca228941ee1599c02.r2.cloudflarestorage.com',
+  bucketPath: '/luxscepter-uploads', // appended path
+  accountId: '4aefdc871e931f0ca228941ee1599c02'
+};
+
+const uploadBtn = document.getElementById('uploadBtn');
+const statusEl = document.getElementById('status');
+
+uploadBtn.addEventListener('click', async ()=> {
+  status('Starting upload...');
+
+  const file = document.getElementById('file').files[0];
+  if(!file) return status('Please choose a video file first.', true);
+
+  const kind = document.getElementById('kind').value;
+  const title = document.getElementById('title').value || '';
+  const description = document.getElementById('description').value || '';
+  const author = document.getElementById('author').value || null;
+
+  // build object key
+  const ts = Date.now();
+  const safeName = file.name.replace(/[^a-zA-Z0-9.\-_]/g,'_');
+  const key = `${kind}/${ts}_${Math.random().toString(36).slice(2,9)}_${safeName}`;
+  const objectPath = `${R2.bucketPath}/${key}`; // path portion
+  const objectUrl = `${R2.base}${objectPath}`;
+
+  // try R2 upload
+  const suppliedKey = document.getElementById('r2_key').value.trim();
+  const suppliedSecret = document.getElementById('r2_secret').value.trim();
+
+  try {
+    status('Uploading to R2: ' + key);
+    let uploadResp;
+    if(suppliedKey && suppliedSecret){
+      // Use SigV4 signing client-side (S3 compatible)
+      uploadResp = await uploadToR2Signed(R2.base, objectPath, file, suppliedKey, suppliedSecret);
+    } else {
+      // Try a direct PUT (works only if CORS + bucket allow it)
+      uploadResp = await fetch(objectUrl, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': file.type || 'application/octet-stream',
+          'x-amz-acl': 'public-read'
+        },
+        body: file
+      });
+    }
+
+    if(!uploadResp || (uploadResp.status && !(uploadResp.status >=200 && uploadResp.status <300))){
+      const msg = uploadResp && uploadResp.statusText ? uploadResp.statusText : 'R2 upload failed';
+      throw new Error('Upload failed: ' + (uploadResp.status || '') + ' ' + msg);
+    }
+
+    status('Upload to R2 completed. Saving metadata to Supabase...');
+
+    // Save metadata in Supabase contents table
+    const payload = {
+      author: author,
+      kind: kind,
+      title: title,
+      description: description + '\n\nr2_url:' + objectUrl,
+      duration_seconds: 0,
+      is_draft: false,
+      published_at: new Date().toISOString(),
+      created_at: new Date().toISOString()
+    };
+
+    const res = await fetch(SUPabase.url + '/rest/v1/contents', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'apikey': SUPabase.anonKey,
+        'Authorization': 'Bearer ' + SUPabase.anonKey,
+        'Prefer': 'return=representation'
+      },
+      body: JSON.stringify(payload)
+    });
+
+    if(!res.ok) {
+      const text = await res.text();
+      throw new Error('Supabase insert failed: ' + res.status + ' ' + text);
+    }
+    const items = await res.json();
+    status('Saved. Content id: ' + (items && items[0] && items[0].id ? items[0].id : '(unknown)'));
+    // go to watch/view page
+    if(items && items[0] && items[0].id){
+      setTimeout(()=> location.href = 'watch.html?id=' + encodeURIComponent(items[0].id), 700);
+    }
+  } catch(err){
+    console.error(err);
+    status('Error: ' + err.message, true);
+  }
+});
+
+// status helper
+function status(msg, isError=false){
+  statusEl.style.display = 'block';
+  statusEl.style.borderLeftColor = isError ? 'var(--red)' : 'var(--indigo)';
+  statusEl.innerText = msg;
+}
+
+/* ----------------
+   CLIENT SIGV4 FOR S3-COMPATIBLE R2
+   Uses SubtleCrypto for HMAC and SHA256.
+   This implementation is intentionally compact. For production use, server-signed URLs are recommended.
+   ---------------- */
+async function sha256Hex(data){
+  const buff = (data instanceof ArrayBuffer) ? data : new TextEncoder().encode(data);
+  const hash = await crypto.subtle.digest('SHA-256', buff);
+  return toHex(new Uint8Array(hash));
+}
+function toHex(uint8){
+  return Array.from(uint8).map(b=>b.toString(16).padStart(2,'0')).join('');
+}
+async function hmac(key, msg){
+  const cryptoKey = await crypto.subtle.importKey('raw', key instanceof Uint8Array ? key : new TextEncoder().encode(key), {name:'HMAC', hash:'SHA-256'}, false, ['sign']);
+  const sig = await crypto.subtle.sign('HMAC', cryptoKey, new TextEncoder().encode(msg));
+  return new Uint8Array(sig);
+}
+async function getSigningKey(secret, dateStamp, regionName, serviceName){
+  const kSecret = new TextEncoder().encode('AWS4' + secret);
+  const kDate = await hmac(kSecret, dateStamp);
+  const kRegion = await hmac(kDate, regionName);
+  const kService = await hmac(kRegion, serviceName);
+  const kSigning = await hmac(kService, 'aws4_request');
+  return kSigning;
+}
+
+async function uploadToR2Signed(baseUrl, objectPath, file, accessKey, secretKey){
+  // objectPath must start with /bucket/...
+  // host
+  const url = new URL(baseUrl);
+  const host = url.host;
+  const method = 'PUT';
+  const service = 's3';
+  const region = 'auto'; // Cloudflare R2 uses "auto" in some docs; if this fails try "us-east-1"
+  const now = new Date();
+  const amzDate = now.toISOString().replace(/[:-]|\.\d{3}/g,'') + 'Z'; // 20250713T120000Z
+  const dateStamp = amzDate.slice(0,8); // YYYYMMDD
+  const payloadArray = new Uint8Array(await file.arrayBuffer());
+  const payloadHash = await sha256Hex(payloadArray);
+
+  const canonicalUri = objectPath; // begins with /bucket/...
+  const canonicalQueryString = '';
+  const canonicalHeaders = `host:${host}\nx-amz-content-sha256:${payloadHash}\nx-amz-date:${amzDate}\n`;
+  const signedHeaders = 'host;x-amz-content-sha256;x-amz-date';
+  const canonicalRequest = [
+    method,
+    canonicalUri,
+    canonicalQueryString,
+    canonicalHeaders,
+    signedHeaders,
+    payloadHash
+  ].join('\n');
+
+  const canonicalRequestHash = await sha256Hex(canonicalRequest);
+  const credentialScope = `${dateStamp}/${region}/${service}/aws4_request`;
+  const stringToSign = ['AWS4-HMAC-SHA256', amzDate, credentialScope, canonicalRequestHash].join('\n');
+  const signingKey = await getSigningKey(secretKey, dateStamp, region, service);
+  const signatureBytes = await hmac(signingKey, stringToSign);
+  const signature = toHex(signatureBytes);
+
+  const authorization = `AWS4-HMAC-SHA256 Credential=${accessKey}/${credentialScope}, SignedHeaders=${signedHeaders}, Signature=${signature}`;
+
+  const uploadUrl = baseUrl + canonicalUri;
+  // perform PUT
+  const resp = await fetch(uploadUrl, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': file.type || 'application/octet-stream',
+      'x-amz-date': amzDate,
+      'x-amz-content-sha256': payloadHash,
+      'Authorization': authorization,
+      'x-amz-acl': 'public-read'
+    },
+    body: file
+  });
+  return resp;
+}
+</script>
+</body>
+</html>
