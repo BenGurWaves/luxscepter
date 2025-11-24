@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Channel — Lux Scepter</title>
+<style>
+:root{
+  --black:#000;
+  --gold:#FFD700;
+  --purple:#8A2BE2;
+  --tan:#D8C8A6;
+  --white:#fff;
+}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0;background:radial-gradient(circle at 20% 10%, rgba(138,43,226,0.06), transparent 120px), linear-gradient(180deg,#020202,#000);color:var(--white);font-family:"Times New Roman", Times, serif}
+.container{max-width:1000px;margin:0 auto;padding:36px}
+.header{display:flex;align-items:center;gap:12px}
+.logo{width:56px;height:56px;border-radius:12px;display:grid;place-items:center;background:linear-gradient(135deg,var(--gold),var(--purple));color:#000;font-weight:800}
+.row{display:flex;gap:10px;align-items:center}
+.banner{height:160px;background:linear-gradient(90deg,#0b0b0b, rgba(138,43,226,0.06));border-radius:12px;display:flex;align-items:center;padding:16px;margin-top:16px}
+.profile{display:flex;gap:18px;align-items:center}
+.avatar{width:120px;height:120px;border-radius:12px;background:linear-gradient(90deg,var(--purple),var(--gold))}
+.meta{color:#d0d0d0}
+.items{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px;margin-top:18px}
+.card{background:linear-gradient(180deg, rgba(255,255,255,0.02), transparent);padding:10px;border-radius:10px}
+.small{font-size:13px;color:#bdbdbd}
+.btn{background:var(--gold);color:#000;border:0;padding:8px 10px;border-radius:10px;cursor:pointer}
+.input{padding:8px;border-radius:8px;background:transparent;border:1px solid rgba(255,255,255,0.06);color:var(--white)}
+.inline{display:flex;gap:8px;align-items:center}
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="header">
+    <div class="logo">♛</div>
+    <div>
+      <div style="font-family:var(--brand-font);font-size:18px">Lux Scepter</div>
+      <div class="small">Creator Channel</div>
+    </div>
+    <div style="margin-left:auto" class="row">
+      <a class="small" href="feed.html" style="color:var(--gold);text-decoration:none">Back to Feed</a>
+      <button id="signOut" class="small" style="margin-left:8px">Sign out</button>
+    </div>
+  </div>
+
+  <div id="contentArea">
+    <div class="banner">
+      <div class="profile">
+        <div id="avatar" class="avatar"></div>
+        <div>
+          <h2 id="displayName" style="margin:0;font-family:var(--brand-font)"></h2>
+          <div id="username" class="small"></div>
+          <div id="bio" class="meta" style="margin-top:8px"></div>
+          <div style="margin-top:12px" class="inline"><button id="editProfile" class="btn">Edit</button></div>
+        </div>
+      </div>
+    </div>
+
+    <h3 style="margin-top:18px">Public uploads</h3>
+    <div id="items" class="items"></div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/supabase.min.js"></script>
+<script>
+const SUPABASE_URL = 'https://YOUR-PROJECT.supabase.co';
+const SUPABASE_ANON_KEY = 'YOUR_ANON_KEY';
+const supabase = supabaseJs.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+const params = new URLSearchParams(location.search);
+const uid = params.get('u');
+
+document.getElementById('signOut').addEventListener('click', async ()=> { await supabase.auth.signOut(); location.href='index.html'; });
+
+async function loadChannel() {
+  let userId = uid;
+  if (!userId) {
+    const u = await supabase.auth.getUser();
+    userId = u.data?.user?.id;
+    if (!userId) return location.href = 'index.html';
+  }
+
+  // fetch profile
+  const { data: profile, error } = await supabase.from('profiles').select('*').eq('id', userId).single();
+  if (error) { console.error(error); return; }
+  document.getElementById('displayName').textContent = profile.display_name || profile.username || 'Unnamed';
+  document.getElementById('username').textContent = '@' + (profile.username || '').toLowerCase();
+  document.getElementById('bio').textContent = profile.bio || '';
+  if (profile.avatar_url) {
+    const url = supabase.storage.from('avatars').getPublicUrl(profile.avatar_url).publicURL;
+    document.getElementById('avatar').style.backgroundImage = `url(${url})`;
+    document.getElementById('avatar').style.backgroundSize = 'cover';
+    document.getElementById('avatar').style.backgroundPosition = 'center';
+  }
+
+  // fetch public contents
+  const { data: items, error: iterr } = await supabase.from('contents').select('id, title, kind, published_at, media:media(storage_path)').eq('author', userId).is('is_draft', false).order('published_at', { ascending:false });
+  if (iterr) { console.error(iterr); return; }
+  const el = document.getElementById('items');
+  el.innerHTML = (items || []).map(it => {
+    const thumb = `<div style="height:150px;background:linear-gradient(90deg,var(--purple),var(--gold));border-radius:8px;"></div>`;
+    const title = it.title || '(untitled)';
+    const time = it.published_at ? new Date(it.published_at).toLocaleString() : 'draft';
+    return `<div class="card">${thumb}<div style="margin-top:8px;font-weight:700">${title}</div><div class="small">${it.kind.toUpperCase()} · ${time}</div></div>`;
+  }).join('') || '<div class="small">No public uploads yet.</div>';
+}
+
+loadChannel();
+</script>
+</body>
+</html>
