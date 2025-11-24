@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/><title>Profile — Founders</title><link rel="stylesheet" href="style.css"></head>
+<body>
+<div class="container" style="max-width:800px">
+  <div style="display:flex;justify-content:space-between;align-items:center">
+    <div style="font-family:var(--brand-font);font-size:20px">Profile</div>
+    <a class="link small" href="feed.html">Back</a>
+  </div>
+
+  <div style="display:flex;gap:18px;margin-top:20px">
+    <div style="width:120px;height:120px;background:rgba(255,255,255,0.02);border-radius:12px"></div>
+    <div style="flex:1">
+      <h3 id="username">—</h3>
+      <div id="role" class="small" style="color:var(--tan)"></div>
+      <div style="margin-top:12px"><button class="btn" id="signOut">Sign out</button></div>
+    </div>
+  </div>
+
+  <h4 style="margin-top:28px">My uploads</h4>
+  <div id="myUploads" style="margin-top:12px;display:grid;gap:10px"></div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/supabase.min.js"></script>
+<script>
+const SUPABASE_URL = 'https://YOUR-PROJECT.supabase.co';
+const SUPABASE_ANON_KEY = 'YOUR_ANON_KEY';
+const supabase = supabaseJs.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+async function loadProfile() {
+  const { data: s } = await supabase.auth.getUser();
+  const user = s?.user;
+  if (!user) { location.href = 'signin.html'; return; }
+  const { data } = await supabase.from('profiles').select('*').eq('id', user.id).single();
+  document.getElementById('username').textContent = data.username || data.display_name || 'unnamed';
+  document.getElementById('role').textContent = data.role ? data.role.toUpperCase() : '';
+  // load uploads
+  const { data: items } = await supabase.from('contents').select('*').eq('author', user.id).order('created_at', {ascending:false});
+  document.getElementById('myUploads').innerHTML = (items||[]).map(it => `<div style="background:rgba(255,255,255,0.02);padding:10px;border-radius:8px">${it.title||it.kind} · ${it.kind} · ${it.is_draft? 'Draft':'Published'}</div>`).join('');
+}
+
+document.getElementById('signOut').addEventListener('click', async () => {
+  await supabase.auth.signOut();
+  location.href = 'index.html';
+});
+
+loadProfile();
+</script>
+</body>
+</html>
