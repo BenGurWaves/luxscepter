@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Crown the moment — Founders Crown</title>
+<link rel="stylesheet" href="style.css">
+<style>
+/* Minimal inline CSS for demo fallback (style.css recommended) */
+:root{
+  --black:#000000;
+  --gold:#FFD700;
+  --purple:#8A2BE2;
+  --red:#FF1D58;
+  --tan:#D8C8A6;
+  --white:#FFFFFF;
+  --brand-font: "Chomsky", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+  --body-font: "Times New Roman", Times, serif;
+  --maxw:1100px;
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{
+  margin:0;
+  background:var(--black);
+  color:var(--white);
+  font-family:var(--body-font);
+  -webkit-font-smoothing:antialiased;
+  -moz-osx-font-smoothing:grayscale;
+  line-height:1.45;
+}
+.container{max-width:var(--maxw);margin:0 auto;padding:48px;}
+.header{display:flex;align-items:center;gap:18px}
+.brand{display:flex;align-items:center;gap:12px}
+.logo{
+  width:56px;height:56px;border-radius:8px;
+  display:grid;place-items:center;background:linear-gradient(135deg,var(--gold),var(--purple));
+  color:var(--black);font-weight:700;font-family:var(--brand-font);font-size:20px;
+}
+.tagline{color:var(--tan);letter-spacing:0.06em;font-size:18px;margin-top:6px}
+.hero{display:flex;gap:48px;align-items:center;justify-content:space-between;margin-top:40px}
+.hero-left{max-width:640px}
+.h1{font-family:var(--brand-font);font-size:54px;margin:0 0 14px;color:var(--white)}
+.p{color:#cfcfcf;margin:0 0 24px}
+.cta{display:flex;gap:12px}
+.btn{
+  background:var(--gold);color:var(--black);border:0;padding:12px 18px;border-radius:10px;font-weight:700;cursor:pointer;
+}
+.btn.secondary{background:transparent;border:1px solid rgba(255,255,255,0.06);color:var(--white)}
+.badge{display:inline-flex;align-items:center;gap:8px;padding:8px 12px;border-radius:999px;background:rgba(255,255,255,0.03);color:var(--tan);font-weight:600}
+.features{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:28px}
+.feature{background:rgba(255,255,255,0.02);padding:16px;border-radius:10px;font-size:14px;color:#ddd}
+.preview{width:360px;height:380px;background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));border-radius:14px;display:flex;flex-direction:column;gap:12px;padding:18px}
+.preview .card{flex:1;background:rgba(0,0,0,0.45);border-radius:10px;padding:10px}
+.footer{margin-top:60px;color:#8c8c8c;font-size:13px}
+.row {display:flex;gap:12px;align-items:center}
+.small{font-size:13px;color:#bdbdbd}
+a.link{color:var(--gold);text-decoration:none}
+</style>
+</head>
+<body>
+<!-- assets/icons.svg must be available -->
+<div class="container">
+  <div class="header">
+    <div class="brand">
+      <div class="logo" aria-hidden="true">
+        <svg width="24" height="24"><use href="assets/icons.svg#icon-crown"></use></svg>
+      </div>
+      <div>
+        <div style="font-family:var(--brand-font);font-size:20px">BenGurWaves</div>
+        <div class="tagline">Crown the moment.</div>
+      </div>
+    </div>
+    <div style="margin-left:auto" class="row">
+      <a class="link small" href="signin.html">Sign in</a>
+      <a class="link small" href="feed.html" style="margin-left:14px">Feed</a>
+    </div>
+  </div>
+
+  <div class="hero">
+    <div class="hero-left">
+      <h1 class="h1">Founders Crown — invite-only creators platform</h1>
+      <p class="p">Invite-only alpha for 250 creators. Upload vertical Reigns, horizontal Empires, long-form Thrones, run live Coronations and publish Decrees — all on your terms. One-time Founding Crown buys a permanent founder badge and priority placement.</p>
+
+      <div class="cta">
+        <button class="btn" id="buyButton">Buy Founding Crown — $99</button>
+        <a class="btn secondary" href="signin.html">Join waitlist</a>
+        <div class="badge">♛ Founding Crown</div>
+      </div>
+
+      <div class="features">
+        <div class="feature"><strong>Dominion Feed</strong><div class="small">chrono + algorithmic toggle</div></div>
+        <div class="feature"><strong>Oracle Edge</strong><div class="small">right-edge contextual search</div></div>
+        <div class="feature"><strong>Auto-Advance</strong><div class="small">endless or timed playback</div></div>
+      </div>
+    </div>
+
+    <div class="preview" aria-hidden="true">
+      <div class="card"><strong style="color:var(--gold)">Reign • 00:48</strong><div style="margin-top:8px;color:#ccc">Vertical short — autoplay preview</div></div>
+      <div class="card"><strong style="color:var(--purple)">Empire • 00:24</strong><div style="margin-top:8px;color:#ccc">Horizontal short</div></div>
+      <div style="font-size:12px;color:#999">Mock preview. Uploads happen in your dashboard after sign-in.</div>
+    </div>
+  </div>
+
+  <div class="footer">
+    <div style="display:flex;justify-content:space-between;align-items:center">
+      <div>© <strong style="font-family:var(--brand-font)">BenGurWaves</strong> — Founders Crown</div>
+      <div><a class="link" href="feed.html">Open Feed</a> · <a class="link" href="upload.html">Upload</a></div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/supabase.min.js"></script>
+<script>
+/*
+  IMPORTANT: Replace the placeholder values below with your public Supabase URL and ANON key.
+  DO NOT put a service_role key here.
+*/
+const SUPABASE_URL = 'https://uewvmldolwgihfkxwlsl.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVld3ZtbGRvbHdnaWhma3h3bHNsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjM5MzQ1MjksImV4cCI6MjA3OTUxMDUyOX0.b9C00OjIkAUDPztC8RtdHcwjdgX4OrShNW_pp6r-_qI';
+
+const supabase = supabaseJs.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+document.getElementById('buyButton').addEventListener('click', async () => {
+  // Create a Checkout session via your server. This client-side code opens Stripe Checkout
+  // Endpoint expected: /api/create-checkout (server-side) which creates Stripe checkout session.
+  try {
+    const res = await fetch('/api/create-checkout', { method:'POST', headers:{'content-type':'application/json'}, body: JSON.stringify({ userId: (await supabase.auth.getUser()).data?.user?.id })});
+    const data = await res.json();
+    if (data?.url) window.location.href = data.url;
+    else alert('Checkout setup error. See console.');
+  } catch (e) {
+    console.error(e);
+    alert('Checkout failed to start.');
+  }
+});
+</script>
+</body>
+</html>
