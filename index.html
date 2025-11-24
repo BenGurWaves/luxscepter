@@ -3,256 +3,136 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Lux Scepter — Crown the moment</title>
+<title>Realm — Lux Scepter (Feed)</title>
 <style>
-:root{
-  --black:#000;
-  --gold:#FFD700;
-  --purple:#8A2BE2;
-  --tan:#D8C8A6;
-  --white:#fff;
-  --brand-font:"Chomsky", system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
-  --body-font:"Times New Roman", Times, serif;
-}
-*{box-sizing:border-box}
-html,body{height:100%;margin:0;background:linear-gradient(180deg,#020202,#000);color:var(--white);font-family:var(--body-font)}
-.container{max-width:1100px;margin:0 auto;padding:48px}
-.header{display:flex;align-items:center;gap:18px}
-.logo{width:64px;height:64px;border-radius:12px;display:grid;place-items:center;background:linear-gradient(135deg,var(--gold),var(--purple));color:#000;font-weight:800;font-family:var(--brand-font);font-size:20px}
-.title{font-family:var(--brand-font);font-size:28px;margin:0}
-.lead{color:#d0d0d0}
-.btn{background:var(--gold);color:#000;border:0;padding:10px 14px;border-radius:10px;cursor:pointer}
-.small-btn{background:transparent;border:1px solid rgba(255,255,255,0.06);padding:8px 10px;border-radius:8px;color:var(--white);cursor:pointer}
-.input{width:100%;padding:10px;border-radius:8px;background:transparent;border:1px solid rgba(255,255,255,0.06);color:var(--white)}
-.sheet{background:#070707;padding:18px;border-radius:12px;border:1px solid rgba(255,255,255,0.03);width:420px}
-.modal{position:fixed;inset:0;display:none;place-items:center;background:rgba(0,0,0,0.65)}
-.modal.show{display:grid}
-.muted{color:#bdbdbd;font-size:13px}
-.note{color:var(--tan);font-size:13px;margin-top:10px}
+  /* Royal minimal — black / gold / indigo / red */
+  :root{
+    --black:#000000;
+    --gold:#D4AF37;
+    --indigo:#4B0082;
+    --red:#8B0000;
+    --muted:#1a1a1a;
+  }
+  html,body{height:100%;margin:0;background:var(--black);color:#eee;font-family: "Chomsky","Times New Roman",serif;}
+  .wrap{max-width:1100px;margin:28px auto;padding:24px;}
+  header{display:flex;align-items:center;gap:18px;margin-bottom:26px}
+  h1{font-size:28px;margin:0;color:var(--gold);letter-spacing:0.06em}
+  .sub{color:#cfcfcf;font-size:13px}
+  .card{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));border-left:4px solid var(--gold);padding:16px;border-radius:8px;margin-bottom:12px}
+  .title{font-size:18px;margin:0 0 6px 0;color:#fff}
+  .meta{font-size:13px;color:#cfcfcf;display:flex;gap:12px;align-items:center}
+  .thumb{width:220px;height:124px;background:#111;border-radius:6px;display:flex;align-items:center;justify-content:center;overflow:hidden}
+  .row{display:flex;gap:18px}
+  .actions{margin-left:auto}
+  .btn{background:transparent;border:1px solid var(--gold);color:var(--gold);padding:8px 12px;border-radius:6px;cursor:pointer}
+  .small{font-size:12px;color:#bbb}
+  a.logo{color:var(--gold);text-decoration:none;font-weight:700}
+  .empty{color:#999;padding:40px;text-align:center}
+  footer{border-top:1px solid rgba(255,255,255,0.03);padding-top:12px;margin-top:18px;color:#999;font-size:12px}
+  .tag{background:rgba(212,175,55,0.09);padding:6px;border-radius:6px;color:var(--gold);font-weight:600}
 </style>
 </head>
 <body>
-<div class="container">
-  <div class="header">
-    <div class="logo">♛</div>
-    <div>
-      <div class="title">Lux Scepter</div>
-      <div class="muted">Crown the moment — founders alpha</div>
-    </div>
-    <div style="margin-left:auto">
-      <button id="openAuth" class="small-btn">Sign in / Sign up</button>
-      <a href="feed.html" style="color:var(--gold);margin-left:12px;text-decoration:none">Dominion</a>
-    </div>
+  <div class="wrap">
+    <header>
+      <div>
+        <h1><a class="logo" href="/">Lux Scepter — Realm</a></h1>
+        <div class="sub">Rule the feed. Own the crown.</div>
+      </div>
+      <div style="margin-left:auto">
+        <button class="btn" onclick="location.href='upload.html'">Upload Edict / Dominion</button>
+      </div>
+    </header>
+
+    <main id="feed">
+      <div class="empty">Loading feed…</div>
+    </main>
+
+    <footer>
+      <span class="tag">♔ Crown</span> &nbsp; • &nbsp; Founding Bloodline preview • Static demo build
+    </footer>
   </div>
 
-  <section style="margin-top:40px;display:flex;gap:36px;align-items:flex-start">
-    <div style="flex:1">
-      <h1 style="font-family:var(--brand-font);font-size:44px;margin:0">Founders Crown — creators alpha</h1>
-      <p class="lead">Invite-only creators, cinematic feed, founder priority, and a single lifetime Founding Crown purchase. Create your public Lux account and publish Reigns, Empires, Thrones.</p>
-      <div style="display:flex;gap:12px;margin-top:18px">
-        <button id="ctaCreate" class="btn">Create account</button>
-        <a class="small-btn" href="feed.html">Explore public feed</a>
-      </div>
-      <div class="note">Security note: do not put service-role keys in client-side code. Use anon keys only.</div>
-    </div>
+<script>
+/*
+  INDEX.HTML
+  - Lists contents from Supabase table `contents`.
+  - Uses Supabase REST endpoint with the anon key you provided.
+  - Sorting: newest published_at first, then created_at.
+*/
 
-    <aside style="width:360px">
-      <div style="background:linear-gradient(180deg, rgba(255,255,255,0.02), transparent);padding:16px;border-radius:12px">
-        <div style="font-weight:700;color:var(--gold)">Quick facts</div>
-        <div class="muted" style="margin-top:10px">Unlimited Crowns, daily Scepters by tier, founder badges, and Oracle Edge search.</div>
-      </div>
-    </aside>
-  </section>
-</div>
+const SUPabase = {
+  url: 'https://uewvmldolwgihfkxwlsl.supabase.co',
+  anonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVld3ZtbGRvbHdnaWhma3h3bHNsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjM5MzQ1MjksImV4cCI6MjA3OTUxMDUyOX0.b9C00OjIkAUDPztC8RtdHcwjdgX4OrShNW_pp6r-_qI'
+};
 
-<!-- modal dialog for auth & post-create -->
-<div id="modal" class="modal" aria-hidden="true">
-  <div class="sheet" role="dialog" id="sheet">
-    <!-- Step 1: signup -->
-    <div id="step-signup">
-      <h3 style="margin:0;font-family:var(--brand-font)">Create account</h3>
-      <div class="muted" style="margin-top:8px">Email, username and password.</div>
-      <div style="margin-top:12px">
-        <input id="suEmail" class="input" type="email" placeholder="Email" />
-      </div>
-      <div style="margin-top:8px;display:flex;gap:8px">
-        <input id="suUser" class="input" placeholder="Public username" />
-        <input id="suPass" class="input" type="password" placeholder="Password" />
-      </div>
-      <div style="margin-top:12px;display:flex;gap:8px">
-        <button id="doSignup" class="btn">Create</button>
-        <button id="gotoSignin" class="small-btn">Sign in</button>
-      </div>
-      <div id="suMsg" class="muted" style="margin-top:8px"></div>
-    </div>
-
-    <!-- Step 2: public profile + avatar upload -->
-    <div id="step-public" style="display:none">
-      <h3 style="margin:0;font-family:var(--brand-font)">Lux public account</h3>
-      <div class="muted" style="margin-top:8px">Set display name, bio and avatar. This will appear on your channel and public feed.</div>
-      <div style="margin-top:12px">
-        <input id="pubDisplay" class="input" placeholder="Display name" />
-      </div>
-      <div style="margin-top:8px">
-        <input id="pubBio" class="input" placeholder="Short bio" />
-      </div>
-      <div style="margin-top:8px">
-        <label class="muted">Avatar (image)</label>
-        <input id="pubAvatar" type="file" accept="image/*" style="margin-top:6px"/>
-      </div>
-      <div style="margin-top:12px;display:flex;gap:8px">
-        <button id="doPublic" class="btn">Create public profile</button>
-        <button id="skipPublic" class="small-btn">Skip</button>
-      </div>
-      <div id="pubMsg" class="muted" style="margin-top:8px"></div>
-    </div>
-
-    <!-- Step: signin -->
-    <div id="step-signin" style="display:none">
-      <h3 style="margin:0;font-family:var(--brand-font)">Sign in</h3>
-      <div class="muted" style="margin-top:8px">Email + password</div>
-      <div style="margin-top:12px">
-        <input id="siEmail" class="input" placeholder="Email" />
-      </div>
-      <div style="margin-top:8px">
-        <input id="siPass" class="input" type="password" placeholder="Password" />
-      </div>
-      <div style="margin-top:12px;display:flex;gap:8px">
-        <button id="doSignin" class="btn">Sign in</button>
-        <button id="backToSignup" class="small-btn">Back</button>
-      </div>
-      <div id="siMsg" class="muted" style="margin-top:8px"></div>
-    </div>
-  </div>
-</div>
-
-<!-- Supabase ES module (avoids MIME/type blocking); +esm ensures proper module content-type -->
-<script type="module">
-  import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
-
-  // --- REPLACE THESE with your project's public values ---
-  const SUPABASE_URL = 'https://uewvmldolwgihfkxwlsl.supabase.co';
-  const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVld3ZtbGRvbHdnaWhma3h3bHNsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjM5MzQ1MjksImV4cCI6MjA3OTUxMDUyOX0.b9C00OjIkAUDPztC8RtdHcwjdgX4OrShNW_pp6r-_qI';
-  // -------------------------------------------------------
-
-  if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
-    console.error('Please set SUPABASE_URL and SUPABASE_ANON_KEY in the script.');
-    // Allow page to still load visually; features will fail gracefully.
-  }
-  const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
-  // UI wiring
-  const modal = document.getElementById('modal');
-  const sheet = document.getElementById('sheet');
-  const openAuth = document.getElementById('openAuth');
-  const ctaCreate = document.getElementById('ctaCreate');
-  const stepSignup = document.getElementById('step-signup');
-  const stepPublic = document.getElementById('step-public');
-  const stepSignin = document.getElementById('step-signin');
-
-  function show(step){
-    modal.classList.add('show'); modal.removeAttribute('aria-hidden');
-    stepSignup.style.display = step==='signup' ? 'block' : 'none';
-    stepPublic.style.display = step==='public' ? 'block' : 'none';
-    stepSignin.style.display = step==='signin' ? 'block' : 'none';
-  }
-  function hide(){ modal.classList.remove('show'); modal.setAttribute('aria-hidden','true'); }
-
-  openAuth.onclick = () => show('signup');
-  ctaCreate.onclick = () => show('signup');
-
-  document.getElementById('gotoSignin').onclick = () => show('signin');
-  document.getElementById('backToSignup').onclick = () => show('signup');
-  document.getElementById('skipPublic').onclick = () => { hide(); window.location.href='feed.html'; };
-
-  // SIGNUP: password flow
-  document.getElementById('doSignup').addEventListener('click', async () => {
-    const email = document.getElementById('suEmail').value.trim();
-    const username = document.getElementById('suUser').value.trim();
-    const password = document.getElementById('suPass').value;
-    const suMsg = document.getElementById('suMsg'); suMsg.textContent = 'Creating account…';
-    if (!email || !username || !password) { suMsg.textContent = 'Email, username, and password are required.'; return; }
-
-    try {
-      const { data, error } = await supabase.auth.signUp({ email, password });
-      if (error) { suMsg.textContent = 'Sign up error: ' + error.message; return; }
-
-      // If immediate user returned, create profile row.
-      const user = data.user;
-      if (user && user.id) {
-        const { error: pErr } = await supabase.from('profiles').upsert({
-          id: user.id,
-          username,
-          display_name: username,
-          created_at: new Date().toISOString()
-        }, { returning: 'minimal' }); // returning minimal avoids > payload
-        if (pErr) { suMsg.textContent = 'Profile save error: ' + pErr.message; return; }
-        suMsg.textContent = 'Account created. Fill public profile.';
-        // show next step
-        show('public');
-      } else {
-        // If your Supabase requires email confirmation before user object appears
-        suMsg.textContent = 'Sign-up initiated. Confirm email, then sign in to continue.';
-        // still show public creation step — note user might need to verify first depending on project settings
-        show('public');
+async function fetchFeed() {
+  const q = '/rest/v1/contents?select=*,author:author(username,avatar)&order=coalesce(published_at,created_at.desc)&limit=50';
+  // Note: If row-level security exists, anon key may be limited.
+  try {
+    const res = await fetch(SUPabase.url + q, {
+      headers: {
+        apikey: SUPabase.anonKey,
+        Authorization: 'Bearer ' + SUPabase.anonKey
       }
-    } catch (e) {
-      console.error(e);
-      suMsg.textContent = 'Unexpected error. See console.';
-    }
+    });
+    if(!res.ok) throw new Error('Supabase responded ' + res.status);
+    const items = await res.json();
+    renderFeed(items);
+  } catch (err) {
+    console.error(err);
+    document.getElementById('feed').innerHTML = `<div class="empty">Failed to load feed — check console for details.</div>`;
+  }
+}
+
+function thumbnailFor(item){
+  // If item.kind includes 'throne' or 'dominion' we can derive a thumbnail from R2 path or placeholder.
+  // Use first 220px placeholder for now.
+  return `<div class="thumb"><div style="padding:10px;text-align:center"><div style="font-size:13px;color:#bbb">${(item.kind||'content').toUpperCase()}</div><div style="margin-top:6px;font-size:12px;color:#888">${(item.duration_seconds||0) ? (Math.floor(item.duration_seconds/60)+':' + String(item.duration_seconds%60).padStart(2,'0')) : ''}</div></div></div>`;
+}
+
+function renderFeed(items){
+  const root = document.getElementById('feed');
+  if(!items || items.length===0){
+    root.innerHTML = `<div class="empty">No contents yet. Go upload a Crown.</div>`;
+    return;
+  }
+  root.innerHTML = '';
+  items.forEach(it=>{
+    const html = document.createElement('div');
+    html.className = 'card';
+    html.innerHTML = `
+      <div class="row">
+        ${thumbnailFor(it)}
+        <div style="flex:1">
+          <h3 class="title">${escapeHtml(it.title || '(Untitled)')}</h3>
+          <div class="meta">
+            <div class="small">By <strong>${escapeHtml((it.author && it.author.username) || 'unknown')}</strong></div>
+            <div class="small">• ${escapeHtml(it.kind || 'edict')}</div>
+            <div class="small">• ${it.published_at ? new Date(it.published_at).toLocaleString() : 'draft'}</div>
+            <div class="actions">
+              <button class="btn" onclick="openViewer('${encodeURIComponent(it.id)}')">Play</button>
+            </div>
+          </div>
+          <p class="small" style="margin-top:10px;color:#d7d7d7">${escapeHtml(it.description || '')}</p>
+        </div>
+      </div>
+    `;
+    root.appendChild(html);
   });
+}
 
-  // CREATE PUBLIC PROFILE + upload avatar to luxscepter-uploads
-  document.getElementById('doPublic').addEventListener('click', async () => {
-    const disp = document.getElementById('pubDisplay').value.trim();
-    const bio = document.getElementById('pubBio').value.trim();
-    const avatar = document.getElementById('pubAvatar').files[0];
-    const pubMsg = document.getElementById('pubMsg'); pubMsg.textContent = 'Saving…';
-    const userRes = await supabase.auth.getUser();
-    const user = userRes.data?.user;
-    if (!user) { pubMsg.textContent = 'You must be signed in to create public profile.'; return; }
+function openViewer(id){
+  // open watch page with id parameter
+  location.href = 'watch.html?id=' + id;
+}
 
-    try {
-      let avatar_path = null;
-      if (avatar) {
-        const fileName = `${user.id}/${Date.now()}_${avatar.name.replace(/\s+/g,'_')}`;
-        const bucket = 'luxscepter-uploads';
-        const up = await supabase.storage.from(bucket).upload(`avatars/${fileName}`, avatar, { cacheControl: '3600', upsert: false });
-        if (up.error) throw up.error;
-        avatar_path = up.data.path;
-      }
-      const upd = await supabase.from('profiles').update({
-        display_name: disp || undefined,
-        bio: bio || undefined,
-        avatar_url: avatar_path || undefined
-      }).eq('id', user.id);
-      if (upd.error) { pubMsg.textContent = 'Save failed: ' + upd.error.message; return; }
-      pubMsg.textContent = 'Public profile created. Redirecting to channel…';
-      setTimeout(()=> { hide(); window.location.href = `channel.html?u=${user.id}`; }, 800);
-    } catch (err) {
-      console.error(err); pubMsg.textContent = 'Upload failed: ' + (err.message || err);
-    }
-  });
+function escapeHtml(s){
+  if(!s) return '';
+  return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
 
-  // SIGNIN
-  document.getElementById('doSignin').addEventListener('click', async () => {
-    const email = document.getElementById('siEmail').value.trim();
-    const password = document.getElementById('siPass').value;
-    const siMsg = document.getElementById('siMsg'); siMsg.textContent = 'Signing in…';
-    if (!email || !password) { siMsg.textContent = 'Email and password required.'; return; }
-    try {
-      const { data, error } = await supabase.auth.signInWithPassword({ email, password });
-      if (error) { siMsg.textContent = 'Sign-in error: ' + error.message; return; }
-      siMsg.textContent = 'Signed in. Redirecting…';
-      hide();
-      window.location.href = `channel.html?u=${data.user.id}`;
-    } catch (e) {
-      console.error(e); siMsg.textContent = 'Unexpected error';
-    }
-  });
-
-  // Close when clicking outside sheet
-  document.getElementById('modal').addEventListener('click', (ev) => { if (ev.target.id === 'modal') hide(); });
+fetchFeed();
 </script>
 </body>
 </html>
