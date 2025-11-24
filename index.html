@@ -3,10 +3,8 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Crown the moment — Founders Crown</title>
-<link rel="stylesheet" href="style.css">
+<title>Lux Scepter — Crown the moment</title>
 <style>
-/* Minimal inline CSS for demo fallback (style.css recommended) */
 :root{
   --black:#000000;
   --gold:#FFD700;
@@ -14,125 +12,289 @@
   --red:#FF1D58;
   --tan:#D8C8A6;
   --white:#FFFFFF;
-  --brand-font: "Chomsky", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+  --brand-font: "Chomsky", system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
   --body-font: "Times New Roman", Times, serif;
   --maxw:1100px;
 }
 *{box-sizing:border-box}
-html,body{height:100%}
-body{
-  margin:0;
-  background:var(--black);
-  color:var(--white);
-  font-family:var(--body-font);
-  -webkit-font-smoothing:antialiased;
-  -moz-osx-font-smoothing:grayscale;
-  line-height:1.45;
-}
-.container{max-width:var(--maxw);margin:0 auto;padding:48px;}
+html,body{height:100%;margin:0;background:linear-gradient(180deg,#030303,#000000 60%);color:var(--white);font-family:var(--body-font)}
+.container{max-width:var(--maxw);margin:0 auto;padding:48px}
 .header{display:flex;align-items:center;gap:18px}
-.brand{display:flex;align-items:center;gap:12px}
-.logo{
-  width:56px;height:56px;border-radius:8px;
-  display:grid;place-items:center;background:linear-gradient(135deg,var(--gold),var(--purple));
-  color:var(--black);font-weight:700;font-family:var(--brand-font);font-size:20px;
-}
-.tagline{color:var(--tan);letter-spacing:0.06em;font-size:18px;margin-top:6px}
-.hero{display:flex;gap:48px;align-items:center;justify-content:space-between;margin-top:40px}
-.hero-left{max-width:640px}
-.h1{font-family:var(--brand-font);font-size:54px;margin:0 0 14px;color:var(--white)}
-.p{color:#cfcfcf;margin:0 0 24px}
-.cta{display:flex;gap:12px}
-.btn{
-  background:var(--gold);color:var(--black);border:0;padding:12px 18px;border-radius:10px;font-weight:700;cursor:pointer;
-}
-.btn.secondary{background:transparent;border:1px solid rgba(255,255,255,0.06);color:var(--white)}
-.badge{display:inline-flex;align-items:center;gap:8px;padding:8px 12px;border-radius:999px;background:rgba(255,255,255,0.03);color:var(--tan);font-weight:600}
-.features{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:28px}
-.feature{background:rgba(255,255,255,0.02);padding:16px;border-radius:10px;font-size:14px;color:#ddd}
-.preview{width:360px;height:380px;background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));border-radius:14px;display:flex;flex-direction:column;gap:12px;padding:18px}
-.preview .card{flex:1;background:rgba(0,0,0,0.45);border-radius:10px;padding:10px}
-.footer{margin-top:60px;color:#8c8c8c;font-size:13px}
-.row {display:flex;gap:12px;align-items:center}
+.logo{width:64px;height:64px;border-radius:12px;display:grid;place-items:center;background:linear-gradient(135deg,var(--gold),var(--purple));color:#000;font-weight:800;font-family:var(--brand-font);font-size:20px;box-shadow:0 8px 30px rgba(0,0,0,0.7)}
+.brand-line{display:flex;flex-direction:column}
+.title{font-family:var(--brand-font);font-size:34px;margin:0}
+.subtitle{color:var(--tan);margin-top:6px;font-size:14px}
+.row{display:flex;gap:12px;align-items:center}
+.main{display:flex;gap:48px;margin-top:48px;align-items:center}
+.left{flex:1}
+.hero-card{background:linear-gradient(180deg,rgba(255,255,255,0.02),rgba(255,255,255,0.01));padding:28px;border-radius:14px;box-shadow:0 12px 40px rgba(0,0,0,0.6)}
+.h1{font-family:var(--brand-font);font-size:44px;margin:0 0 12px;color:var(--white)}
+.lead{color:#d7d7d7;margin:0 0 22px}
+.cta{display:flex;gap:10px}
+.btn{background:var(--gold);color:#000;border:0;padding:12px 16px;border-radius:12px;font-weight:700;cursor:pointer}
+.btn.ghost{background:transparent;border:1px solid rgba(255,255,255,0.06);color:var(--white)}
+.preview{width:360px;padding:18px;border-radius:12px;background:linear-gradient(180deg, rgba(255,255,255,0.02), transparent);box-shadow:inset 0 -40px 80px rgba(0,0,0,0.4)}
 .small{font-size:13px;color:#bdbdbd}
-a.link{color:var(--gold);text-decoration:none}
+.form-row{display:flex;gap:8px;margin-top:12px}
+.input, .select {width:100%;padding:10px;border-radius:10px;background:transparent;border:1px solid rgba(255,255,255,0.06);color:var(--white)}
+.footer{margin-top:40px;color:#909090;font-size:13px}
+.note{margin-top:12px;color:var(--tan);font-size:13px}
+.center{display:grid;place-items:center}
+hr{border:none;border-top:1px solid rgba(255,255,255,0.03);margin:18px 0}
+.icon{width:18px;height:18px;vertical-align:middle}
+.badge{display:inline-flex;align-items:center;gap:8px;padding:8px 12px;border-radius:999px;background:rgba(255,255,255,0.03);color:var(--tan);font-weight:600}
+.brand-accent{color:var(--gold)}
+/* modal */
+.modal{position:fixed;inset:0;display:none;place-items:center;background:linear-gradient(rgba(0,0,0,0.6),rgba(0,0,0,0.8));z-index:60}
+.modal.show{display:grid}
+.sheet{background:#080808;padding:20px;border-radius:14px;width:420px;max-width:94%;box-shadow:0 20px 60px rgba(0,0,0,0.8);border:1px solid rgba(255,255,255,0.03)}
+.form-title{font-family:var(--brand-font);font-size:18px;margin:0 0 6px}
+.muted{color:#b8b8b8;font-size:13px}
+.link{color:var(--gold);text-decoration:none}
+.sep{height:10px}
+.small-btn{background:transparent;border:1px solid rgba(255,255,255,0.06);padding:8px 10px;border-radius:8px;color:var(--white);cursor:pointer}
 </style>
 </head>
 <body>
-<!-- assets/icons.svg must be available -->
 <div class="container">
   <div class="header">
-    <div class="brand">
-      <div class="logo" aria-hidden="true">
-        <svg width="24" height="24"><use href="assets/icons.svg#icon-crown"></use></svg>
-      </div>
-      <div>
-        <div style="font-family:var(--brand-font);font-size:20px">BenGurWaves</div>
-        <div class="tagline">Crown the moment.</div>
-      </div>
+    <div class="logo" aria-hidden="true">♛</div>
+    <div class="brand-line">
+      <div class="title">Lux Scepter</div>
+      <div class="subtitle">Crown the moment — invite creators, rule the feed</div>
     </div>
     <div style="margin-left:auto" class="row">
-      <a class="link small" href="signin.html">Sign in</a>
-      <a class="link small" href="feed.html" style="margin-left:14px">Feed</a>
+      <button id="openSign" class="small-btn">Sign in / Sign up</button>
+      <a class="link" href="feed.html" style="margin-left:12px">Open Dominion</a>
     </div>
   </div>
 
-  <div class="hero">
-    <div class="hero-left">
-      <h1 class="h1">Founders Crown — invite-only creators platform</h1>
-      <p class="p">Invite-only alpha for 250 creators. Upload vertical Reigns, horizontal Empires, long-form Thrones, run live Coronations and publish Decrees — all on your terms. One-time Founding Crown buys a permanent founder badge and priority placement.</p>
+  <div class="main">
+    <div class="left">
+      <div class="hero-card">
+        <h1 class="h1">Founders Crown — alpha for creators</h1>
+        <p class="lead">Invite-only ethos with founder badges, unlimited Crowns, limited Scepters, and a feed designed to feel majestic — dark, cinematic, and fast. Build your public Lux profile and publish Reigns, Empires and Thrones.</p>
 
-      <div class="cta">
-        <button class="btn" id="buyButton">Buy Founding Crown — $99</button>
-        <a class="btn secondary" href="signin.html">Join waitlist</a>
-        <div class="badge">♛ Founding Crown</div>
-      </div>
+        <div class="cta">
+          <button id="ctaJoin" class="btn">Create account</button>
+          <a class="btn ghost" href="feed.html">Explore public feed</a>
+        </div>
 
-      <div class="features">
-        <div class="feature"><strong>Dominion Feed</strong><div class="small">chrono + algorithmic toggle</div></div>
-        <div class="feature"><strong>Oracle Edge</strong><div class="small">right-edge contextual search</div></div>
-        <div class="feature"><strong>Auto-Advance</strong><div class="small">endless or timed playback</div></div>
+        <div class="note">Founders: one-time lifetime purchase, priority algorithm. Waitlist: referral system supports a limited invite quota.</div>
+        <hr>
+        <div style="display:flex;gap:14px">
+          <div style="flex:1">
+            <div class="small">Dominion</div>
+            <div class="small">Chrono + Algorithmic</div>
+          </div>
+          <div style="flex:1">
+            <div class="small">Oracle Edge</div>
+            <div class="small">Right-edge contextual search</div>
+          </div>
+        </div>
       </div>
     </div>
 
-    <div class="preview" aria-hidden="true">
-      <div class="card"><strong style="color:var(--gold)">Reign • 00:48</strong><div style="margin-top:8px;color:#ccc">Vertical short — autoplay preview</div></div>
-      <div class="card"><strong style="color:var(--purple)">Empire • 00:24</strong><div style="margin-top:8px;color:#ccc">Horizontal short</div></div>
-      <div style="font-size:12px;color:#999">Mock preview. Uploads happen in your dashboard after sign-in.</div>
+    <div class="preview center" aria-hidden="true">
+      <div style="text-align:center">
+        <div style="font-size:18px;color:var(--gold);font-family:var(--brand-font)">Preview</div>
+        <div style="height:16px"></div>
+        <div style="width:260px;height:150px;background:linear-gradient(90deg,var(--purple),var(--gold));border-radius:10px;box-shadow:0 20px 50px rgba(0,0,0,0.6)"></div>
+        <div style="margin-top:12px;color:#d0d0d0">Reign · Vertical short · 00:42</div>
+      </div>
     </div>
   </div>
 
   <div class="footer">
     <div style="display:flex;justify-content:space-between;align-items:center">
-      <div>© <strong style="font-family:var(--brand-font)">BenGurWaves</strong> — Founders Crown</div>
-      <div><a class="link" href="feed.html">Open Feed</a> · <a class="link" href="upload.html">Upload</a></div>
+      <div>© <strong class="brand-accent">Lux Scepter</strong> — Founders Crown</div>
+      <div class="small">Built for cinematic creators</div>
     </div>
   </div>
 </div>
 
+<!-- modal signup / signin -->
+<div id="modal" class="modal" aria-hidden="true">
+  <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="formTitle">
+    <div id="stepSignup">
+      <h3 id="formTitle" class="form-title">Create account</h3>
+      <div class="muted">Create an account with email, username and password.</div>
+
+      <div class="sep"></div>
+      <input id="suEmail" class="input" placeholder="Email" type="email" autocomplete="email"/>
+      <div class="form-row">
+        <input id="suUser" class="input" placeholder="Username (public)" />
+        <input id="suPass" class="input" placeholder="Password" type="password" />
+      </div>
+      <div style="display:flex;gap:8px;margin-top:12px">
+        <button id="doSignup" class="btn">Create account</button>
+        <button id="toSignin" class="small-btn">Already have an account</button>
+      </div>
+      <div id="suMsg" class="muted" style="margin-top:10px"></div>
+    </div>
+
+    <div id="stepPostCreate" style="display:none">
+      <h3 class="form-title">Lux public account</h3>
+      <div class="muted">Create your public Lux profile and optionally upload your first piece. This will be visible on the public feed and on your channel.</div>
+      <div class="sep"></div>
+      <input id="pubName" class="input" placeholder="Display name (public)" />
+      <input id="pubBio" class="input" placeholder="Short bio (optional)" />
+      <label style="font-size:13px;color:#bdbdbd;margin-top:8px">Upload avatar</label>
+      <input id="pubAvatar" type="file" accept="image/*" />
+      <div style="display:flex;gap:8px;margin-top:12px">
+        <button id="createPublic" class="btn">Create Public Account</button>
+        <button id="skipPublic" class="small-btn">Skip for now</button>
+      </div>
+      <div id="pubMsg" class="muted" style="margin-top:10px"></div>
+    </div>
+
+    <div id="stepSignin" style="display:none">
+      <h3 class="form-title">Sign in</h3>
+      <div class="muted">Sign in with email and password</div>
+      <div class="sep"></div>
+      <input id="siEmail" class="input" placeholder="Email" type="email"/>
+      <input id="siPass" class="input" placeholder="Password" type="password"/>
+      <div style="display:flex;gap:8px;margin-top:12px">
+        <button id="doSignin" class="btn">Sign in</button>
+        <button id="backSignup" class="small-btn">Back</button>
+      </div>
+      <div id="siMsg" class="muted" style="margin-top:10px"></div>
+    </div>
+  </div>
+</div>
+
+<!-- Supabase client -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/supabase.min.js"></script>
 <script>
 /*
-  IMPORTANT: Replace the placeholder values below with your public Supabase URL and ANON key.
-  DO NOT put a service_role key here.
+  Replace these with your project's values.
+  Never use a service_role key in client code.
 */
-const SUPABASE_URL = 'https://uewvmldolwgihfkxwlsl.supabase.co';
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVld3ZtbGRvbHdnaWhma3h3bHNsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjM5MzQ1MjksImV4cCI6MjA3OTUxMDUyOX0.b9C00OjIkAUDPztC8RtdHcwjdgX4OrShNW_pp6r-_qI';
-
+const SUPABASE_URL = 'https://YOUR-PROJECT.supabase.co';
+const SUPABASE_ANON_KEY = 'YOUR_ANON_KEY';
 const supabase = supabaseJs.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-document.getElementById('buyButton').addEventListener('click', async () => {
-  // Create a Checkout session via your server. This client-side code opens Stripe Checkout
-  // Endpoint expected: /api/create-checkout (server-side) which creates Stripe checkout session.
+const modal = document.getElementById('modal');
+const openSign = document.getElementById('openSign');
+const ctaJoin = document.getElementById('ctaJoin');
+
+openSign.onclick = showSignup;
+ctaJoin.onclick = showSignup;
+
+function showSignup(){ showStep('signup'); modal.classList.add('show'); modal.removeAttribute('aria-hidden'); }
+function hideModal(){ modal.classList.remove('show'); modal.setAttribute('aria-hidden','true'); }
+
+document.getElementById('toSignin').onclick = ()=> showStep('signin');
+document.getElementById('backSignup').onclick = ()=> showStep('signup');
+document.getElementById('skipPublic').onclick = async ()=> { hideModal(); window.location.href = 'feed.html'; };
+
+// Step UI helper
+function showStep(s){
+  document.getElementById('stepSignup').style.display = s==='signup'? 'block':'none';
+  document.getElementById('stepSignin').style.display = s==='signin'? 'block':'none';
+  document.getElementById('stepPostCreate').style.display = s==='postcreate'? 'block':'none';
+}
+
+// Signup flow: sign up + create profiles row
+document.getElementById('doSignup').addEventListener('click', async () => {
+  const email = document.getElementById('suEmail').value.trim();
+  const username = document.getElementById('suUser').value.trim();
+  const password = document.getElementById('suPass').value;
+  const msg = document.getElementById('suMsg'); msg.textContent = 'Creating account…';
+
+  if (!email || !username || !password) { msg.textContent = 'Email, username and password required.'; return; }
+
   try {
-    const res = await fetch('/api/create-checkout', { method:'POST', headers:{'content-type':'application/json'}, body: JSON.stringify({ userId: (await supabase.auth.getUser()).data?.user?.id })});
-    const data = await res.json();
-    if (data?.url) window.location.href = data.url;
-    else alert('Checkout setup error. See console.');
+    // Create auth user with password
+    const { data, error } = await supabase.auth.signUp({ email, password });
+    if (error) { msg.textContent = 'Sign up error: ' + error.message; return; }
+
+    // If auth returns user immediately, create profile row
+    // Note: if email confirmation required, user may not be able to sign in yet depending on your Supabase settings.
+    const user = data.user;
+    if (!user) {
+      // some projects require confirmation; still create a minimal profiles row keyed by email placeholder via temp UUID
+      msg.textContent = 'Sign-up initiated. Please check your email. You can continue after confirming.';
+      // show post-create anyway; user can't use features until confirmed, but we'll proceed to public account creation step.
+      showStep('postcreate');
+      return;
+    }
+
+    // create profile record
+    const up = await supabase.from('profiles').insert({
+      id: user.id,
+      username,
+      display_name: username
+    }).select().single();
+
+    if (up.error) msg.textContent = 'Profile creation error: ' + up.error.message;
+    else {
+      msg.textContent = 'Account created. Continue to public profile setup.';
+      // show next step
+      showStep('postcreate');
+    }
   } catch (e) {
-    console.error(e);
-    alert('Checkout failed to start.');
+    console.error(e); msg.textContent = 'Unexpected error';
   }
+});
+
+// Create public profile (avatar upload)
+document.getElementById('createPublic').addEventListener('click', async () => {
+  const display = document.getElementById('pubName').value.trim();
+  const bio = document.getElementById('pubBio').value.trim();
+  const avatarFile = document.getElementById('pubAvatar').files[0];
+  const pubMsg = document.getElementById('pubMsg'); pubMsg.textContent = 'Saving public profile…';
+
+  const userObj = await supabase.auth.getUser();
+  const user = userObj.data?.user;
+  if (!user) { pubMsg.textContent = 'You must be signed in to create public profile.'; return; }
+
+  try {
+    let avatar_path = null;
+    if (avatarFile) {
+      const slug = `avatars/${user.id}/${Date.now()}_${avatarFile.name.replace(/\s/g, '_')}`;
+      const up = await supabase.storage.from('avatars').upload(slug, avatarFile, { cacheControl: '3600', upsert: false });
+      if (up.error) throw up.error;
+      avatar_path = up.data.path;
+    }
+
+    // update profile row
+    const { data, error } = await supabase.from('profiles').update({
+      display_name: display || undefined,
+      bio: bio || undefined,
+      avatar_url: avatar_path ? avatar_path : undefined
+    }).eq('id', user.id);
+
+    if (error) { pubMsg.textContent = 'Save error: ' + error.message; return; }
+    pubMsg.textContent = 'Public Lux account created. Redirecting to your channel...';
+    setTimeout(()=> { hideModal(); window.location.href = 'channel.html?u=' + user.id; }, 900);
+  } catch (err) {
+    console.error(err); pubMsg.textContent = 'Upload or save failed: ' + (err.message || err);
+  }
+});
+
+// Sign in
+document.getElementById('doSignin').addEventListener('click', async () => {
+  const email = document.getElementById('siEmail').value.trim();
+  const password = document.getElementById('siPass').value;
+  const msg = document.getElementById('siMsg'); msg.textContent = 'Signing in…';
+  if (!email || !password) { msg.textContent = 'Email and password required.'; return; }
+  try {
+    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+    if (error) { msg.textContent = 'Sign-in error: ' + error.message; return; }
+    msg.textContent = 'Signed in. Redirecting…';
+    hideModal();
+    // go to channel
+    const user = data.user;
+    window.location.href = 'channel.html?u=' + user.id;
+  } catch (e) {
+    console.error(e); msg.textContent = 'Unexpected error';
+  }
+});
+
+// Close modal on outside click
+modal.addEventListener('click', (e)=> {
+  if (e.target === modal) hideModal();
 });
 </script>
 </body>
