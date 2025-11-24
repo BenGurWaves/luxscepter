@@ -1,0 +1,9 @@
+<!-- assets/icons.svg -->
+<svg xmlns="http://www.w3.org/2000/svg" style="display:none">
+  <symbol id="icon-crown" viewBox="0 0 24 24">
+    <path fill="currentColor" d="M12 2l2.5 5.5L20 8l-4 4 1 7-5-3-5 3 1-7-4-4 5.5-.5z"/>
+  </symbol>
+  <symbol id="icon-scepter" viewBox="0 0 24 24">
+    <path fill="currentColor" d="M21 3l-3 3-2-2-9 9 2 2 9-9 2 2 3-3v-2zM6 18l-2 2 2 2 2-2-2-2z"/>
+  </symbol>
+</svg>
