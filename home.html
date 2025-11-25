@@ -1,260 +1,654 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Lux Scepter — Realm</title>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Lux Scepter — Home</title>
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Chomsky&display=swap');
-body {
-  margin: 0;
-  font-family: 'Times New Roman', serif;
-  background-color: #0e0e0e;
-  color: #bd8e20;
-}
-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 1em 2em;
-  background: #35005a;
-  color: #bd8e20;
-}
-header h1 {
-  font-family: 'Chomsky', sans-serif;
-  font-size: 2em;
-}
-nav button {
-  background: #5600a1;
-  border: none;
-  color: #fff;
-  padding: 0.5em 1em;
-  margin-left: 1em;
-  border-radius: 6px;
-  cursor: pointer;
-}
-nav button:hover {
-  background: #35005a;
-}
-.container {
-  display: flex;
-  margin: 2em;
-}
-#feed {
-  flex: 3;
-  margin-right: 2em;
-}
-.post {
-  background: #0e0e0e;
-  border: 2px solid #571728;
-  border-radius: 10px;
-  margin-bottom: 1em;
-  padding: 1em;
-}
-.post video {
-  width: 100%;
-  border-radius: 8px;
-}
-.sidebar {
-  flex: 1;
-}
-#oracle {
-  position: fixed;
-  right: 0;
-  top: 0;
-  width: 40px;
-  height: 100vh;
-  background: linear-gradient(to bottom, #bd8e20 0%, #571728 100%);
-  cursor: pointer;
-}
-#oracle.expanded {
-  width: 300px;
-  transition: width 0.5s;
-  overflow: auto;
-}
-#oracle input {
-  width: 100%;
-  padding: 0.5em;
-  margin: 0.5em;
-  border-radius: 6px;
-  border: 1px solid #35005a;
-  background: #0e0e0e;
-  color: #bd8e20;
-}
-.upload-section {
-  background: #0e0e0e;
-  border: 2px solid #35005a;
-  padding: 1em;
-  margin-bottom: 2em;
-  border-radius: 10px;
-}
-button.upload-btn {
-  background: #bd8e20;
-  color: #0e0e0e;
-  border: none;
-  padding: 0.5em 1em;
-  cursor: pointer;
-  border-radius: 6px;
-}
-button.upload-btn:hover {
-  background: #5600a1;
-  color: #fff;
-}
-.profile-card {
-  background: #0e0e0e;
-  border: 2px solid #571728;
-  padding: 1em;
-  border-radius: 10px;
-  margin-bottom: 1em;
-}
+  /* Fonts: brand titles in Chomsky if available (fallbacks) */
+  @font-face {
+    font-family: 'Chomsky';
+    src: local('Chomsky'), local('Georgia');
+  }
+  :root{
+    --black:#0e0e0e;
+    --maroon:#571728;
+    --deepviolet:#35005a;
+    --royal:#5600a1;
+    --gold:#bd8e20;
+    --muted:#9b8b6d;
+  }
+  html,body{height:100%;margin:0;background:var(--black);color:var(--gold);font-family:"Times New Roman",serif;}
+  .app {
+    display:grid;
+    grid-template-columns: 320px 1fr 360px;
+    gap:18px;
+    padding:20px;
+    min-height:100vh;
+    box-sizing:border-box;
+  }
+
+  /* Left sidebar: profile + upload area */
+  .left {
+    border-radius:12px;
+    border:1px solid var(--maroon);
+    padding:16px;
+    background: linear-gradient(180deg, rgba(14,14,14,0.95), rgba(20,10,20,0.6));
+    box-shadow: 0 8px 40px rgba(0,0,0,0.6);
+  }
+  .title { font-family:Chomsky, serif; font-size:22px; color:var(--gold); margin-bottom:12px; }
+  .profile {
+    display:flex; gap:12px; align-items:center; margin-bottom:12px;
+  }
+  .avatar { width:64px; height:64px; border-radius:8px; background:#111; border:2px solid var(--deepviolet); display:flex; align-items:center; justify-content:center; color:var(--muted);}
+  .banner { height:84px; width:100%; border-radius:8px; background: linear-gradient(90deg, rgba(86,0,161,0.3), rgba(87,23,40,0.3)); margin-bottom:12px; border:1px solid rgba(255,255,255,0.03); }
+
+  /* Feed (center) */
+  .center {
+    padding:16px;
+    border-radius:12px;
+    border:1px solid var(--maroon);
+    background: linear-gradient(180deg, rgba(5,5,5,0.8), rgba(10,5,10,0.6));
+  }
+  .controls { display:flex; gap:8px; margin-bottom:14px; align-items:center; }
+  .btn { background:transparent; border:1px solid rgba(255,255,255,0.04); padding:8px 12px; border-radius:8px; color:var(--gold); cursor:pointer; }
+  .btn.primary{ background:var(--royal); border:none; color:white; }
+  .toggle { margin-left:auto; display:flex; gap:8px; align-items:center; color:var(--muted); font-size:14px; }
+
+  .post { border-radius:10px; padding:12px; margin-bottom:12px; background: rgba(255,255,255,0.01); border:1px solid rgba(255,255,255,0.02); }
+  .post .meta { display:flex; gap:8px; align-items:center; margin-bottom:8px; }
+  .post video, .post img { width:100%; border-radius:8px; }
+
+  /* Right: Oracle Edge + Missives + stories */
+  .right { padding:16px; border-radius:12px; border:1px solid var(--maroon); background: linear-gradient(180deg, rgba(10,6,10,0.8), rgba(14,8,14,0.5)); }
+  .oracle {
+    position:fixed; right:0; top:40vh; transform:translateX(0);
+    display:flex; align-items:center; height:48px;
+  }
+  /* Oracle collapsed bar */
+  .oracle-bar {
+    width:40px; height:48px; background:linear-gradient(90deg, rgba(189,142,32,0.06), rgba(189,142,32,0.02)); border-left:4px solid var(--gold);
+    display:flex; align-items:center; justify-content:center; writing-mode:vertical-rl; text-orientation:upright; font-family:Chomsky; color:var(--gold);
+    cursor:pointer; border-top-left-radius:8px; border-bottom-left-radius:8px;
+    transition: all .3s ease;
+  }
+  /* Full search open */
+  .oracle-open {
+    position:fixed; right:0; top:0; bottom:0; width:420px; background:rgba(5,5,5,0.98); transform:translateX(0); border-left:6px solid var(--gold);
+    box-shadow:-20px 0 60px rgba(0,0,0,0.6); padding:20px;
+  }
+  .oracle input { width:100%; padding:12px; font-size:16px; border-radius:8px; border:1px solid rgba(255,255,255,0.03); background:#0b0b0b; color:var(--gold);}
+  .search-results { margin-top:12px; max-height:60vh; overflow:auto; }
+
+  /* small helpers */
+  label { font-size:13px; color:var(--muted); display:block; margin-top:8px; }
+  .muted { color:var(--muted); font-size:13px; }
+  .stat { display:inline-block; padding:4px 8px; background:rgba(255,255,255,0.02); border-radius:8px; margin-right:6px; font-size:13px; }
+  .small { font-size:13px; color:var(--muted); }
+
+  /* playback overlay */
+  .player-modal { position:fixed; inset:0; display:none; align-items:center; justify-content:center; background:rgba(0,0,0,0.85); z-index:80; }
+  .player-modal.show { display:flex; }
+  .player-card { width:90%; max-width:900px; padding:18px; border-radius:12px; background:linear-gradient(180deg,#0b0b0b,#150815); border:1px solid rgba(255,255,255,0.04); }
+
+  /* small responsive */
+  @media(max-width:980px){
+    .app { grid-template-columns: 1fr; padding:12px; }
+    .oracle { display:none; }
+  }
 </style>
 </head>
 <body>
-<header>
-  <h1>Lux Scepter</h1>
-  <nav>
-    <button id="signOutBtn">Sign Out</button>
-    <button id="toggleFeed">Chrono / Algo</button>
-  </nav>
-</header>
+<div class="app">
+  <!-- LEFT: profile + upload area -->
+  <aside class="left">
+    <div class="banner" id="profile-banner"></div>
+    <div class="profile">
+      <div class="avatar" id="profile-avatar">✠</div>
+      <div>
+        <div id="display-name" style="font-family:Chomsky;font-size:18px">—</div>
+        <div class="small" id="username">@—</div>
+        <div style="margin-top:6px">
+          <span class="stat" id="crowns">♔ 0</span>
+          <span class="stat" id="scepters">𐀣 0/10</span>
+        </div>
+      </div>
+    </div>
 
-<div class="container">
-  <div id="feed">
-    <div id="uploadSection" class="upload-section" style="display:none;">
-      <h2>Upload Content</h2>
-      <input type="file" id="uploadFile">
-      <select id="uploadType">
-        <option value="edict">Edict (vertical)</option>
-        <option value="dominion">Dominion (horizontal)</option>
+    <div id="creator-area">
+      <div class="title">Create — Upload</div>
+      <label>Post Type</label>
+      <select id="post-type">
+        <option value="edict">Edict (vertical, short)</option>
+        <option value="dominion">Dominion (horizontal, cinematic)</option>
         <option value="throne">Throne (long-form)</option>
       </select>
-      <button class="upload-btn" id="uploadBtn">Upload</button>
+      <label>Title</label>
+      <input id="post-title" placeholder="Title" />
+      <label>File</label>
+      <input id="post-file" type="file" accept="video/*,image/*,audio/*" />
+      <label>Description</label>
+      <input id="post-desc" placeholder="1-300 chars" />
+      <button class="btn primary" id="upload-btn">Upload</button>
+      <div class="small muted" id="upload-status"></div>
     </div>
-    <div id="posts"></div>
-  </div>
-  <div class="sidebar">
-    <div class="profile-card">
-      <h3 id="username">@username</h3>
-      <img id="avatar" src="" alt="avatar" style="width:100%; border-radius:50%;">
-      <p id="banner" style="height:60px; background:#35005a; margin-top:1em;"></p>
-      <a id="profileLink" href="#" target="_blank"></a>
+
+    <hr style="border:1px solid rgba(255,255,255,0.02); margin:12px 0">
+
+    <div>
+      <div class="title">Founding Bloodline</div>
+      <div class="small muted" id="pass-info">Pass status: —</div>
+      <button class="btn" id="buy-pass">Buy Founding Pass — $149</button>
+      <div class="small muted" style="margin-top:10px">Referrals: <span id="ref-count">0</span></div>
+      <button class="btn" id="gen-ref">Generate Referral Link</button>
     </div>
-    <div class="profile-card">
-      <h3>Crown ♔: <span id="crownCount">0</span></h3>
-      <h3>Daily Scepter 𐀣: <span id="scepterCount">10</span></h3>
+  </aside>
+
+  <!-- CENTER: feed -->
+  <main class="center">
+    <div class="controls">
+      <div style="display:flex;gap:8px;">
+        <button class="btn" id="filter-chrono">Chrono</button>
+        <button class="btn" id="filter-algo">Algorithm</button>
+        <button class="btn" id="new-post">New Edict</button>
+      </div>
+      <div class="toggle">
+        Auto-Advance
+        <label style="margin-left:8px;">
+          <input type="checkbox" id="auto-advance"/> Eternal
+        </label>
+        <div style="margin-left:12px;">
+          Reign Timer:
+          <select id="reign-timer" style="background:#0b0b0b;border:none;color:var(--gold)">
+            <option value="8">8s</option>
+            <option value="15">15s</option>
+            <option value="30">30s</option>
+            <option value="60">60s</option>
+            <option value="120">2m</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <div id="feed"></div>
+    <div id="feed-empty" class="small muted" style="display:none">No posts yet — founding court is quiet.</div>
+  </main>
+
+  <!-- RIGHT: Oracle Edge + Missives + Stories -->
+  <aside class="right">
+    <div style="display:flex;justify-content:space-between;align-items:center;">
+      <div class="title">Proclamations (24h)</div>
+      <div class="small muted" id="stories-count">0</div>
+    </div>
+    <div id="stories" style="margin-top:8px; max-height:200px; overflow:auto"></div>
+
+    <hr style="border:1px solid rgba(255,255,255,0.02); margin:12px 12px">
+
+    <div class="title" style="font-size:16px">Missives</div>
+    <div style="margin-top:8px;">
+      <label>To</label>
+      <input id="dm-to" placeholder="@username" />
+      <label>Message</label>
+      <input id="dm-msg" placeholder="Write a sealed letter..." />
+      <button class="btn" id="send-dm">Send Missive</button>
+      <div id="dm-status" class="small muted"></div>
+    </div>
+
+    <hr style="border:1px solid rgba(255,255,255,0.02); margin:12px 12px">
+
+    <div style="margin-top:8px">
+      <div class="title" style="font-size:14px">Profiles</div>
+      <div id="profiles-list" style="max-height:180px;overflow:auto;margin-top:8px"></div>
+    </div>
+  </aside>
+</div>
+
+<!-- Oracle Edge collapsed bar -->
+<div id="oracle" class="oracle" aria-hidden="false">
+  <div id="oracle-bar" class="oracle-bar">ORACLE</div>
+</div>
+
+<!-- Full search overlay -->
+<div id="oracle-full" style="display:none; position:fixed; right:0; top:0; bottom:0; width:420px; z-index:100;">
+  <div style="height:100%; background:#070407; color:var(--gold); border-left:6px solid var(--gold); padding:20px;">
+    <div style="display:flex; justify-content:space-between; align-items:center;">
+      <div style="font-family:Chomsky;font-size:20px">Oracle Edge</div>
+      <button class="btn" id="oracle-close">Close</button>
+    </div>
+    <div style="margin-top:16px">
+      <input id="oracle-input" placeholder="Search titles, creators, tags..." />
+      <div class="search-results" id="oracle-results"></div>
     </div>
   </div>
 </div>
 
-<div id="oracle"></div>
+<!-- Player Modal -->
+<div id="player-modal" class="player-modal">
+  <div class="player-card">
+    <div style="display:flex;justify-content:space-between;align-items:center">
+      <div id="player-title" style="font-family:Chomsky;font-size:18px"></div>
+      <div><button class="btn" id="close-player">Close</button></div>
+    </div>
+    <div id="player-area" style="margin-top:12px"></div>
+    <div style="margin-top:10px; display:flex; justify-content:space-between; align-items:center;">
+      <div class="small muted" id="player-meta"></div>
+      <div>
+        <button class="btn" id="crown-btn">♔ Crown</button>
+        <button class="btn" id="scepter-btn">𐀣 Scepter</button>
+      </div>
+    </div>
+  </div>
+</div>
 
 <script type="module">
 import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
 
-const supabaseUrl = 'https://uewvmldolwgihfkxwlsl.supabase.co'
-const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVld3ZtbGRvbHdnaWhmaWhmaWh3bHNsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjM5MzQ1MjksImV4cCI6MjA3OTUxMDUyOX0.b9C00OjIkAUDPztC8RtdHcwjdgX4OrShNW_pp6r-_qI'
-const supabase = createClient(supabaseUrl, supabaseKey)
+// --- CONFIG: Supabase project (from index.html)
+const SUPABASE_URL = 'https://uewvmldolwgihfkxwlsl.supabase.co'
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVld3ZtbGRvbHdnaWhma3h3bHNsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjM5MzQ1MjksImV4cCI6MjA3OTUxMDUyOX0.b9C00OjIkAUDPztC8RtdHcwjdgX4OrShNW_pp6r-_qI'
+const supabase = createClient(SUPABASE_URL, SUPABASE_KEY)
 
-let user = null
+// --- STATE
+let me = null
+let isCreator = false
+let posts = []
+let autoAdvance = false
+let feedIndex = 0
+let feedTimer = null
+let sceptersLeftToday = 0
 
-// Sign out
-document.getElementById('signOutBtn').addEventListener('click', async () => {
-  await supabase.auth.signOut()
-  window.location.href = 'index.html'
+// DOM refs
+const profileBanner = document.getElementById('profile-banner')
+const profileAvatar = document.getElementById('profile-avatar')
+const displayName = document.getElementById('display-name')
+const usernameEl = document.getElementById('username')
+const crownsEl = document.getElementById('crowns')
+const sceptersEl = document.getElementById('scepters')
+const creatorArea = document.getElementById('creator-area')
+const uploadStatus = document.getElementById('upload-status')
+const feedEl = document.getElementById('feed')
+const feedEmpty = document.getElementById('feed-empty')
+const storiesEl = document.getElementById('stories')
+const storiesCount = document.getElementById('stories-count')
+const profilesList = document.getElementById('profiles-list')
+const oracleBar = document.getElementById('oracle-bar')
+const oracleFull = document.getElementById('oracle-full')
+const oracleInput = document.getElementById('oracle-input')
+const oracleResults = document.getElementById('oracle-results')
+const playerModal = document.getElementById('player-modal')
+const playerArea = document.getElementById('player-area')
+const playerTitle = document.getElementById('player-title')
+const playerMeta = document.getElementById('player-meta')
+const crownBtn = document.getElementById('crown-btn')
+const scepterBtn = document.getElementById('scepter-btn')
+const autoAdvanceInput = document.getElementById('auto-advance')
+const reignTimer = document.getElementById('reign-timer')
+
+// --- Init
+window.addEventListener('load', async () => {
+  await checkUser()
+  await loadFeed()
+  subscribeRealtime()
+  loadStories()
+  loadProfiles()
 })
 
-// Feed toggle (chrono/algo) — placeholder
-document.getElementById('toggleFeed').addEventListener('click', () => {
-  alert('Feed toggle chrono/algo (placeholder)')
-})
-
-// Oracle Edge toggle
-const oracle = document.getElementById('oracle')
-oracle.addEventListener('click', () => {
-  oracle.classList.toggle('expanded')
-  if(oracle.classList.contains('expanded')){
-    oracle.innerHTML = '<input type="text" placeholder="Search...">'
-  } else {
-    oracle.innerHTML = ''
+// --- AUTH / USER
+async function checkUser(){
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) {
+    // Not signed in: redirect to index
+    window.location.href = 'index.html'
+    return
   }
-})
-
-async function init() {
-  const { data: { user: currentUser } } = await supabase.auth.getUser()
-  if (!currentUser) window.location.href = 'index.html'
-  user = currentUser
-
-  // Load profile
-  const { data: profile } = await supabase
-    .from('profiles')
-    .select('*')
-    .eq('id', user.id)
-    .single()
-  
-  document.getElementById('username').textContent = profile.username || '@username'
-  document.getElementById('avatar').src = profile.avatar_url || 'https://via.placeholder.com/150'
-  document.getElementById('profileLink').href = profile.link || '#'
-  document.getElementById('profileLink').textContent = profile.link || ''
-
-  // Show upload section if creator
-  if(profile.is_creator){
-    document.getElementById('uploadSection').style.display = 'block'
-  }
-
-  // Load initial posts (placeholder)
-  loadPosts()
+  // load profile
+  const { data: profile } = await supabase.from('profiles').select('*').eq('id', user.id).single()
+  me = profile || { id: user.id, email: user.email }
+  isCreator = !!me.is_creator
+  renderProfile()
+  // scepter daily reset logic: assume profile has scepter_count and scepter_last_reset
+  computeScepters()
+  // show/hide upload
+  creatorArea.style.display = isCreator ? 'block' : 'none'
 }
 
-async function loadPosts(){
-  // Replace with actual feed query
-  const { data: posts } = await supabase
+function renderProfile(){
+  profileBanner.style.background = me.banner_url ? `url(${me.banner_url}) center/cover` : ''
+  profileAvatar.textContent = me.avatar_url ? '' : (me.display_name ? me.display_name.slice(0,1) : '✠')
+  displayName.textContent = me.display_name || me.email.split('@')[0]
+  usernameEl.textContent = me.username ? `@${me.username}` : '@unknown'
+  crownsEl.textContent = `♔ ${me.crown_count || 0}`
+  sceptersEl.textContent = `𐀣 ${me.scepter_count_today || 0}/10`
+  document.getElementById('pass-info').textContent = me.is_founder ? `Founding #${me.founder_badge || '—'}` : 'Pass status: none'
+}
+
+// --- FEED (posts)
+async function loadFeed(){
+  // fetch posts (simple)
+  const { data, error } = await supabase
     .from('posts')
     .select('*')
     .order('created_at', { ascending: false })
-    .limit(20)
-  const postsDiv = document.getElementById('posts')
-  postsDiv.innerHTML = ''
-  if(!posts) return
-  posts.forEach(post => {
-    const postDiv = document.createElement('div')
-    postDiv.className = 'post'
-    postDiv.innerHTML = `
-      <h4>${post.title || 'Untitled'}</h4>
-      <video src="${post.url}" controls></video>
+    .limit(100)
+
+  if (error) { console.error(error); feedEmpty.style.display = 'block'; return }
+  posts = data || []
+  if (posts.length === 0) feedEmpty.style.display = 'block'; else feedEmpty.style.display = 'none'
+  renderFeed(posts)
+}
+
+function renderFeed(list){
+  feedEl.innerHTML = ''
+  list.forEach((p, idx) => {
+    const el = document.createElement('div')
+    el.className = 'post'
+    el.innerHTML = `
+      <div class="meta">
+        <div style="font-family:Chomsky;font-size:15px">${p.title || '—'}</div>
+        <div class="muted" style="margin-left:auto">${new Date(p.created_at).toLocaleString()}</div>
+      </div>
+      <div>${p.description || ''}</div>
     `
-    postsDiv.appendChild(postDiv)
+    // media preview: we stored public URL in p.file_url
+    if (p.file_url) {
+      if (p.post_type === 'edict' || p.post_type === 'throne' || p.post_type === 'dominion') {
+        // embed video
+        const video = document.createElement('video')
+        video.src = p.file_url
+        video.controls = false
+        video.preload = 'metadata'
+        video.style.maxHeight = '420px'
+        video.addEventListener('click', () => openPlayer(p))
+        el.appendChild(video)
+      } else {
+        const img = document.createElement('img')
+        img.src = p.file_url
+        el.appendChild(img)
+      }
+    }
+    // meta actions
+    const actions = document.createElement('div')
+    actions.style.marginTop = '8px'
+    actions.innerHTML = `<button class="btn" data-idx="${idx}" data-action="play">Play</button>
+                         <button class="btn" data-idx="${idx}" data-action="like">Like</button>
+                         <button class="btn" data-idx="${idx}" data-action="share">Share</button>`
+    el.appendChild(actions)
+    feedEl.appendChild(el)
   })
 }
 
-// Upload logic
-document.getElementById('uploadBtn').addEventListener('click', async () => {
-  const file = document.getElementById('uploadFile').files[0]
-  const type = document.getElementById('uploadType').value
-  if(!file) return alert('Select a file')
+// --- Player / Watch logic (Crown + Scepter auto rules implemented)
+function openPlayer(post){
+  playerModal.classList.add('show')
+  playerTitle.textContent = post.title
+  playerMeta.textContent = `by ${post.owner_username || 'unknown'} • ${post.post_type}`
+  playerArea.innerHTML = ''
+  if (post.file_url) {
+    const video = document.createElement('video')
+    video.src = post.file_url
+    video.controls = true
+    video.autoplay = true
+    video.style.width = '100%'
+    playerArea.appendChild(video)
 
-  // Use Cloudflare R2 or Supabase storage (placeholder with Supabase storage)
-  const fileExt = file.name.split('.').pop()
-  const fileName = `${type}/${user.id}-${Date.now()}.${fileExt}`
+    // watch progress logic for auto-crown / auto-scepter
+    let saw = 0
+    video.addEventListener('timeupdate', () => {
+      saw = (video.currentTime / video.duration) || 0
+      // auto crown at 80%
+      if (saw >= 0.8) crownBtn.classList.add('active')
+      // auto scepter at 95% and if allowed
+      if (saw >= 0.95) scepterBtn.classList.add('active')
+    })
+    // Auto-advance handling
+    if (autoAdvance) {
+      const next = findNext(post)
+      if (next) {
+        video.addEventListener('ended', () => {
+          const delay = parseInt(reignTimer.value) * 1000
+          setTimeout(() => openPlayer(next), delay)
+        })
+      }
+    }
+    // manual Crown / Scepter buttons
+    crownBtn.onclick = () => giveCrown(post)
+    scepterBtn.onclick = () => giveScepter(post)
+  }
+}
 
-  const { data, error } = await supabase.storage
-    .from('uploads')
-    .upload(fileName, file)
-  
-  if(error) return alert('Upload failed: ' + error.message)
+// Find next post in the currently loaded posts array
+function findNext(current){
+  const i = posts.findIndex(p => p.id === current.id)
+  if (i >= 0 && i < posts.length - 1) return posts[i+1]
+  return null
+}
 
-  // Save post in database
-  await supabase.from('posts').insert({
-    user_id: user.id,
-    type: type,
-    url: `https://uewvmldolwgihfkxwlsl.supabase.co/storage/v1/object/public/uploads/${fileName}`,
-    created_at: new Date()
-  })
+document.getElementById('close-player').onclick = () => {
+  playerModal.classList.remove('show')
+  playerArea.innerHTML = ''
+}
 
-  alert('Upload successful!')
-  loadPosts()
+// Crown action
+async function giveCrown(post){
+  // unlimited for viewers: increment post.crown_count and profile.crown_count
+  await supabase.from('posts').update({ crown_count: (post.crown_count || 0) + 1 }).eq('id', post.id)
+  await supabase.from('profiles').update({ crown_count: (me.crown_count || 0) + 1 }).eq('id', me.id)
+  // update UI
+  me.crown_count = (me.crown_count || 0) + 1
+  renderProfile()
+}
+
+// Scepter action (limited daily)
+async function giveScepter(post){
+  if (sceptersLeftToday <= 0) { alert('You have no Scepters left today.'); return }
+  sceptersLeftToday -= 1
+  await supabase.from('posts').update({ scepter_count: (post.scepter_count || 0) + 1 }).eq('id', post.id)
+  await supabase.from('profiles').update({ scepter_count_today: (me.scepter_count_today || 0) + 1 }).eq('id', me.id)
+  me.scepter_count_today = (me.scepter_count_today || 0) + 1
+  renderProfile()
+}
+
+// compute scepter allowance based on profile metadata (quick implementation)
+function computeScepters(){
+  const today = new Date().toISOString().slice(0,10)
+  if (!me.scepter_last_reset || me.scepter_last_reset.slice(0,10) !== today) {
+    // reset
+    sceptersLeftToday = 10
+    // update profile server-side
+    supabase.from('profiles').update({ scepter_count_today: 0, scepter_last_reset: new Date().toISOString() }).eq('id', me.id)
+    me.scepter_count_today = 0
+  } else {
+    sceptersLeftToday = 10 - (me.scepter_count_today || 0)
+  }
+  sceptersEl.textContent = `𐀣 ${me.scepter_count_today || 0}/10`
+}
+
+// --- Upload handling (Supabase storage)
+document.getElementById('upload-btn').addEventListener('click', async () => {
+  if (!isCreator) { alert('Only creators may upload.'); return }
+  const fileInput = document.getElementById('post-file')
+  const title = document.getElementById('post-title').value.trim()
+  const desc = document.getElementById('post-desc').value.trim()
+  const type = document.getElementById('post-type').value
+  if (!fileInput.files.length) { uploadStatus.textContent = 'Select a file.'; return }
+  const file = fileInput.files[0]
+  uploadStatus.textContent = 'Uploading...'
+
+  // generate a path
+  const filename = `${me.id}/${Date.now()}_${file.name}`
+  try {
+    // Upload to Supabase storage 'uploads' bucket
+    const { data: uploadData, error: uploadError } = await supabase.storage
+      .from('uploads')
+      .upload(filename, file, { cacheControl: '3600', upsert: false })
+
+    if (uploadError) throw uploadError
+    // make public URL (publicURL for bucket)
+    const { data: publicURLData } = supabase.storage.from('uploads').getPublicUrl(uploadData.path)
+    const file_url = publicURLData.publicUrl
+
+    // Save post record
+    const { data: postRec, error: postError } = await supabase.from('posts').insert([{
+      owner_id: me.id,
+      owner_username: me.username || displayName.textContent,
+      title, description: desc, post_type: type,
+      file_path: uploadData.path,
+      file_url, crown_count: 0, scepter_count: 0
+    }]).select().single()
+
+    if (postError) throw postError
+    uploadStatus.textContent = 'Uploaded.'
+    // reload feed
+    await loadFeed()
+  } catch (err) {
+    console.error(err)
+    uploadStatus.textContent = 'Upload failed: ' + (err.message || JSON.stringify(err))
+  }
 })
 
-init()
+/*
+  CLOUDFlare R2 note:
+  - Direct client uploads to R2 require either making the bucket public (not recommended)
+  - or generating a pre-signed URL server-side and uploading via PUT from the client.
+  - Placeholder for where to request a signed URL from your server:
+  // const signed = await fetch('/api/getR2SignedUrl', {method:'POST', body: JSON.stringify({path:filename})})
+  // then PUT file to signed.url
+*/
+
+// --- Stories (24h)
+async function loadStories(){
+  const { data } = await supabase
+    .from('stories')
+    .select('*')
+    .gte('expires_at', new Date().toISOString())
+    .order('created_at', { ascending: false })
+  storiesEl.innerHTML = ''
+  (data || []).forEach(s => {
+    const d = document.createElement('div')
+    d.className = 'post'
+    d.innerHTML = `<div style="font-family:Chomsky">${s.title || ''}</div><div class="small muted">${s.owner_username || '—'}</div>`
+    storiesEl.appendChild(d)
+  })
+  storiesCount.textContent = (data || []).length
+}
+
+// --- Missives (DMs)
+document.getElementById('send-dm').addEventListener('click', async () => {
+  const to = document.getElementById('dm-to').value.trim().replace('@','')
+  const msg = document.getElementById('dm-msg').value.trim()
+  if (!to || !msg) { document.getElementById('dm-status').textContent = 'Fill both fields'; return }
+  // find recipient id
+  const { data: recip } = await supabase.from('profiles').select('*').eq('username', to).single()
+  if (!recip) { document.getElementById('dm-status').textContent = 'No such user'; return }
+  // insert message
+  await supabase.from('messages').insert([{ from_id: me.id, to_id: recip.id, body: msg }])
+  document.getElementById('dm-status').textContent = 'Missive sent.'
+  document.getElementById('dm-msg').value = ''
+})
+
+// --- Profiles listing
+async function loadProfiles(){
+  const { data } = await supabase.from('profiles').select('id,username,display_name,avatar_url,is_creator,crown_count').limit(50)
+  profilesList.innerHTML = ''
+  (data || []).forEach(p => {
+    const div = document.createElement('div')
+    div.className = 'small muted'
+    div.style.padding = '6px 0'
+    div.innerHTML = `<strong style="color:var(--gold)">${p.username || '—'}</strong> ${p.display_name || ''} ${p.is_creator ? '<span class="muted">• Creator</span>':''}`
+    profilesList.appendChild(div)
+  })
+}
+
+// --- Realtime: optional simple subscription to posts changes
+function subscribeRealtime(){
+  supabase.channel('public:posts')
+    .on('postgres_changes', { event: '*', schema: 'public', table: 'posts' }, payload => {
+      // refresh feed on changes
+      loadFeed()
+    }).subscribe()
+}
+
+// --- Filter controls
+document.getElementById('filter-chrono').addEventListener('click', () => {
+  posts.sort((a,b) => new Date(b.created_at) - new Date(a.created_at))
+  renderFeed(posts)
+})
+document.getElementById('filter-algo').addEventListener('click', () => {
+  // naive algorithm: sort by crown_count + scepter_count then recency
+  posts.sort((a,b) => ((b.crown_count||0)+(b.scepter_count||0)) - ((a.crown_count||0)+(a.scepter_count||0)) || (new Date(b.created_at)-new Date(a.created_at)))
+  renderFeed(posts)
+})
+
+// --- Oracle Edge interaction (visual screen push simulated)
+oracleBar.addEventListener('click', () => {
+  // animate: push body left slightly and show oracle overlay
+  document.body.style.transform = 'translateX(-220px)'
+  oracleFull.style.display = 'block'
+  setTimeout(() => oracleInput.focus(), 250)
+})
+document.getElementById('oracle-close').addEventListener('click', () => {
+  document.body.style.transform = ''
+  oracleFull.style.display = 'none'
+  oracleResults.innerHTML = ''
+  oracleInput.value = ''
+})
+oracleInput.addEventListener('input', async (e) => {
+  const q = e.target.value.trim()
+  if (!q) { oracleResults.innerHTML = ''; return }
+  // search posts by title / description
+  const { data } = await supabase.from('posts').select('*').ilike('title', `%${q}%`).limit(20)
+  oracleResults.innerHTML = ''
+  (data || []).forEach(p => {
+    const d = document.createElement('div')
+    d.className = 'post'
+    d.innerHTML = `<div style="font-family:Chomsky">${p.title}</div><div class="small muted">${p.owner_username}</div>`
+    d.addEventListener('click', () => { document.body.style.transform=''; oracleFull.style.display='none'; openPlayer(p) })
+    oracleResults.appendChild(d)
+  })
+})
+
+// --- Founding Pass flow (mock checkout)
+document.getElementById('buy-pass').addEventListener('click', async () => {
+  // In production, this must go through a real payment gateway (Stripe). Here: simulate purchase and assign a badge.
+  if (me.is_founder) { alert('You already own a Founding Pass.'); return }
+  const badgeNo = Math.floor(Math.random()*5000)+1
+  await supabase.from('profiles').update({ is_founder:true, founder_badge: badgeNo }).eq('id', me.id)
+  me.is_founder = true
+  me.founder_badge = badgeNo
+  renderProfile()
+  alert(`Purchased founding pass. Badge #${badgeNo}.`)
+})
+
+// --- Referral generation
+document.getElementById('gen-ref').addEventListener('click', async () => {
+  // create a referral record with owner id
+  const { data } = await supabase.from('referrals').insert([{ owner_id: me.id, created_at: new Date().toISOString(), count: 0 }]).select().single()
+  const url = `${location.origin}/index.html?ref=${data.id}`
+  navigator.clipboard.writeText(url)
+  alert('Referral link copied to clipboard.')
+})
+
+// --- Simple utility: reading ref param at signup is handled in index.html and credited to ref record (server side ideally)
+
+// --- Auto-advance toggle
+autoAdvanceInput.addEventListener('change', (e) => autoAdvance = e.target.checked)
+
+// --- Minimal event delegation in feed to play items
+feedEl.addEventListener('click', (ev) => {
+  const btn = ev.target.closest('button')
+  if (!btn) return
+  const action = btn.getAttribute('data-action')
+  const idx = parseInt(btn.getAttribute('data-idx'))
+  const post = posts[idx]
+  if (action === 'play') openPlayer(post)
+  if (action === 'like') giveCrown(post)
+  if (action === 'share') {
+    const link = post.file_url
+    navigator.clipboard.writeText(link)
+    alert('Link copied.')
+  }
+})
+
 </script>
 </body>
 </html>
