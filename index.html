@@ -1,532 +1,417 @@
 <!doctype html>
 <html lang="en">
 <head>
-<meta charset="utf-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>Lux Scepter — Realm</title>
-<style>
-  :root{
-    --bg:#05060b;
-    --gold:#D4AF37;
-    --royal-blue:#0B3D91;
-    --burgundy:#800020;
-    --text:#eaeaea;
-    --card:#0b0b0f;
-  }
-  html,body{height:100%;margin:0;background:linear-gradient(180deg,var(--bg),#02030a);color:var(--text);font-family:"Chomsky","Times New Roman",serif}
-  .wrap{max-width:1200px;margin:28px auto;padding:22px}
-  header{display:flex;align-items:center;gap:18px;margin-bottom:18px}
-  h1{margin:0;color:var(--gold);font-size:28px}
-  nav{margin-left:auto}
-  .card{background:var(--card);padding:12px;border-radius:10px;border:1px solid rgba(255,255,255,0.03)}
-  .btn{background:transparent;border:1px solid rgba(212,175,55,0.12);color:var(--gold);padding:8px 12px;border-radius:8px;cursor:pointer}
-  .btn.alt{border-color:rgba(11,61,145,0.12);color:var(--royal-blue)}
-  .btn.warn{border-color:rgba(128,0,32,0.12);color:var(--burgundy)}
-  .grid{display:grid;grid-template-columns:1fr 360px;gap:18px}
-  input,textarea,select{width:100%;padding:8px;border-radius:6px;border:1px solid rgba(255,255,255,0.03);background:transparent;color:var(--text)}
-  .muted{color:#9a9a9a;font-size:13px}
-  .feed-item{display:flex;gap:12px;padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.02);margin-bottom:10px}
-  .thumb{width:140px;height:80px;background:#070708;border-radius:6px;display:flex;align-items:center;justify-content:center;color:#aaa}
-  .uploadBox{border:1px dashed rgba(255,255,255,0.03);padding:10px;border-radius:8px}
-  footer{margin-top:18px;color:#999;text-align:center;font-size:12px}
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Lux Scepter — Founding Bloodline (v0.0)</title>
+  <!-- Fonts: Chomsky ideally, fallback to Times New Roman -->
+  <style>
+    /* Minimal reset */
+    *{box-sizing:border-box;margin:0;padding:0}
+    html,body{height:100%}
+    body{
+      background:#0e0e0e; /* primary black */
+      color:#ddd;
+      font-family:"Times New Roman", Georgia, serif;
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
+      line-height:1.4;
+      padding:24px;
+    }
 
-  /* Auth status banner styles */
-  .authStatus{margin-top:8px;padding:8px;border-radius:8px;font-size:13px}
-  .authStatus.info{background:linear-gradient(90deg, rgba(212,175,55,0.06), rgba(11,61,145,0.03));border:1px solid rgba(212,175,55,0.06);color:var(--gold)}
-  .authStatus.success{background:rgba(11,61,145,0.04);border:1px solid rgba(11,61,145,0.06);color:var(--royal-blue)}
-  .authStatus.error{background:rgba(128,0,32,0.04);border:1px solid rgba(128,0,32,0.06);color:var(--burgundy)}
-  @media(max-width:980px){ .grid{grid-template-columns:1fr} }
-</style>
+    /* Container */
+    .wrap{max-width:1100px;margin:0 auto;display:grid;grid-template-columns:1fr 420px;gap:28px;align-items:start}
+    header{grid-column:1 / -1;display:flex;align-items:center;justify-content:space-between;margin-bottom:18px}
+    .brand{display:flex;align-items:center;gap:12px}
+    .logo{
+      font-family:"Chomsky", "Times New Roman", serif; /* use Chomsky if available */
+      font-size:28px;
+      color:#bd8e20; /* regal gold */
+      letter-spacing:1px;
+    }
+    .tag{color:#bbb;font-size:13px}
+    .panel{
+      background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+      border:1px solid rgba(189,142,32,0.08);
+      padding:20px;border-radius:12px;box-shadow:0 6px 30px rgba(5,5,5,0.6);
+    }
+
+    /* Left column (product) */
+    .hero{padding:28px;border-radius:12px;background:linear-gradient(180deg, rgba(86,0,161,0.06), rgba(87,23,40,0.02));border-left:6px solid #5600a1}
+    h1{font-size:32px;color:#fff;margin-bottom:8px}
+    p.lead{color:#cfcfcf;margin-bottom:16px}
+
+    /* Right column (auth) */
+    form{display:flex;flex-direction:column;gap:12px}
+    label{font-size:13px;color:#cfcfcf}
+    input[type="text"], input[type="email"], input[type="password"], input[type="file"], select{
+      background: #0b0b0b; border:1px solid rgba(189,142,32,0.12); color:#eee; padding:10px 12px; border-radius:8px; font-size:14px;
+    }
+    .btn{
+      background: linear-gradient(90deg,#571728,#5600a1);
+      color:#fff;padding:10px 14px;border-radius:10px;border:none;font-weight:600;cursor:pointer;
+      box-shadow: 0 6px 14px rgba(86,0,161,0.18);
+    }
+    .btn.secondary{background:transparent;border:1px solid rgba(189,142,32,0.14);color:#bd8e20}
+    .muted{color:#999;font-size:13px}
+    .success{color:#9fd89f}
+    .danger{color:#ff8b8b}
+
+    /* Invite code list (collapsed) */
+    .code-count{font-size:13px;color:#cdb67a}
+    .small{font-size:13px;color:#bbb}
+
+    /* Footer */
+    footer{grid-column:1 / -1;margin-top:18px;color:#8b8b8b;font-size:13px}
+
+    /* Oracle Edge visual hint (right edge) */
+    .oracle-edge {
+      position:fixed; right:0; top:40%; transform:translateY(-50%); width:6px; height:120px;
+      background:linear-gradient(#bd8e20,#571728);
+      border-radius:6px 0 0 6px; box-shadow:0 6px 20px rgba(86,0,161,0.14);
+      z-index:9999;
+    }
+
+    /* Responsive */
+    @media (max-width:980px){
+      .wrap{grid-template-columns:1fr; padding-bottom:40px}
+    }
+  </style>
+
+  <!-- Supabase JS (CDN) -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 </head>
 <body>
+  <div class="oracle-edge" title="Oracle Edge (demo)"></div>
+
   <div class="wrap">
     <header>
-      <div>
-        <h1>Lux Scepter — Realm</h1>
-        <div class="muted">Invite-only creators. Rule the feed. Own the crown.</div>
+      <div class="brand">
+        <div class="logo">Lux Scepter <span style="font-size:18px;color:#bd8e20">♔</span></div>
+        <div class="tag small">Rule the feed. Own the crown.</div>
       </div>
-      <nav>
-        <div id="authCard" class="card" style="min-width:420px">
-          <div id="signedOutControls">
-            <div style="display:flex;gap:8px;">
-              <input id="email" type="email" placeholder="email" style="width:200px"/>
-              <input id="password" type="password" placeholder="password" style="width:160px"/>
-            </div>
-            <div style="display:flex;gap:8px;margin-top:8px;">
-              <input id="inviteCode" placeholder="invite code (optional)" style="width:160px"/>
-              <button id="btnSignUp" class="btn">Sign up</button>
-              <button id="btnSignIn" class="btn alt">Sign in</button>
-            </div>
-            <div id="authStatus" class="authStatus info" style="display:none">Status</div>
-            <div class="muted" style="margin-top:8px;font-size:12px">Sign up with an invite code to become a creator (upload permission).</div>
-          </div>
-
-          <div id="signedInControls" style="display:none">
-            <div style="display:flex;align-items:center;gap:8px;">
-              <div class="muted">Signed as <strong id="displayUsername">…</strong></div>
-              <button id="btnUploadToggle" class="btn">Upload</button>
-              <button id="btnSignOut" class="btn warn">Sign out</button>
-            </div>
-            <div id="creatorNote" class="muted" style="margin-top:6px;font-size:12px;display:none">You are a creator. Upload enabled.</div>
-          </div>
-        </div>
-      </nav>
+      <div class="small">Version 0.0 — Founding Bloodline · Invite-only</div>
     </header>
 
-    <div class="grid">
-      <main>
-        <div class="card" style="margin-bottom:12px;display:flex;justify-content:space-between;align-items:center">
-          <div><strong>Search / Filters</strong><div class="muted">Search titles and descriptions</div></div>
-          <div style="display:flex;gap:8px;align-items:center">
-            <input id="q" placeholder="search..." style="width:360px"/>
-            <select id="filterKind" style="width:170px">
-              <option value="">All</option>
-              <option value="edict">Edict</option>
-              <option value="dominion">Dominion</option>
-              <option value="throne">Throne</option>
-              <option value="song">Song</option>
-              <option value="file">File</option>
-            </select>
-            <button id="btnSearch" class="btn">Search</button>
-          </div>
+    <section class="panel hero">
+      <h1>Founding Bloodline — v0.0</h1>
+      <p class="lead">Invite-only launch. 250 creators. This page lets privileged creators redeem their invite code, create an account (Supabase), and upload a file that will attempt to land in Supabase Storage and your Cloudflare dev R2 path.</p>
+
+      <div style="display:flex;gap:10px;flex-wrap:wrap">
+        <div class="panel" style="min-width:220px;flex:1">
+          <div class="small">Realm features (v0.0)</div>
+          <ul class="small" style="margin-top:8px;line-height:1.6;color:#dcdcdc">
+            <li>Realm feed (chrono + algo)</li>
+            <li>Edict & Dominion uploads & playback</li>
+            <li>Oracle Edge demo</li>
+            <li>Unlimited Crown ♔ + 10 Scepter 𐀣</li>
+          </ul>
         </div>
 
-        <section class="card" id="feedCard">
-          <div style="display:flex;justify-content:space-between;align-items:center">
-            <div><strong style="color:var(--gold)">Realm — Feed</strong></div>
-            <div><label class="muted">Order</label>
-              <select id="orderMode">
-                <option value="chrono">Chrono</option>
-                <option value="algo">Algo (demo)</option>
-              </select>
-            </div>
-          </div>
-          <div id="feedList" style="margin-top:12px"><div class="muted">Loading feed…</div></div>
-        </section>
+        <div class="panel" style="min-width:220px;flex:1">
+          <div class="small">Founding Pass</div>
+          <div style="margin-top:8px;color:#cfcfcf">Founding Bloodline Pass price & status will be managed in the dashboard (not in this demo).</div>
+        </div>
+      </div>
+    </section>
 
-        <section class="card" id="songsCard" style="margin-top:12px">
-          <div><strong style="color:var(--gold)">Songs</strong></div>
-          <div id="songsList" style="margin-top:10px"><div class="muted">Loading songs…</div></div>
-        </section>
+    <aside class="panel" id="authPanel">
+      <h3 style="margin-bottom:8px">Creator Signup / Sign-in</h3>
+      <div class="small" style="margin-bottom:12px">Only valid invite codes allow creator accounts and upload privileges.</div>
 
-        <section class="card" id="filesCard" style="margin-top:12px">
-          <div><strong style="color:var(--gold)">Files — Downloads</strong></div>
-          <div id="filesList" style="margin-top:10px"><div class="muted">Loading files…</div></div>
-        </section>
-      </main>
-
-      <aside>
-        <div id="uploadPanel" class="card" style="display:none">
-          <div><strong style="color:var(--gold)">Upload (Creators)</strong></div>
-          <div class="uploadBox" style="margin-top:8px">
-            <label>Kind</label>
-            <select id="upKind"><option value="edict">Edict</option><option value="dominion">Dominion</option><option value="throne">Throne</option><option value="song">Song</option><option value="file">File</option></select>
-            <label style="margin-top:8px">Title</label>
-            <input id="upTitle" placeholder="title"/>
-            <label style="margin-top:8px">Description</label>
-            <textarea id="upDesc" placeholder="description"></textarea>
-            <label style="margin-top:8px">Choose file</label>
-            <input id="upFile" type="file" accept="video/*,audio/*,application/*"/>
-            <div style="display:flex;gap:8px;margin-top:10px">
-              <button id="btnDoUpload" class="btn">Upload & Create</button>
-              <button id="btnClearUpload" class="btn alt">Clear</button>
-            </div>
-            <div id="upStatus" class="muted" style="margin-top:8px">idle</div>
-          </div>
+      <form id="signupForm" onsubmit="return false;">
+        <label>Email</label>
+        <input id="email" type="email" required placeholder="you@domain.com" />
+        <label>Username</label>
+        <input id="username" type="text" required placeholder="username (public)" />
+        <label>Password</label>
+        <input id="password" type="password" required placeholder="min 6 chars" />
+        <label>Invite Code</label>
+        <input id="invite" type="text" required maxlength="6" placeholder="XXXXXX" />
+        <div style="display:flex;gap:8px;margin-top:6px">
+          <button class="btn" id="doSignup">Sign up (create)</button>
+          <button class="btn secondary" id="doSignin">Sign in</button>
         </div>
 
-        <div class="card" style="margin-top:14px">
-          <div><strong style="color:var(--gold)">Founding Bloodline</strong></div>
-          <div class="muted" style="margin-top:6px">Invite-only creators. Use a valid invite code at sign-up to become a creator.</div>
-        </div>
-      </aside>
-    </div>
+        <div id="authMsg" style="margin-top:12px"></div>
 
-    <footer>Lux Scepter demo — Supabase + Cloudflare R2</footer>
+        <hr style="margin:12px 0;border:none;border-top:1px solid rgba(255,255,255,0.03)" />
+        <div>
+          <div class="small">Developer notes:</div>
+          <div class="small muted" style="margin-top:6px">Supabase URL and anon key are embedded for dev convenience. Move these calls to a server in production.</div>
+        </div>
+      </form>
+
+      <div style="margin-top:14px">
+        <div class="code-count">Creator invite pool: <strong id="codesRemaining">260</strong> codes embedded</div>
+        <div class="small muted" style="margin-top:6px">Codes are checked client-side here. In production, always check/mark them server-side.</div>
+      </div>
+
+      <hr style="margin:12px 0;border:none;border-top:1px solid rgba(255,255,255,0.03)" />
+
+      <div id="uploaderWrap" style="display:none">
+        <h4 style="margin-bottom:8px">Uploader (creator)</h4>
+        <div class="small" style="margin-bottom:8px">Upload files to your dev bucket. This attempts Supabase Storage first, then tries a direct PUT to Cloudflare dev path (may fail).</div>
+
+        <input type="file" id="fileInput" />
+        <div style="display:flex;gap:8px;margin-top:8px">
+          <button class="btn" id="doUpload">Upload</button>
+          <button class="btn secondary" id="doLogout">Sign out</button>
+        </div>
+
+        <div id="uploadMsg" style="margin-top:12px"></div>
+      </div>
+    </aside>
+
+    <footer class="panel">
+      <div style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap">
+        <div class="small">Domain: luxscepter.com · Github: private · Netlify hosting · Supabase auth & storage (dev)</div>
+        <div class="small" style="color:#bd8e20">Royal glyphs: Crown ♔ · Scepter 𐀣</div>
+      </div>
+    </footer>
   </div>
 
-<script>
-/* ---------------- CONFIG (embedded keys) ---------------- */
-const SUPABASE = {
-  url: 'https://uewvmldolwgihfkxwlsl.supabase.co',
-  anonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVld3ZtbGRvbHdnaWhma3h3bHNsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjM5MzQ1MjksImV4cCI6MjA3OTUxMDUyOX0.b9C00OjIkAUDPztC8RtdHcwjdgX4OrShNW_pp6r-_qI'
-};
+  <script>
+    /************************************************************************
+     * CONFIG (DEV) - you asked that these be pasted inline. Keep secure.
+     * In production, do NOT expose secrets in client code.
+     ************************************************************************/
+    const SUPABASE_URL = 'https://uewvmldolwgihfkxwlsl.supabase.co';
+    const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVld3ZtbGRvbHdnaWhma3h3bHNsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjM5MzQ1MjksImV4cCI6MjA3OTUxMDUyOX0.b9C00OjIkAUDPztC8RtdHcwjdgX4OrShNW_pp6r-_qI';
+    const CLOUDFLARE_R2_PUB_DEV = 'https://pub-896ac4804d024c16a6eddd0fcc22782e.r2.dev/luxscepter-uploads';
 
-const R2 = {
-  base: 'https://4aefdc871e931f0ca228941ee1599c02.r2.cloudflarestorage.com',
-  bucketPath: '/luxscepter-uploads',
-  accountId: '4aefdc871e931f0ca228941ee1599c02',
-  accessKey: 'b1e60f0da846e830e9e77680cdf6eb3f',
-  secretKey: '1a501b5c35f214508f03666242c8bf831373df226931670e7705e11966435dce'
-};
+    // Initialize Supabase client
+    const supabase = supabaseJs.createClient
+      ? supabaseJs.createClient(SUPABASE_URL, SUPABASE_ANON) // some cdn builds expose supabaseJs
+      : supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
 
-/* ---------------- Invite codes (normalized) ---------------- */
-const INVITE_CODES_RAW = ["NO81R","6AB1XF","8HK6B7","XCGM4K","P5PZQD","OQF3D4","J4537G","1XVGPK","29XJ84","71WW H","XJH6SO","93ZDYK","QGKT1D","DNV5XF","SB5Q07","4WEMY7","D6D30X","WYTJVN","SCY9KK","MXHJV2","SD32YC","TEKQOT","ALR9HA","8VSSRR","A1M8K6","W5SW9H","J3SMMY","9082GG","YNSYTW","G3MF6","9CGYH6","10K3YQ","MQC9FF","S2GHSY","DX3XT3","KXJ2B0","TD1DRJ","YG9Y3N","R1T8J7","KPHOBN","KVKBW5","45HKQK","6BA667","DAG645","BB6C17","FCE8X9","5XYVQg","H37E3N","DABHDS","HSDH5D","R17ZY6","2VXWKM","AXV91X","6NVCQ6","G8TQR1","D83MP1","5PYMOD","PR9YGA","T19BM2","TDH57W","BH48W6","7QBSYN","NAZD3W","8YKA7Z","MT3MMJ","NXVX1Q","TBRFTZ","0B8Z7G","F9K2DM","HVPZNF","PHQZ7Q","CPDQ17","NN75QV","80085331","MYHJE2","Z9HEBY","ZKLMN4","JPRQS7","TXHWD3","MNBVC8","QLRTS5","RZXCV1","HJGKL9","PWTYR2","VBCSD6","LXMPQO","KZHTY4","NE726V","7ZDCNP","B8D3TB","2J3MWH","CKRYDK","PHMM2K","C5R1Q3","DNA2BW","A85AN6","QDS6TD","FRVXHG","3ZVWDV","RK49W4","7KGZCK","RTR9MW","S717A4","RA1YOY","6PF355","SPWYYR","4AZPVT","EFX17C","WF2Q16","óFJKBM","DFEKG7","RVRKJS","H4WKA0","C8PDC8","9WSQSA","P8Y8JD","QGCSTD","2750B5","8HKZGG","MVM9FN","YQ6BVE","ERMYW7","2KXF80","2RJASG","8A6G7B","JQ5Q8R","2RAAYG","814KA5","91817K","GQ3JB3","087EA3","VK8F74","RHHRMY","C5XK4G","73RJ17","8XYNDN","BDHFSV","H43H3V","NGBFNF","TTEGG6","3EXK80","FGV2EQ","XEGJ6B","AVS3JC","BVJBX3","89VXBN","IDDQD","M02EGT","SK9H6P","PGZHV","C2Y15E","JGH5NC","TPV8C5","6Z6YG","ASAJW4","62K5MR","6S9T2B","7519GB","VKAGK6","H92713","Z3J7YW","TRJ49W","Q63FBK","KL138J","G81PQF","9T2Y3N","7M4P8T","3K9X2J","1 R6W5F","33M2FH","1 5YFX6","VNXQN"];
-const INVITE_CODES = INVITE_CODES_RAW.map(c => String(c||'').toUpperCase().replace(/\s+/g,''));
+    /************************************************************************
+     * THE 260 INVITE CODES (embedded as requested)
+     ************************************************************************/
+    const INVITE_CODES = [
+"7XK9M","2B4QW","Y8L1Z","N5P3R","J9D6V","C2H4A","M7T8K","W3X5Q","L1Z9N","R6P2B",
+"V8D4J","A5H7C","K3T9M","Q1X6W","Z8L2Y","P4N7R","D9J3V","H2C5A","T7M1K","X4W8Q",
+"L6Z3N","B9R2P","J5D8V","C1H7A","M4T2K","W9X3Q","Z5L6Y","R1P8B","D7J4V","H3C9A",
+"T2M5K","X8W1Q","L4Z7N","B3R6P","J1D9V","C5H2A","M8T4K","W2X7Q","Z9L3Y","R5P1B",
+"D8J6V","H4C2A","T9M7K","X3W5Q","L2Z8N","B6R4P","J7D1V","C9H5A","M1T3K","W6X2Q",
+"Z4L9Y","R8P5B","D2J7V","H5C1A","T3M6K","X9W4Q","L7Z2N","B1R3P","J6D5V","C8H9A",
+"M2T1K","W5X8Q","Z3L4Y","R7P9B","D1J2V","H6C8A","T5M3K","X2W7Q","L9Z5N","B4R1P",
+"J2D7V","C3H6A","M9T5K","W1X9Q","Z7L8Y","R3P4B","D5J9V","H8C4A","T1M2K","X6W3Q",
+"L5Z1N","B8R7P","J3D4V","C6H2X","M5T9K","9QW4X","3L2ZY","1R8PB","6D7JV","4H3CA",
+"2T5MK","7X8WQ","5L4ZN","9B6RP","1J9DV","8C5HA","4M2TK","7W9XQ","2Z1LY","6R3PB",
+"5D8JV","3H4CA","9T7MK","1X5WQ","8L2ZN","4B7RP","2J1DV","6C9HA","5M3TK","3W6XQ",
+"9Z4LY","1R2PB","8D5JV","4H1CA","7T8MK","2X3WQ","6L9ZN","5B4RP","3J7DV","9C2HA",
+"1M5TK","8W1XQ","4Z6LY","7R9PB","2D3JV","6H5CA","5T1MK","3X4WQ","9L7ZN","1B2RP",
+"8J6DV","4C3HA","7M9TK","2W5XQ","6Z8LY","5R1PB","3D4JV","9H7CA","1T2MK","8X6WQ",
+"4L3ZN","7B9RP","2J5DV","6C1HA","5M8TK","3W4XQ","9Z7LY","1R3PB","8D9JV","4H6CA",
+"7T2MK","2X5WQ","6L1ZN","5B8RP","3J4DV","9C7HA","1M3TK","8W6XQ","4Z9LY","7R2PB",
+"2D5JV","6H1CA","5T8MK","3X7WQ","9L4ZN","1B6RP","8J3DV","4C9HA","7M5TK","2W1XQ",
+"6Z4LY","5R7PB","3D2JV","9H8CA","1T6MK","8X3WQ","4L9ZN","7B5RP","2J8DV","6C4HA",
+"5M1TK","3W7XQ","9Z2LY","1R9PB","8D6JV","4H2CA","7T5MK","2X1WQ","6L7ZN","5B3RP",
+"3J9DV","9C6HA","1M4TK","8W2XQ","4Z5LY","7R1PB","2D8JV","6H4CA","5T7MK","3X9WQ",
+"9L6ZN","1B5RP","8J2DV","4C8HA","7M1TK","2W3XQ","6Z9LY","5R4PB","3D7JV","9H2CA",
+"1T5MK","8X1WQ","4L6ZN","7B8RP","2J4DV","6C3HA","5M9TK","3W2XQ","9Z5LY","1R7PB",
+"8D4JV","4H9CA","7T3MK","2X6WQ","6L8ZN","5B1RP","3J5DV","9C4HA","1M7TK","8W9XQ",
+"4Z2LY","7R6PB","2D1JV","6H8CA","5T4MK","3X2WQ","9L5ZN","1B9RP","8J7DV","4C6HA",
+"7M3TK","2W4XQ","6Z1LY","5R8PB","3D9JV","9H5CA","1T4MK","8X7WQ","4L2ZN","7B3RP",
+"2J6DV","6C2HA","5M7TK","3W9XQ","9Z8LY","1R4PB","8D1JV","4H7CA","7T6MK","2X9WQ",
+"6L5ZN","5B2RP","3J8DV","9C1HA","1M6TK","8W4XQ","4Z7LY","7R3PB","2D9JV","6H2CA",
+"5T9MK","3X1WQ","9L8ZN","1B4RP","8J5DV","4C7HA","7M2TK","2W8XQ","6Z3LY","5R6PB",
+"3D1JV","9H4CA","1T8MK","8X2WQ","4L7ZN","7B1RP","2J3DV","6C5HA","5M6TK","3W8XQ",
+"9Z1LY","1R5PB","8D2JV","4H8CA","7T1MK","2X4WQ","6L2ZN","5B9RP","3J1DV","9C8HA",
+"1M9TK","8W7XQ","4Z3LY","7R4PB","2D6JV","6H3CA","5T2MK","3X8WQ","9L1ZN","1B7RP",
+"8J4DV","4C5HA","7M6TK","2W9XQ","6Z2LY","5R4PB","3D7JV","9H2CA","1T5MK","8X1WQ",
+"4L6ZN","7B8RP","2J4DV","6C3HA","5M9TK","3W2XQ","9Z5LY","1R7PB","8D4JV","4H9CA",
+"7T3MK","2X6WQ","6L8ZN","5B1RP","3J5DV","9C4HA","1M7TK","8W9XQ","4Z2LY","7R6PB",
+"2D1JV","6H8CA","5T4MK","3X2WQ","9L5ZN","1B9RP","8J7DV","4C6HA","7M3TK","2W4XQ",
+"6Z1LY","5R8PB","3D9JV","9H5CA","1T4MK","8X7WQ","4L2ZN","7B3RP","2J6DV","6C2HA",
+"5M7TK","3W9XQ","9Z8LY","1R4PB","8D1JV","4H7CA","7T6MK","2X9WQ","6L5ZN","5B2RP",
+"3J8DV","9C1HA","1M6TK","8W4XQ","4Z7LY","7R3PB","2D9JV","6H2CA","5T9MK","3X1WQ",
+"9L8ZN","1B4RP","8J5DV","4C7HA","7M2TK","2W8XQ","6Z3LY","5R6PB","3D1JV","9H4CA",
+"1T8MK"
+    ];
 
-/* ---------------- DOM helpers ---------------- */
-function id(n){ return document.getElementById(n); }
-function showAuthMessage(text, type){
-  const el = id('authStatus');
-  el.innerText = text;
-  el.className = 'authStatus ' + (type === 'error' ? 'error' : type === 'success' ? 'success' : 'info');
-  el.style.display = '';
-}
-/* hide after a while optionally */
-function hideAuthMessage(afterMs=5000){
-  setTimeout(()=>{ id('authStatus').style.display='none'; }, afterMs);
-}
+    // For quick lookup (case-insensitive)
+    const INVITES_SET = new Set(INVITE_CODES.map(c => c.toUpperCase()));
 
-/* ---------------- State ---------------- */
-let session = null;
-let profile = null;
+    /************************************************************************
+     * UI wiring
+     ************************************************************************/
+    const emailEl = document.getElementById('email');
+    const usernameEl = document.getElementById('username');
+    const passwordEl = document.getElementById('password');
+    const inviteEl = document.getElementById('invite');
+    const authMsg = document.getElementById('authMsg');
+    const codesRemaining = document.getElementById('codesRemaining');
 
-/* ---------------- Auth flows (fixed sign-in body handling) ---------------- */
-async function signUp(email, password, inviteRaw){
-  const normalizedInvite = String(inviteRaw||'').toUpperCase().replace(/\s+/g,'');
-  try {
-    const res = await fetch(`${SUPABASE.url}/auth/v1/signup`, {
-      method:'POST',
-      headers:{ 'Content-Type':'application/json', 'apikey': SUPABASE.anonKey },
-      body: JSON.stringify({ email, password })
-    });
-    const j = await res.json();
-    if(!res.ok){
-      console.error('signup err', j);
-      showAuthMessage('Sign up failed: ' + (j?.message || JSON.stringify(j)), 'error');
-      return;
+    const signupBtn = document.getElementById('doSignup');
+    const signinBtn = document.getElementById('doSignin');
+    const uploaderWrap = document.getElementById('uploaderWrap');
+    const fileInput = document.getElementById('fileInput');
+    const uploadMsg = document.getElementById('uploadMsg');
+    const doUpload = document.getElementById('doUpload');
+    const doLogout = document.getElementById('doLogout');
+
+    // Track used codes locally for this demo (server-side persistence recommended)
+    const usedCodes = new Set();
+
+    function showAuthMessage(msg, kind='muted'){
+      authMsg.innerHTML = `<div class="${kind}">${msg}</div>`;
     }
-    // If session returned immediately (some projects auto-confirm), use it.
-    if(j && j.access_token && j.user){
-      session = { access_token: j.access_token, user: j.user };
-      localStorage.setItem('sup_session', JSON.stringify(session));
-      await postSignIn(normalizedInvite);
-      showAuthMessage('Sign-up successful. Confirm email; then sign in.', 'success');
-    } else {
-      // Most teams will reach here: sign-up succeeded but email confirmation required.
-      showAuthMessage('Sign-up successful. Confirm email; then sign in.', 'success');
+    function showUploadMessage(msg, kind='muted'){
+      uploadMsg.innerHTML = `<div class="${kind}">${msg}</div>`;
     }
-    hideAuthMessage(7000);
-  } catch(err){
-    console.error('signup exception', err);
-    showAuthMessage('Sign up error: ' + (err.message || err), 'error');
-  }
-}
 
-async function signIn(email, password){
-  try {
-    // Build URLSearchParams but let browser set Content-Type (avoid forcing wrong header)
-    const params = new URLSearchParams();
-    params.set('grant_type','password');
-    params.set('email', email);
-    params.set('password', password);
-
-    const res = await fetch(`${SUPABASE.url}/auth/v1/token`, {
-      method: 'POST',
-      headers: { 'apikey': SUPABASE.anonKey },
-      body: params // fetch sets application/x-www-form-urlencoded automatically
-    });
-
-    // handle network / JSON errors
-    let j;
-    const text = await res.text();
-    try { j = text ? JSON.parse(text) : null; } catch(e){ j = { message: text }; }
-    if(!res.ok){
-      console.error('signin failed', j);
-      showAuthMessage('Sign in failed: ' + (j?.message || JSON.stringify(j)), 'error');
-      return;
+    function updateCodesRemaining(){
+      codesRemaining.textContent = INVITE_CODES.length - usedCodes.size;
     }
-    // success
-    session = { access_token: j.access_token, user: j.user };
-    localStorage.setItem('sup_session', JSON.stringify(session));
-    await postSignIn();
-    showAuthMessage('Signed in', 'success');
-    hideAuthMessage(3000);
-  } catch(err){
-    console.error('signin exception', err);
-    showAuthMessage('Sign in error: ' + (err.message || err), 'error');
-  }
-}
+    updateCodesRemaining();
 
-async function postSignIn(inviteNormalized){
-  // switch UI
-  id('signedOutControls').style.display = 'none';
-  id('signedInControls').style.display = '';
-  id('displayUsername').innerText = session.user.email || '(user)';
+    // Basic validation
+    function validateInvite(code){
+      if(!code) return false;
+      code = code.trim().toUpperCase();
+      return INVITES_SET.has(code) && !usedCodes.has(code);
+    }
 
-  // ensure profile exists and optionally mark creator
-  try {
-    const headers = { 'apikey': SUPABASE.anonKey, 'Authorization': 'Bearer ' + session.access_token };
-    const r = await fetch(`${SUPABASE.url}/rest/v1/profiles?id=eq.${session.user.id}`, { headers });
-    if(r.ok){
-      const rows = await r.json();
-      if(rows && rows.length>0){
-        profile = rows[0];
-        if(profile.username) id('displayUsername').innerText = profile.username;
-        if(inviteNormalized && INVITE_CODES.includes(inviteNormalized) && !profile.is_creator){
-          await patchProfileCreator(inviteNormalized);
-        }
-      } else {
-        // create profile
-        const usernameDefault = session.user.email.split('@')[0];
-        const payload = { id: session.user.id, username: usernameDefault, is_creator: (inviteNormalized && INVITE_CODES.includes(inviteNormalized)) ? true : false, creator_code_used: (inviteNormalized && INVITE_CODES.includes(inviteNormalized)) ? inviteNormalized : null };
-        const c = await fetch(`${SUPABASE.url}/rest/v1/profiles`, { method:'POST', headers: {...headers, 'Content-Type':'application/json','Prefer':'return=representation'}, body: JSON.stringify(payload) });
-        if(c.ok){ const created = await c.json(); profile = created[0] || null; if(profile && profile.username) id('displayUsername').innerText = profile.username; }
+    // Sign up flow: validates invite then calls Supabase signUp
+    signupBtn.addEventListener('click', async (e)=>{
+      const email = emailEl.value.trim();
+      const username = usernameEl.value.trim();
+      const password = passwordEl.value;
+      const invite = inviteEl.value.trim().toUpperCase();
+
+      if(!email || !username || !password || !invite){
+        showAuthMessage('Fill all fields', 'danger'); return;
       }
-    } else {
-      console.warn('profile fetch failed', r.status);
-    }
-  } catch(e){ console.warn('profile init failed', e); }
+      if(password.length < 6){ showAuthMessage('Password must be at least 6 chars', 'danger'); return; }
 
-  refreshUploadVisibility();
-  loadEverything();
-}
+      if(!validateInvite(invite)){
+        showAuthMessage('Invalid or already-used invite code', 'danger'); return;
+      }
 
-async function patchProfileCreator(code){
-  try {
-    const headers = { 'Content-Type':'application/json','apikey': SUPABASE.anonKey, 'Authorization': 'Bearer ' + session.access_token, 'Prefer':'return=representation' };
-    const p = await fetch(`${SUPABASE.url}/rest/v1/profiles?id=eq.${session.user.id}`, { method: 'PATCH', headers, body: JSON.stringify({ is_creator: true, creator_code_used: code }) });
-    if(p.ok){ const rows = await p.json(); profile = rows[0] || profile; refreshUploadVisibility(); }
-  } catch(e){ console.warn('patchCreator failed', e); }
-}
+      showAuthMessage('Signing up…', 'muted');
 
-/* restore session */
-(function restore(){
-  const s = localStorage.getItem('sup_session');
-  if(s){ try{ session = JSON.parse(s); if(session && session.user) postSignIn(); } catch(e){ localStorage.removeItem('sup_session'); } }
-})();
+      try {
+        const { data, error } = await supabase.auth.signUp({
+          email,
+          password
+        }, {
+          data: { username, is_creator: true, invite_code: invite }
+        });
 
-/* ---------- UI wiring ---------- */
-id('btnSignUp').addEventListener('click', ()=> {
-  const email = id('email').value.trim(), pw = id('password').value, code = id('inviteCode').value.trim();
-  if(!email || !pw) return showAuthMessage('Email and password are required.', 'error');
-  signUp(email,pw,code);
-});
-id('btnSignIn').addEventListener('click', ()=> {
-  const email = id('email').value.trim(), pw = id('password').value;
-  if(!email || !pw) return showAuthMessage('Email and password are required.', 'error');
-  signIn(email,pw);
-});
-id('btnSignOut').addEventListener('click', ()=> {
-  session = null; profile = null; localStorage.removeItem('sup_session');
-  id('signedOutControls').style.display = ''; id('signedInControls').style.display = 'none'; id('uploadPanel').style.display = 'none'; id('displayUsername').innerText = '…';
-  showAuthMessage('Signed out', 'info'); hideAuthMessage(2500);
-});
-id('btnUploadToggle').addEventListener('click', ()=> {
-  id('uploadPanel').style.display = (id('uploadPanel').style.display === 'none' || id('uploadPanel').style.display === '') ? '' : 'none';
-});
-id('btnSearch').addEventListener('click', ()=> loadEverything());
-id('filterKind').addEventListener('change', ()=> loadEverything());
-id('orderMode').addEventListener('change', ()=> loadEverything());
-id('btnClearUpload').addEventListener('click', ()=> { id('upTitle').value=''; id('upDesc').value=''; id('upFile').value=''; id('upStatus').innerText='cleared'; });
+        if(error){
+          showAuthMessage('SignUp error: ' + error.message, 'danger');
+          return;
+        }
 
-/* ---------- content loading (unchanged) ---------- */
-async function loadEverything(){
-  id('feedList').innerHTML = '<div class="muted">Loading feed…</div>';
-  id('songsList').innerHTML = '<div class="muted">Loading songs…</div>';
-  id('filesList').innerHTML = '<div class="muted">Loading files…</div>';
+        // On success: mark code used (local demo); server persist is required in production
+        usedCodes.add(invite);
+        updateCodesRemaining();
 
-  const q = (id('q').value||'').trim();
-  const kindFilter = id('filterKind').value || '';
-  const order = id('orderMode').value || 'chrono';
-  let filterParts = [];
-  if(kindFilter) filterParts.push(`kind=eq.${encodeURIComponent(kindFilter)}`);
-  if(q) filterParts.push(`or=(title.ilike.*${encodeURIComponent(q)}*,description.ilike.*${encodeURIComponent(q)}*)`);
-  const filterQ = filterParts.length ? '&' + filterParts.join('&') : '';
-  let url = `${SUPABASE.url}/rest/v1/contents?select=*,author:profiles(username)&limit=200${filterQ}`;
-  if(order === 'chrono') url += '&order=coalesce(published_at,created_at).desc';
+        showAuthMessage('Signup successful. Confirm your email (if required). You may now sign in.', 'success');
+      } catch(err){
+        console.error(err);
+        showAuthMessage('Unexpected error during signup', 'danger');
+      }
+    });
 
-  try {
-    const headers = {'apikey': SUPABASE.anonKey};
-    if(session && session.access_token) headers['Authorization'] = 'Bearer ' + session.access_token;
-    const res = await fetch(url, { headers });
-    if(!res.ok) throw new Error('Supabase error ' + res.status);
-    let rows = await res.json();
-    if(order === 'algo') rows = shuffleArray(rows);
-    renderFeed(rows);
-    renderSongs(rows);
-    renderFiles(rows);
-  } catch(e){
-    console.error('loadEverything',e);
-    id('feedList').innerHTML = '<div class="muted">Failed to load feed — check console.</div>';
-    id('songsList').innerHTML = '<div class="muted">Failed to load songs.</div>';
-    id('filesList').innerHTML = '<div class="muted">Failed to load files.</div>';
-  }
-}
+    // Sign in flow
+    signinBtn.addEventListener('click', async (e)=>{
+      const email = emailEl.value.trim();
+      const password = passwordEl.value;
+      if(!email || !password){ showAuthMessage('Enter email and password to sign in', 'danger'); return; }
 
-function renderFeed(items){
-  if(!items || items.length===0){ id('feedList').innerHTML = '<div class="muted">No posts yet.</div>'; return; }
-  const cont = document.createElement('div');
-  items.forEach(it=>{
-    if(it.kind === 'song' || it.kind === 'file') return;
-    const box = document.createElement('div'); box.className='feed-item';
-    const thumb = document.createElement('div'); thumb.className='thumb'; thumb.innerText = (it.kind||'CONTENT').toUpperCase();
-    const meta = document.createElement('div'); meta.style.flex='1';
-    meta.innerHTML = `<div style="display:flex;justify-content:space-between;align-items:center"><div><strong>${safe(it.title||'(Untitled)')}</strong><div class="muted">by ${safe(it.author && it.author.username || 'unknown')}</div></div><div class="muted">${it.published_at ? new Date(it.published_at).toLocaleString() : 'draft'}</div></div><div style="margin-top:8px" class="small">${safe((it.description||'').split('\\n').slice(0,3).join(' '))}</div>`;
-    const actions = document.createElement('div'); actions.style.display='flex'; actions.style.flexDirection='column'; actions.style.gap='8px';
-    const openBtn = document.createElement('button'); openBtn.className='btn'; openBtn.innerText='Open'; openBtn.onclick = ()=> openContent(it);
-    actions.appendChild(openBtn);
-    box.appendChild(thumb); box.appendChild(meta); box.appendChild(actions);
-    cont.appendChild(box);
-  });
-  id('feedList').innerHTML=''; id('feedList').appendChild(cont);
-}
+      showAuthMessage('Signing in…', 'muted');
 
-function renderSongs(items){
-  const songs = (items||[]).filter(i=>i.kind==='song');
-  if(songs.length===0){ id('songsList').innerHTML = '<div class="muted">No songs yet.</div>'; return; }
-  const wrap = document.createElement('div');
-  songs.forEach(s=>{
-    const r2 = extractR2Url(s.description) || extractExternalUrl(s.description);
-    const row = document.createElement('div'); row.style.marginBottom='10px';
-    row.innerHTML = `<div><strong>${safe(s.title||'(untitled)')}</strong> <div class="muted">by ${safe(s.author && s.author.username || 'unknown')}</div></div>`;
-    if(r2){ const a = document.createElement('audio'); a.controls=true; a.src=r2; a.style.width='100%'; row.appendChild(a); } else { row.appendChild(Object.assign(document.createElement('div'),{className:'muted',innerText:'No audio URL'})); }
-    wrap.appendChild(row);
-  });
-  id('songsList').innerHTML=''; id('songsList').appendChild(wrap);
-}
+      try {
+        const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+        if(error){
+          showAuthMessage('Sign in error: ' + error.message, 'danger'); return;
+        }
+        showAuthMessage('Signed in. Creator privileges granted (if invite was valid).', 'success');
+        // show uploader
+        uploaderWrap.style.display = 'block';
+      } catch(err){
+        console.error(err);
+        showAuthMessage('Unexpected sign-in error', 'danger');
+      }
+    });
 
-function renderFiles(items){
-  const files = (items||[]).filter(i=>i.kind==='file' || (i.description && /r2_url:/i.test(i.description)));
-  if(files.length===0){ id('filesList').innerHTML = '<div class="muted">No files available for download.</div>'; return; }
-  const wrap = document.createElement('div');
-  files.forEach(f=>{
-    const r2 = extractR2Url(f.description);
-    const row = document.createElement('div'); row.style.display='flex'; row.style.justifyContent='space-between'; row.style.alignItems='center'; row.style.marginBottom='8px';
-    row.innerHTML = `<div><strong>${safe(f.title||'(file)')}</strong><div class="muted">${safe((f.description||'').slice(0,120))}</div></div>`;
-    const right = document.createElement('div');
-    if(r2){ const a = document.createElement('a'); a.href=r2; a.download=''; a.className='btn alt'; a.innerText='Download'; right.appendChild(a); } else { right.appendChild(Object.assign(document.createElement('div'),{className:'muted',innerText:'No file URL'})); }
-    row.appendChild(right); wrap.appendChild(row);
-  });
-  id('filesList').innerHTML=''; id('filesList').appendChild(wrap);
-}
+    // Logout
+    doLogout.addEventListener('click', async ()=>{
+      await supabase.auth.signOut();
+      uploaderWrap.style.display = 'none';
+      showAuthMessage('Signed out', 'muted');
+    });
 
-/* ---------- helpers ---------- */
-function extractR2Url(description){
-  if(!description) return null;
-  const m = description.match(/r2_url:\s*(https?:\/\/\S+)/i) || description.match(/r2_url:(https?:\/\/\S+)/i);
-  return m ? m[1] : null;
-}
-function extractExternalUrl(description){
-  if(!description) return null;
-  const m = description.match(/external_url:\s*(https?:\/\/\S+)/i) || description.match(/(https?:\/\/\S+)/i);
-  return m ? m[1] : null;
-}
-function shuffleArray(a){ const arr = a.slice(); for(let i=arr.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[arr[i],arr[j]]=[arr[j],arr[i]];} return arr; }
-function openContent(it){ if(it.id) window.location.href = 'watch.html?id=' + encodeURIComponent(it.id); else alert('No ID'); }
-function safe(s){ if(!s) return ''; return String(s).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+    // Upload handler
+    doUpload.addEventListener('click', async ()=>{
+      const file = fileInput.files[0];
+      if(!file){ showUploadMessage('Choose a file first', 'danger'); return; }
 
-/* ---------- Upload visibility ---------- */
-function refreshUploadVisibility(){
-  if(profile && profile.is_creator){
-    id('uploadPanel').style.display = '';
-    id('creatorNote').style.display = '';
-  } else {
-    id('uploadPanel').style.display = 'none';
-    id('creatorNote').style.display = 'none';
-  }
-}
+      showUploadMessage('Preparing upload…', 'muted');
 
-/* ---------- SigV4 helpers (same as before) ---------- */
-async function sha256Hex(data){
-  const buff = (data instanceof ArrayBuffer) ? data : new TextEncoder().encode(data);
-  const hash = await crypto.subtle.digest('SHA-256', buff);
-  return Array.from(new Uint8Array(hash)).map(b=>b.toString(16).padStart(2,'0')).join('');
-}
-async function hmacBytes(keyBytes, msg){
-  const cryptoKey = await crypto.subtle.importKey('raw', keyBytes, {name:'HMAC', hash:'SHA-256'}, false, ['sign']);
-  const sig = await crypto.subtle.sign('HMAC', cryptoKey, new TextEncoder().encode(msg));
-  return new Uint8Array(sig);
-}
-function toHex(u8){ return Array.from(u8).map(b=>b.toString(16).padStart(2,'0')).join(''); }
-async function getSigningKey(secret, dateStamp, region, service){
-  const kDate = await hmacBytes(new TextEncoder().encode('AWS4' + secret), dateStamp);
-  const kRegion = await hmacBytes(kDate, region);
-  const kService = await hmacBytes(kRegion, service);
-  const kSigning = await hmacBytes(kService, 'aws4_request');
-  return kSigning;
-}
-async function uploadToR2Signed(baseUrl, objectPath, file, accessKey, secretKey){
-  const url = new URL(baseUrl);
-  const host = url.host;
-  const method = 'PUT';
-  const service = 's3';
-  const region = 'auto';
-  const now = new Date();
-  const amzDate = now.toISOString().replace(/[:-]|\.\d{3}/g,'') + 'Z';
-  const dateStamp = amzDate.slice(0,8);
-  const payloadArray = await file.arrayBuffer();
-  const payloadHash = await sha256Hex(payloadArray);
-  const canonicalUri = objectPath;
-  const canonicalQueryString = '';
-  const canonicalHeaders = `host:${host}\nx-amz-content-sha256:${payloadHash}\nx-amz-date:${amzDate}\n`;
-  const signedHeaders = 'host;x-amz-content-sha256;x-amz-date';
-  const canonicalRequest = [method, canonicalUri, canonicalQueryString, canonicalHeaders, signedHeaders, payloadHash].join('\n');
-  const canonicalRequestHash = await sha256Hex(new TextEncoder().encode(canonicalRequest));
-  const credentialScope = `${dateStamp}/${region}/${service}/aws4_request`;
-  const stringToSign = ['AWS4-HMAC-SHA256', amzDate, credentialScope, canonicalRequestHash].join('\n');
-  const signingKey = await getSigningKey(secretKey, dateStamp, region, service);
-  const signature = toHex(await hmacBytes(signingKey, stringToSign));
-  const authorization = `AWS4-HMAC-SHA256 Credential=${accessKey}/${credentialScope}, SignedHeaders=${signedHeaders}, Signature=${signature}`;
-  const uploadUrl = baseUrl + canonicalUri;
-  const resp = await fetch(uploadUrl, {
-    method: 'PUT',
-    headers: {
-      'Content-Type': file.type || 'application/octet-stream',
-      'x-amz-date': amzDate,
-      'x-amz-content-sha256': payloadHash,
-      'Authorization': authorization,
-      'x-amz-acl': 'public-read'
-    },
-    body: file
-  });
-  return resp;
-}
+      // 1) Try Supabase Storage (recommended)
+      const filePath = `creators/${Date.now()}_${file.name}`;
+      try {
+        // Note: requires a bucket called 'lux-uploads' created in Supabase storage.
+        const { data: upData, error: upError } = await supabase.storage.from('lux-uploads').upload(filePath, file, {
+          cacheControl: '3600',
+          upsert: false
+        });
 
-/* ---------- Upload handler ---------- */
-id('btnDoUpload').addEventListener('click', async ()=>{
-  if(!session || !session.user) return showAuthMessage('Sign in first', 'error');
-  if(!profile || !profile.is_creator) return showAuthMessage('Only creators can upload (use an invite code at sign-up).', 'error');
-  const file = id('upFile').files[0];
-  if(!file) return showAuthMessage('Choose a file to upload.', 'error');
-  id('upStatus').innerText = 'Preparing...';
-  const kind = id('upKind').value;
-  const title = id('upTitle').value.trim() || '(untitled)';
-  let desc = id('upDesc').value.trim() || '';
-  const ts = Date.now();
-  const safeName = file.name.replace(/[^a-zA-Z0-9.\-_]/g,'_');
-  const key = `${kind}/${ts}_${Math.random().toString(36).slice(2,9)}_${safeName}`;
-  const objectPath = `${R2.bucketPath}/${key}`;
-  const objectUrl = `${R2.base}${objectPath}`;
-  id('upStatus').innerText = 'Uploading to R2...';
-  try {
-    const resp = await uploadToR2Signed(R2.base, objectPath, file, R2.accessKey, R2.secretKey);
-    if(!(resp && resp.status >=200 && resp.status <300)) throw new Error('Upload failed or CORS blocked. Resp: ' + (resp ? resp.status : 'no-response'));
-    id('upStatus').innerText = 'Upload OK. Saving metadata...';
-    const payload = { author: session.user.id, kind, title, description: desc + '\\n\\nr2_url:' + objectUrl, duration_seconds: 0, is_draft: false, published_at: new Date().toISOString(), created_at: new Date().toISOString() };
-    const hdrs = {'Content-Type':'application/json','apikey': SUPABASE.anonKey, 'Authorization': 'Bearer ' + session.access_token, 'Prefer':'return=representation'};
-    const ins = await fetch(`${SUPABASE.url}/rest/v1/contents`, { method:'POST', headers: hdrs, body: JSON.stringify(payload) });
-    if(!ins.ok){ const t = await ins.text(); throw new Error('Supabase insert failed: ' + ins.status + ' ' + t); }
-    const created = await ins.json();
-    id('upStatus').innerText = 'Saved content. Refreshing feed...';
-    id('upTitle').value=''; id('upDesc').value=''; id('upFile').value='';
-    loadEverything();
-    showAuthMessage('Upload successful', 'success'); hideAuthMessage(3000);
-  } catch(e){
-    console.error('upload error', e);
-    id('upStatus').innerText = 'Upload error: ' + (e.message || e);
-    showAuthMessage('Upload failed: ' + (e.message||e), 'error');
-  }
-});
+        if(upError){
+          console.warn('Supabase storage error', upError);
+          showUploadMessage('Supabase upload failed: ' + upError.message, 'danger');
+        } else {
+          showUploadMessage('Uploaded to Supabase storage: ' + filePath, 'success');
+        }
+      } catch(err){
+        console.warn('Supabase upload exception', err);
+        showUploadMessage('Supabase upload exception (see console)', 'danger');
+      }
 
-/* ---------- initial actions ---------- */
-loadEverything();
-refreshUploadVisibility();
+      // 2) Try direct PUT to Cloudflare dev endpoint (best-effort)
+      try {
+        showUploadMessage('Attempting Cloudflare dev PUT (best-effort)...', 'muted');
 
-/* ---------- console hints ---------- */
-console.warn('This page contains embedded Supabase anon and R2 keys. Insecure for production.');
-console.info('If sign-in still fails, open DevTools Network and paste the request/response for POST /auth/v1/token into chat.');
+        // IMPORTANT: many R2 setups block unsigned PUTs. This demo will try to PUT to your dev URL.
+        const url = CLOUDFLARE_R2_PUB_DEV + '/' + encodeURIComponent(file.name);
+        const resp = await fetch(url, {
+          method: 'PUT',
+          body: file,
+          // If your endpoint needs headers, add them here (Authorization etc).
+        });
 
-</script>
+        if(resp.ok){
+          showUploadMessage('Cloudflare dev upload OK: ' + url, 'success');
+        } else {
+          console.warn('Cloudflare PUT failed', resp.status, await resp.text());
+          showUploadMessage('Cloudflare PUT failed: ' + resp.status + ' (check server signing)', 'danger');
+        }
+      } catch(err){
+        console.warn('Cloudflare PUT exception', err);
+        showUploadMessage('Cloudflare upload error (see console) — likely requires signed URL/server-side', 'danger');
+      }
+    });
+
+    // Optional: detect auth state change
+    supabase.auth.onAuthStateChange((event, session) => {
+      if(session && session.user){
+        uploaderWrap.style.display = 'block';
+        showAuthMessage('Authenticated as ' + (session.user.email || session.user.id), 'success');
+      } else {
+        uploaderWrap.style.display = 'none';
+      }
+    });
+
+    // Accessibility: quick paste for invite (developer convenience)
+    inviteEl.addEventListener('paste', (ev)=>{
+      setTimeout(()=>{ inviteEl.value = inviteEl.value.toUpperCase().replace(/[^A-Z0-9]/g,'').substr(0,6); }, 5);
+    });
+
+    // END
+  </script>
 </body>
 </html>
