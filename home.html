@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lux Scepter — Realm</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Chomsky&display=swap');
+body {
+  margin: 0;
+  font-family: 'Times New Roman', serif;
+  background-color: #0e0e0e;
+  color: #bd8e20;
+  overflow-x: hidden;
+}
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1em 2em;
+  border-bottom: 2px solid #571728;
+}
+h1 {
+  font-family: 'Chomsky', sans-serif;
+  font-size: 2.5em;
+  color: #bd8e20;
+}
+button {
+  background: #5600a1;
+  border: none;
+  padding: 0.5em 1em;
+  color: #fff;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+button:hover {
+  background: #35005a;
+}
+#realm-feed {
+  display: flex;
+  flex-direction: column;
+  gap: 1em;
+  padding: 2em;
+}
+.card {
+  background: #0e0e0e;
+  border: 2px solid #35005a;
+  padding: 1em;
+  border-radius: 12px;
+  position: relative;
+  box-shadow: 0 0 20px rgba(189,142,32,0.3);
+}
+.card video {
+  width: 100%;
+  border-radius: 12px;
+}
+.crown, .scepter {
+  position: absolute;
+  top: 1em;
+  right: 1em;
+  font-size: 1.5em;
+  cursor: pointer;
+}
+.scepter {
+  right: 3em;
+  color: gold;
+}
+#oracle-edge {
+  position: fixed;
+  right: 0;
+  top: 0;
+  width: 30px;
+  height: 100%;
+  background: linear-gradient(to bottom, #bd8e20, transparent);
+  cursor: pointer;
+  z-index: 1000;
+  transition: 0.3s;
+}
+#oracle-input {
+  position: fixed;
+  right: -250px;
+  top: 50px;
+  width: 250px;
+  height: auto;
+  background: #0e0e0e;
+  color: #bd8e20;
+  padding: 1em;
+  border-left: 2px solid #571728;
+  transition: 0.3s;
+  display: flex;
+  flex-direction: column;
+}
+#oracle-input input {
+  background: #0e0e0e;
+  border: 1px solid #35005a;
+  padding: 0.5em;
+  color: #bd8e20;
+  border-radius: 6px;
+  margin-bottom: 1em;
+}
+#oracle-input .results {
+  max-height: 400px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5em;
+}
+.result-item {
+  background: #35005a;
+  padding: 0.5em;
+  border-radius: 6px;
+  cursor: pointer;
+  color: #bd8e20;
+  transition: 0.2s;
+}
+.result-item:hover {
+  background: #5600a1;
+}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Lux Scepter ♔</h1>
+  <button id="signout-btn">Sign Out</button>
+</header>
+
+<div id="realm-feed">
+  <!-- Video cards will be dynamically inserted here -->
+</div>
+
+<div id="oracle-edge"></div>
+<div id="oracle-input">
+  <input type="text" id="oracle-search" placeholder="Search Realm...">
+  <div class="results" id="oracle-results"></div>
+</div>
+
+<script type="module">
+import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
+
+const supabaseUrl = 'https://uewvmldolwgihfkxwlsl.supabase.co'
+const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVld3ZtbGRvbHdnaWhma3h3bHNsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjM5MzQ1MjksImV4cCI6MjA3OTUxMDUyOX0.b9C00OjIkAUDPztC8RtdHcwjdgX4OrShNW_pp6r-_qI'
+const supabase = createClient(supabaseUrl, supabaseKey)
+
+const realmFeed = document.getElementById('realm-feed')
+const oracleEdge = document.getElementById('oracle-edge')
+const oracleInput = document.getElementById('oracle-input')
+const oracleSearch = document.getElementById('oracle-search')
+const oracleResults = document.getElementById('oracle-results')
+const signOutBtn = document.getElementById('signout-btn')
+
+// Auth check
+const { data: { user } } = await supabase.auth.getUser()
+if (!user) window.location.href = 'index.html'
+
+// Sign out
+signOutBtn.addEventListener('click', async () => {
+  await supabase.auth.signOut()
+  window.location.href = 'index.html'
+})
+
+// Fetch Realm videos
+async function loadRealm() {
+  // Placeholder: Replace with Cloudflare or Supabase storage fetch
+  const videos = [
+    { id: 1, type: 'Edict', title: 'Amber Veil', url: 'https://www.w3schools.com/html/mov_bbb.mp4' },
+    { id: 2, type: 'Dominion', title: 'Clouded Flame', url: 'https://www.w3schools.com/html/movie.mp4' },
+    { id: 3, type: 'Throne', title: 'Lavender Fade', url: 'https://www.w3schools.com/html/mov_bbb.mp4' }
+  ]
+
+  realmFeed.innerHTML = ''
+  videos.forEach(video => {
+    const card = document.createElement('div')
+    card.className = 'card'
+    card.innerHTML = `
+      <h3>${video.type}: ${video.title}</h3>
+      <video src="${video.url}" controls></video>
+      <div class="crown">♔</div>
+      <div class="scepter">𐀣</div>
+    `
+    // Crown click
+    card.querySelector('.crown').addEventListener('click', () => {
+      alert('Crown given! ♔')
+    })
+    // Scepter click
+    card.querySelector('.scepter').addEventListener('click', () => {
+      alert('Scepter spent! 𐀣')
+    })
+
+    realmFeed.appendChild(card)
+  })
+}
+
+loadRealm()
+
+// Oracle Edge interactions
+oracleEdge.addEventListener('click', () => {
+  oracleInput.style.right = oracleInput.style.right === '0px' ? '-250px' : '0px'
+  oracleSearch.focus()
+})
+
+oracleSearch.addEventListener('input', async () => {
+  const query = oracleSearch.value.trim()
+  if (!query) {
+    oracleResults.innerHTML = ''
+    return
+  }
+
+  // Placeholder: replace with Supabase search query
+  const mockResults = [
+    { id: 1, title: 'Amber Veil' },
+    { id: 2, title: 'Blue Recede' }
+  ].filter(item => item.title.toLowerCase().includes(query.toLowerCase()))
+
+  oracleResults.innerHTML = ''
+  mockResults.forEach(item => {
+    const div = document.createElement('div')
+    div.className = 'result-item'
+    div.textContent = item.title
+    div.addEventListener('click', () => alert(`Clicked: ${item.title}`))
+    oracleResults.appendChild(div)
+  })
+})
+</script>
+
+</body>
+</html>
