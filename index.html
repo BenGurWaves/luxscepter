@@ -3,136 +3,487 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Realm — Lux Scepter (Feed)</title>
+<title>Lux Scepter — Realm</title>
 <style>
-  /* Royal minimal — black / gold / indigo / red */
+  /* Theme: royal gold, royal blue, royal burgundy */
   :root{
-    --black:#000000;
+    --bg:#04050a;
     --gold:#D4AF37;
-    --indigo:#4B0082;
-    --red:#8B0000;
-    --muted:#1a1a1a;
+    --royal-blue:#0B3D91;
+    --burgundy:#800020;
+    --muted:#111217;
+    --surface:#0b0b0f;
+    --text:#eaeaea;
   }
-  html,body{height:100%;margin:0;background:var(--black);color:#eee;font-family: "Chomsky","Times New Roman",serif;}
-  .wrap{max-width:1100px;margin:28px auto;padding:24px;}
-  header{display:flex;align-items:center;gap:18px;margin-bottom:26px}
-  h1{font-size:28px;margin:0;color:var(--gold);letter-spacing:0.06em}
-  .sub{color:#cfcfcf;font-size:13px}
-  .card{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));border-left:4px solid var(--gold);padding:16px;border-radius:8px;margin-bottom:12px}
-  .title{font-size:18px;margin:0 0 6px 0;color:#fff}
-  .meta{font-size:13px;color:#cfcfcf;display:flex;gap:12px;align-items:center}
-  .thumb{width:220px;height:124px;background:#111;border-radius:6px;display:flex;align-items:center;justify-content:center;overflow:hidden}
-  .row{display:flex;gap:18px}
-  .actions{margin-left:auto}
-  .btn{background:transparent;border:1px solid var(--gold);color:var(--gold);padding:8px 12px;border-radius:6px;cursor:pointer}
-  .small{font-size:12px;color:#bbb}
-  a.logo{color:var(--gold);text-decoration:none;font-weight:700}
-  .empty{color:#999;padding:40px;text-align:center}
-  footer{border-top:1px solid rgba(255,255,255,0.03);padding-top:12px;margin-top:18px;color:#999;font-size:12px}
-  .tag{background:rgba(212,175,55,0.09);padding:6px;border-radius:6px;color:var(--gold);font-weight:600}
+  html,body{height:100%;margin:0;background:linear-gradient(180deg,var(--bg),#02030a);color:var(--text);font-family:"Chomsky","Times New Roman",serif}
+  .wrap{max-width:1200px;margin:28px auto;padding:20px}
+  header{display:flex;align-items:center;gap:18px;margin-bottom:18px}
+  .brand{display:flex;flex-direction:column}
+  h1{margin:0;color:var(--gold);letter-spacing:0.04em;font-size:28px}
+  .tag{font-size:12px;color:#ddd}
+  nav{margin-left:auto;display:flex;gap:10px;align-items:center}
+  .btn{background:transparent;border:1px solid rgba(212,175,55,0.16);color:var(--gold);padding:8px 12px;border-radius:8px;cursor:pointer}
+  .outline{border-color:rgba(11,61,145,0.15);color:var(--royal-blue)}
+  .danger{border-color:rgba(128,0,32,0.12);color:var(--burgundy)}
+  .grid{display:grid;grid-template-columns:1fr 360px;gap:18px}
+  .card{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));padding:14px;border-radius:10px;border:1px solid rgba(255,255,255,0.03)}
+  .sectionTitle{color:var(--gold);font-size:14px;margin-bottom:10px}
+  .feedItem{display:flex;gap:12px;padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.02);margin-bottom:10px}
+  .thumb{width:150px;height:90px;background:#06060a;border-radius:6px;overflow:hidden;display:flex;align-items:center;justify-content:center}
+  .meta{flex:1}
+  .small{font-size:13px;color:#cfcfcf}
+  .muted{color:#9a9a9a}
+  .compact{font-size:12px;color:#bbb}
+  .colActions{display:flex;flex-direction:column;gap:8px;align-items:flex-end}
+  input[type="text"],input[type="email"],input[type="password"],select,textarea{width:100%;padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.03);background:transparent;color:var(--text)}
+  textarea{min-height:76px;resize:vertical}
+  .auth{display:flex;gap:10px;align-items:center}
+  .row{display:flex;gap:10px}
+  .smallNote{font-size:12px;color:#bbb;margin-top:8px}
+  .embedWrap iframe{width:100%;height:220px;border-radius:8px;border:0;background:#000}
+  .audioRow{display:flex;gap:10px;align-items:center}
+  .fileLink{display:flex;justify-content:space-between;align-items:center;padding:8px;border-radius:6px;border:1px solid rgba(255,255,255,0.02);margin-bottom:8px}
+  .search{display:flex;gap:8px;margin-bottom:12px}
+  .pill{padding:6px 10px;border-radius:999px;background:rgba(255,255,255,0.02);font-size:13px;border:1px solid rgba(255,255,255,0.02)}
+  footer{margin-top:18px;color:#999;font-size:12px;text-align:center}
+  @media (max-width:980px){ .grid{grid-template-columns:1fr} .thumb{width:120px;height:72px} .embedWrap iframe{height:180px} }
 </style>
 </head>
 <body>
   <div class="wrap">
     <header>
-      <div>
-        <h1><a class="logo" href="/">Lux Scepter — Realm</a></h1>
-        <div class="sub">Rule the feed. Own the crown.</div>
+      <div class="brand">
+        <h1>Lux Scepter — Realm</h1>
+        <div class="tag">Rule the feed. Own the crown.</div>
       </div>
-      <div style="margin-left:auto">
-        <button class="btn" onclick="location.href='upload.html'">Upload Edict / Dominion</button>
-      </div>
+
+      <nav>
+        <div id="userArea" class="auth card" style="padding:10px">
+          <!-- dynamic auth UI here -->
+          <div id="signedOutControls">
+            <input id="email" type="email" placeholder="email" style="width:170px"/>
+            <input id="password" type="password" placeholder="password" style="width:170px"/>
+            <button class="btn" id="btnSignIn">Sign in</button>
+            <button class="btn outline" id="btnSignUp">Sign up</button>
+          </div>
+
+          <div id="signedInControls" style="display:none;align-items:center;gap:8px">
+            <div class="small">Signed in as <strong id="displayUsername">…</strong></div>
+            <button class="btn" id="btnUpload" title="Upload (opens uploader)">Upload</button>
+            <button class="btn danger" id="btnSignOut">Sign out</button>
+          </div>
+        </div>
+      </nav>
     </header>
 
-    <main id="feed">
-      <div class="empty">Loading feed…</div>
-    </main>
+    <div class="grid">
+      <main>
+        <!-- Search + filters -->
+        <div class="card" style="margin-bottom:12px">
+          <div class="search">
+            <input id="q" type="text" placeholder="Search title, description, username..." />
+            <select id="filterKind">
+              <option value="">All kinds</option>
+              <option value="edict">Edict (vertical)</option>
+              <option value="dominion">Dominion (horizontal)</option>
+              <option value="throne">Throne (long)</option>
+              <option value="song">Song</option>
+              <option value="file">File</option>
+            </select>
+            <button class="btn" id="btnSearch">Search</button>
+          </div>
+          <div class="smallNote">Filters: show vertical / horizontal posts, audio songs, or downloadable files. Embeds for YouTube, Instagram, Spotify, TikTok will render if the content row includes an external URL.</div>
+        </div>
 
-    <footer>
-      <span class="tag">♔ Crown</span> &nbsp; • &nbsp; Founding Bloodline preview • Static demo build
-    </footer>
+        <!-- FEED -->
+        <section class="card" id="feedCard">
+          <div class="sectionTitle">Realm — Feed</div>
+          <div id="feedList"><div class="muted">Loading feed…</div></div>
+        </section>
+
+        <!-- Songs -->
+        <section class="card" id="songsCard" style="margin-top:12px">
+          <div class="sectionTitle">Songs</div>
+          <div id="songsList"><div class="muted">Loading songs…</div></div>
+        </section>
+
+        <!-- Files -->
+        <section class="card" id="filesCard" style="margin-top:12px">
+          <div class="sectionTitle">Files — Downloads</div>
+          <div id="filesList"><div class="muted">Loading files…</div></div>
+        </section>
+      </main>
+
+      <aside>
+        <!-- External embeds column -->
+        <div class="card" id="embedsCard">
+          <div class="sectionTitle">Featured Embeds</div>
+          <div style="display:flex;flex-direction:column;gap:12px">
+            <div>
+              <div class="compact">YouTube</div>
+              <div id="ytEmbed" class="embedWrap"><div class="muted">Loading...</div></div>
+            </div>
+            <div>
+              <div class="compact">Instagram</div>
+              <div id="igEmbed" class="embedWrap"><div class="muted">Loading...</div></div>
+            </div>
+            <div>
+              <div class="compact">Spotify</div>
+              <div id="spotEmbed" class="embedWrap"><div class="muted">Loading...</div></div>
+            </div>
+            <div>
+              <div class="compact">TikTok</div>
+              <div id="ttEmbed" class="embedWrap"><div class="muted">Loading...</div></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card" style="margin-top:12px">
+          <div class="sectionTitle">Quick Controls</div>
+          <div style="display:flex;flex-direction:column;gap:8px">
+            <button class="btn" id="btnRefresh">Refresh feed</button>
+            <button class="btn outline" id="btnMyContents">My uploads</button>
+            <div class="smallNote">Upload requires auth. Upload page is separate (upload.html) — later we will integrate inline uploads and presigned URLs.</div>
+          </div>
+        </div>
+      </aside>
+    </div>
+
+    <footer class="muted">Lux Scepter — internal demo. Built for Founding Bloodline testing.</footer>
   </div>
 
 <script>
 /*
   INDEX.HTML
-  - Lists contents from Supabase table `contents`.
-  - Uses Supabase REST endpoint with the anon key you provided.
-  - Sorting: newest published_at first, then created_at.
+  - Single-file app: sign in / sign up + feed + songs + files + embeds
+  - Uses Supabase REST endpoints and the anon key embedded below (per your request).
+  - Uses Cloudflare R2 base URL and credentials variables (embedded) for direct links.
+  - Assumptions:
+    - Table `contents` exists with fields: id, author (uuid), kind, title, description, duration_seconds, published_at, created_at
+    - Table `profiles` exists with fields: id (uuid), username, avatar
+    - The upload process used earlier stores public R2 URL in the description as: "r2_url:https://.../object.mp4" or "external_url:https://youtube.com/..."
 */
 
-const SUPabase = {
+//// CONFIG (you asked to embed these — this is visible to anyone who opens the HTML) ////
+const SUPABASE = {
   url: 'https://uewvmldolwgihfkxwlsl.supabase.co',
   anonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVld3ZtbGRvbHdnaWhma3h3bHNsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjM5MzQ1MjksImV4cCI6MjA3OTUxMDUyOX0.b9C00OjIkAUDPztC8RtdHcwjdgX4OrShNW_pp6r-_qI'
 };
 
-async function fetchFeed() {
-  const q = '/rest/v1/contents?select=*,author:author(username,avatar)&order=coalesce(published_at,created_at.desc)&limit=50';
-  // Note: If row-level security exists, anon key may be limited.
+const R2 = {
+  base: 'https://4aefdc871e931f0ca228941ee1599c02.r2.cloudflarestorage.com',
+  bucketPath: '/luxscepter-uploads',
+  accountId: '4aefdc871e931f0ca228941ee1599c02',
+  accessKey: 'b1e60f0da846e830e9e77680cdf6eb3f',
+  secretKey: '1a501b5c35f214508f03666242c8bf831373df226931670e7705e11966435dce'
+};
+
+//// Utilities ////
+function el(q){ return document.querySelector(q); }
+function elAll(q){ return Array.from(document.querySelectorAll(q)); }
+function show(id){ el(id).style.display=''; }
+function hide(id){ el(id).style.display='none'; }
+function setHTML(id, html){ el(id).innerHTML = html; }
+function safe(s){ if(!s) return ''; return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+
+//// Auth: sign up / sign in / sign out ////
+let session = null; // {access_token, user}
+let profile = null; // profile row (if exists)
+
+async function signUp(email, password){
+  const resp = await fetch(`${SUPABASE.url}/auth/v1/signup`, {
+    method:'POST',
+    headers:{ 'Content-Type':'application/json', 'apikey': SUPABASE.anonKey },
+    body: JSON.stringify({ email, password })
+  });
+  const j = await resp.json();
+  if(!resp.ok) throw new Error(JSON.stringify(j));
+  // Sometimes returns user/session, sometimes not.
+  if(j && j.user && j.access_token){ session = { access_token: j.access_token, user: j.user }; localStorage.setItem('sup_session', JSON.stringify(session)); await afterSignIn(); }
+  else { alert('Sign up OK. Confirm email if required, then sign in.'); }
+}
+
+async function signIn(email, password){
+  // token exchange endpoint
+  const form = new URLSearchParams();
+  form.set('grant_type','password');
+  form.set('email',email);
+  form.set('password',password);
+  const resp = await fetch(`${SUPABASE.url}/auth/v1/token`, {
+    method:'POST',
+    headers:{ 'Content-Type':'application/x-www-form-urlencoded', 'apikey': SUPABASE.anonKey },
+    body: form.toString()
+  });
+  const j = await resp.json();
+  if(!resp.ok) throw new Error(JSON.stringify(j));
+  session = { access_token: j.access_token, user: j.user };
+  localStorage.setItem('sup_session', JSON.stringify(session));
+  await afterSignIn();
+}
+
+async function signOut(){
+  session = null; profile = null;
+  localStorage.removeItem('sup_session');
+  el('#signedInControls').style.display='none';
+  el('#signedOutControls').style.display='';
+  el('#displayUsername').innerText = '…';
+  setHTML('#status','Signed out');
+}
+
+async function afterSignIn(){
+  // show signed-in UI, fetch/create profile
+  el('#signedOutControls').style.display='none';
+  el('#signedInControls').style.display='';
+  el('#displayEmail') && (el('#displayEmail').innerText = session.user.email || '');
+  // fetch profile row
   try {
-    const res = await fetch(SUPabase.url + q, {
-      headers: {
-        apikey: SUPabase.anonKey,
-        Authorization: 'Bearer ' + SUPabase.anonKey
-      }
+    const res = await fetch(`${SUPABASE.url}/rest/v1/profiles?id=eq.${session.user.id}`, {
+      headers: { 'apikey': SUPABASE.anonKey, 'Authorization': 'Bearer ' + session.access_token }
     });
-    if(!res.ok) throw new Error('Supabase responded ' + res.status);
-    const items = await res.json();
-    renderFeed(items);
-  } catch (err) {
-    console.error(err);
-    document.getElementById('feed').innerHTML = `<div class="empty">Failed to load feed — check console for details.</div>`;
+    const rows = await res.json();
+    if(rows && rows.length>0){ profile = rows[0]; el('#displayUsername').innerText = profile.username || session.user.email; }
+    else {
+      // create profile minimal row with id=user.id
+      const insert = await fetch(`${SUPABASE.url}/rest/v1/profiles`, {
+        method:'POST',
+        headers:{ 'Content-Type':'application/json', 'apikey': SUPABASE.anonKey, 'Authorization': 'Bearer ' + session.access_token },
+        body: JSON.stringify({ id: session.user.id, username: session.user.email.split('@')[0] })
+      });
+      if(insert.ok){ const created = await insert.json(); profile = created[0] || null; el('#displayUsername').innerText = profile ? profile.username : session.user.email; }
+      else { el('#displayUsername').innerText = session.user.email; }
+    }
+  } catch(e){
+    console.warn('profile load failed',e);
+    el('#displayUsername').innerText = session.user.email;
   }
 }
 
-function thumbnailFor(item){
-  // If item.kind includes 'throne' or 'dominion' we can derive a thumbnail from R2 path or placeholder.
-  // Use first 220px placeholder for now.
-  return `<div class="thumb"><div style="padding:10px;text-align:center"><div style="font-size:13px;color:#bbb">${(item.kind||'content').toUpperCase()}</div><div style="margin-top:6px;font-size:12px;color:#888">${(item.duration_seconds||0) ? (Math.floor(item.duration_seconds/60)+':' + String(item.duration_seconds%60).padStart(2,'0')) : ''}</div></div></div>`;
+(function restoreSession(){
+  const s = localStorage.getItem('sup_session');
+  if(s){ try{ session = JSON.parse(s); afterSignIn(); }catch(e){ localStorage.removeItem('sup_session'); } }
+})();
+
+//// Event bindings ////
+el('#btnSignUp').addEventListener('click', async ()=>{
+  const email = el('#email').value.trim(), pw = el('#password').value;
+  if(!email || !pw) return alert('Email + password required');
+  try{ await signUp(email,pw); loadEverything(); } catch(e){ alert('Sign up error: ' + (e.message||e)); console.error(e); }
+});
+el('#btnSignIn').addEventListener('click', async ()=>{
+  const email = el('#email').value.trim(), pw = el('#password').value;
+  if(!email || !pw) return alert('Email + password required');
+  try{ await signIn(email,pw); loadEverything(); } catch(e){ alert('Sign in error: ' + (e.message||e)); console.error(e); }
+});
+el('#btnSignOut').addEventListener('click', ()=> signOut());
+el('#btnUpload').addEventListener('click', ()=> location.href = 'upload.html'); // separate page for uploads
+el('#btnSearch').addEventListener('click', ()=> loadEverything());
+el('#btnRefresh').addEventListener('click', ()=> loadEverything());
+el('#btnMyContents').addEventListener('click', ()=> loadEverything(true));
+
+//// Content loading ////
+async function loadEverything(onlyMine=false){
+  setHTML('#feedList','<div class="muted">Loading feed…</div>');
+  setHTML('#songsList','<div class="muted">Loading songs…</div>');
+  setHTML('#filesList','<div class="muted">Loading files…</div>');
+  // build query
+  const q = (el('#q').value||'').trim();
+  const kindFilter = el('#filterKind').value || '';
+  // For feed: get latest contents (limit 50), include author relationship using select expansion
+  // REST request: /rest/v1/contents?select=*,author:author(username)&order=coalesce(published_at,created_at.desc)
+  let filter = '';
+  if(kindFilter) filter += `kind=eq.${encodeURIComponent(kindFilter)}&`;
+  if(onlyMine && session && session.user) filter += `author=eq.${session.user.id}&`;
+  if(q) {
+    // simple text search: title or description ilike %q% or author username match
+    filter += `or=(title.ilike.*${encodeURIComponent(q)}*,description.ilike.*${encodeURIComponent(q)}*)&`;
+  }
+  const url = `${SUPABASE.url}/rest/v1/contents?select=*,author:profiles(username)&order=coalesce(published_at,created_at.desc)&${filter}limit=50`;
+  try {
+    const headers = { 'apikey': SUPABASE.anonKey };
+    if(session && session.access_token) headers['Authorization'] = 'Bearer ' + session.access_token;
+    const res = await fetch(url, { headers });
+    if(!res.ok) throw new Error('Supabase responded ' + res.status);
+    const rows = await res.json();
+    renderFeed(rows || []);
+    renderSongs(rows || []);
+    renderFiles(rows || []);
+    // pick a recommended external embed (first external_url found)
+    pickEmbeds(rows || []);
+  } catch(e){
+    console.error('loadEverything',e);
+    setHTML('#feedList','<div class="muted">Failed to load feed — check console.</div>');
+    setHTML('#songsList','<div class="muted">Failed to load songs.</div>');
+    setHTML('#filesList','<div class="muted">Failed to load files.</div>');
+  }
 }
 
 function renderFeed(items){
-  const root = document.getElementById('feed');
-  if(!items || items.length===0){
-    root.innerHTML = `<div class="empty">No contents yet. Go upload a Crown.</div>`;
-    return;
-  }
-  root.innerHTML = '';
+  if(!items || items.length===0){ setHTML('#feedList','<div class="muted">No posts yet.</div>'); return; }
+  const container = document.createElement('div');
   items.forEach(it=>{
-    const html = document.createElement('div');
-    html.className = 'card';
-    html.innerHTML = `
-      <div class="row">
-        ${thumbnailFor(it)}
-        <div style="flex:1">
-          <h3 class="title">${escapeHtml(it.title || '(Untitled)')}</h3>
-          <div class="meta">
-            <div class="small">By <strong>${escapeHtml((it.author && it.author.username) || 'unknown')}</strong></div>
-            <div class="small">• ${escapeHtml(it.kind || 'edict')}</div>
-            <div class="small">• ${it.published_at ? new Date(it.published_at).toLocaleString() : 'draft'}</div>
-            <div class="actions">
-              <button class="btn" onclick="openViewer('${encodeURIComponent(it.id)}')">Play</button>
-            </div>
-          </div>
-          <p class="small" style="margin-top:10px;color:#d7d7d7">${escapeHtml(it.description || '')}</p>
-        </div>
+    if(it.kind === 'song' || it.kind === 'file') return; // songs/files shown separately
+    const f = document.createElement('div'); f.className='feedItem';
+    const thumb = document.createElement('div'); thumb.className='thumb';
+    thumb.innerHTML = thumbnailFor(it);
+    const meta = document.createElement('div'); meta.className='meta';
+    meta.innerHTML = `<div style="display:flex;align-items:center;gap:8px">
+        <div style="font-weight:700">${safe(it.title || '(Untitled)')}</div>
+        <div class="compact muted">by ${safe(it.author && it.author.username || 'unknown')}</div>
       </div>
-    `;
-    root.appendChild(html);
+      <div class="small" style="margin-top:8px">${safe(it.description || '').split('\\n').slice(0,2).join('<br>')}</div>
+      `;
+    const actions = document.createElement('div'); actions.className='colActions';
+    const playBtn = document.createElement('button'); playBtn.className='btn'; playBtn.innerText='Open';
+    playBtn.addEventListener('click', ()=> openContent(it));
+    actions.appendChild(playBtn);
+    f.appendChild(thumb); f.appendChild(meta); f.appendChild(actions);
+    container.appendChild(f);
   });
+  setHTML('#feedList',''); el('#feedList').appendChild(container);
 }
 
-function openViewer(id){
-  // open watch page with id parameter
-  location.href = 'watch.html?id=' + id;
+function renderSongs(items){
+  const songs = (items||[]).filter(i=>i.kind==='song');
+  if(songs.length===0){ setHTML('#songsList','<div class="muted">No songs yet.</div>'); return; }
+  const wrap = document.createElement('div');
+  songs.forEach(s=>{
+    const r2 = extractR2Url(s.description) || extractExternalUrl(s.description);
+    const row = document.createElement('div'); row.className='audioRow';
+    row.innerHTML = `<div style="flex:1"><strong>${safe(s.title||'(untitled)')}</strong><div class="compact muted">by ${safe(s.author && s.author.username || 'unknown')}</div></div>`;
+    if(r2){
+      const audio = document.createElement('audio'); audio.controls=true; audio.src = r2; audio.style.width='100%';
+      row.appendChild(audio);
+    } else {
+      const link = document.createElement('a'); link.href='#'; link.innerText='No audio URL'; row.appendChild(link);
+    }
+    wrap.appendChild(row);
+  });
+  setHTML('#songsList',''); el('#songsList').appendChild(wrap);
 }
 
-function escapeHtml(s){
-  if(!s) return '';
-  return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+function renderFiles(items){
+  const files = (items||[]).filter(i=>i.kind==='file' || (i.description && i.description.includes('r2_url')));
+  if(files.length===0){ setHTML('#filesList','<div class="muted">No files available for download.</div>'); return; }
+  const wrap = document.createElement('div');
+  files.forEach(f=>{
+    const r2 = extractR2Url(f.description);
+    const row = document.createElement('div'); row.className='fileLink';
+    row.innerHTML = `<div><strong>${safe(f.title||'(file)')}</strong><div class="compact muted">${safe(f.description||'')}</div></div>`;
+    const right = document.createElement('div');
+    if(r2){
+      const a = document.createElement('a'); a.href = r2; a.download=''; a.className='pill'; a.innerText='Download';
+      right.appendChild(a);
+    } else {
+      const a = document.createElement('a'); a.href = '#'; a.className='pill'; a.innerText='No file URL';
+      right.appendChild(a);
+    }
+    row.appendChild(right);
+    wrap.appendChild(row);
+  });
+  setHTML('#filesList',''); el('#filesList').appendChild(wrap);
 }
 
-fetchFeed();
+function thumbnailFor(it){
+  // attempt to show a simple label or external thumbnail if available
+  const ext = extractExternalUrl(it.description);
+  if(ext && isYouTube(ext)){
+    const id = youtubeID(ext);
+    return `<img src="https://img.youtube.com/vi/${id}/hqdefault.jpg" style="width:100%;height:100%;object-fit:cover"/>`;
+  }
+  // else show kind badge
+  return `<div style="text-align:center;color:#bbb;font-size:13px">${safe((it.kind||'content').toUpperCase())}</div>`;
+}
+
+//// Helpers to read r2_url and external_url from description
+function extractR2Url(description){
+  if(!description) return null;
+  const m = description.match(/r2_url:\\s*(https?:\\/\\/\\S+)/i);
+  if(m) return m[1];
+  // tolerate "r2_url:https..."
+  const m2 = description.match(/r2_url:(https?:\\/\\/\\S+)/i);
+  if(m2) return m2[1];
+  return null;
+}
+function extractExternalUrl(description){
+  if(!description) return null;
+  const m = description.match(/external_url:\\s*(https?:\\/\\/\\S+)/i) || description.match(/(https?:\\/\\/\\S+)/i);
+  return m ? m[1] : null;
+}
+
+//// Embed pickers ////
+function pickEmbeds(rows){
+  // find first youtube, instagram, spotify, tiktok urls in contents
+  const all = (rows || []).map(r => ({...r, ext: extractExternalUrl(r.description)})).filter(x=>x.ext);
+  const yt = all.find(x=>isYouTube(x.ext));
+  const ig = all.find(x=>isInstagram(x.ext));
+  const sp = all.find(x=>isSpotify(x.ext));
+  const tt = all.find(x=>isTikTok(x.ext));
+  setHTML('#ytEmbed', yt ? youtubeEmbedHtml(youtubeID(yt.ext)) : '<div class="muted">No YouTube found</div>');
+  setHTML('#igEmbed', ig ? instagramEmbedHtml(ig.ext) : '<div class="muted">No Instagram found</div>');
+  setHTML('#spotEmbed', sp ? spotifyEmbedHtml(sp.ext) : '<div class="muted">No Spotify found</div>');
+  setHTML('#ttEmbed', tt ? tiktokEmbedHtml(tt.ext) : '<div class="muted">No TikTok found</div>');
+}
+
+function isYouTube(url){ return /youtube.com|youtu.be/.test(url); }
+function isInstagram(url){ return /instagram.com/.test(url); }
+function isSpotify(url){ return /open\.spotify\.com|spotify:/.test(url); }
+function isTikTok(url){ return /tiktok.com/.test(url); }
+
+function youtubeID(url){
+  // supports youtu.be and youtube.com/watch?v=
+  try {
+    const u = new URL(url);
+    if(u.hostname.includes('youtu.be')) return u.pathname.slice(1);
+    if(u.searchParams.get('v')) return u.searchParams.get('v');
+    // maybe /embed/ID
+    const m = u.pathname.match(/embed\\/([^\\/]+)/);
+    return m ? m[1] : null;
+  } catch(e){ return null; }
+}
+function youtubeEmbedHtml(id){
+  if(!id) return '<div class="muted">Invalid YouTube</div>';
+  return `<iframe src="https://www.youtube.com/embed/${id}" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`;
+}
+function instagramEmbedHtml(url){
+  // Instagram embedding via iframe usually blocked; fallback to link preview
+  return `<iframe src="https://r.jina.ai/http://${encodeURIComponent('textise dot iitty? placeholder')}" style="height:220px"></iframe>
+    <!-- Instagram embed requires their script and may not allow cross-origin iframe; use server-side oEmbed for best results or show a link. -->`;
+}
+function spotifyEmbedHtml(url){
+  // convert open.spotify to embed if possible
+  try {
+    const u = new URL(url);
+    // path like /track/{id} or /playlist/{id}
+    const parts = u.pathname.split('/').filter(Boolean);
+    if(parts.length >= 2){
+      const kind = parts[0], id = parts[1];
+      return `<iframe src="https://open.spotify.com/embed/${kind}/${id}" frameborder="0" allow="encrypted-media"></iframe>`;
+    }
+  } catch(e){}
+  return `<div class="muted">Invalid Spotify URL</div>`;
+}
+function tiktokEmbedHtml(url){
+  // TikTok embed often requires their script; fallback to link
+  return `<iframe src="https://www.tiktok.com/embed/${escapeHtmlForIframe(url)}" frameborder="0" allowfullscreen></iframe>`;
+}
+function escapeHtmlForIframe(v){ return encodeURIComponent(v); }
+
+function openContent(it){
+  // open a simple viewer overlay or new page; for now open watch.html?id=ID if present
+  if(it.id) location.href = 'watch.html?id=' + encodeURIComponent(it.id);
+  else alert('No ID');
+}
+
+function setHTMLRaw(sel, html){ el(sel).innerHTML = html; }
+
+//// Startup ////
+loadEverything();
+
+//// Security / CORS notes (display in console so you don't miss it) ////
+console.log('CONFIG: Supabase URL', SUPABASE.url);
+console.warn('Security: Supabase anon key and R2 secret key are embedded in this page. This is insecure. Use server-signed URLs and server-side secrets for production.');
+console.info('If R2 media fails with CORS errors, set bucket CORS to allow your domain and methods GET, PUT, OPTIONS, and allow headers: Content-Type, x-amz-*');
+
 </script>
 </body>
 </html>
