@@ -1,30 +1,40 @@
 <!doctype html>
 <html lang="en">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Lux Scepter — Realm (Index) — Fixed</title>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Lux Scepter — Realm</title>
 <style>
   :root{
-    --bg:#05060b; --gold:#D4AF37; --royal-blue:#0B3D91; --burgundy:#800020; --text:#eaeaea;
+    --bg:#05060b;
+    --gold:#D4AF37;
+    --royal-blue:#0B3D91;
+    --burgundy:#800020;
+    --text:#eaeaea;
+    --card:#0b0b0f;
   }
   html,body{height:100%;margin:0;background:linear-gradient(180deg,var(--bg),#02030a);color:var(--text);font-family:"Chomsky","Times New Roman",serif}
   .wrap{max-width:1200px;margin:28px auto;padding:22px}
   header{display:flex;align-items:center;gap:18px;margin-bottom:18px}
   h1{margin:0;color:var(--gold);font-size:28px}
   nav{margin-left:auto}
-  .card{background:#0b0b0f;padding:12px;border-radius:10px;border:1px solid rgba(255,255,255,0.03)}
+  .card{background:var(--card);padding:12px;border-radius:10px;border:1px solid rgba(255,255,255,0.03)}
   .btn{background:transparent;border:1px solid rgba(212,175,55,0.12);color:var(--gold);padding:8px 12px;border-radius:8px;cursor:pointer}
   .btn.alt{border-color:rgba(11,61,145,0.12);color:var(--royal-blue)}
   .btn.warn{border-color:rgba(128,0,32,0.12);color:var(--burgundy)}
   .grid{display:grid;grid-template-columns:1fr 360px;gap:18px}
   input,textarea,select{width:100%;padding:8px;border-radius:6px;border:1px solid rgba(255,255,255,0.03);background:transparent;color:var(--text)}
-  .thumb{width:140px;height:80px;background:#070708;border-radius:6px;display:flex;align-items:center;justify-content:center;color:#aaa}
   .muted{color:#9a9a9a;font-size:13px}
-  .small{font-size:13px;color:#cfcfcf}
   .feed-item{display:flex;gap:12px;padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.02);margin-bottom:10px}
+  .thumb{width:140px;height:80px;background:#070708;border-radius:6px;display:flex;align-items:center;justify-content:center;color:#aaa}
   .uploadBox{border:1px dashed rgba(255,255,255,0.03);padding:10px;border-radius:8px}
   footer{margin-top:18px;color:#999;text-align:center;font-size:12px}
+
+  /* Auth status banner styles */
+  .authStatus{margin-top:8px;padding:8px;border-radius:8px;font-size:13px}
+  .authStatus.info{background:linear-gradient(90deg, rgba(212,175,55,0.06), rgba(11,61,145,0.03));border:1px solid rgba(212,175,55,0.06);color:var(--gold)}
+  .authStatus.success{background:rgba(11,61,145,0.04);border:1px solid rgba(11,61,145,0.06);color:var(--royal-blue)}
+  .authStatus.error{background:rgba(128,0,32,0.04);border:1px solid rgba(128,0,32,0.06);color:var(--burgundy)}
   @media(max-width:980px){ .grid{grid-template-columns:1fr} }
 </style>
 </head>
@@ -33,26 +43,27 @@
     <header>
       <div>
         <h1>Lux Scepter — Realm</h1>
-        <div class="muted">Invite-only creators. Upload demos.</div>
+        <div class="muted">Invite-only creators. Rule the feed. Own the crown.</div>
       </div>
       <nav>
-        <div id="authCard" class="card">
+        <div id="authCard" class="card" style="min-width:420px">
           <div id="signedOutControls">
             <div style="display:flex;gap:8px;">
-              <input id="email" type="email" placeholder="email" style="width:200px" />
-              <input id="password" type="password" placeholder="password" style="width:160px" />
+              <input id="email" type="email" placeholder="email" style="width:200px"/>
+              <input id="password" type="password" placeholder="password" style="width:160px"/>
             </div>
             <div style="display:flex;gap:8px;margin-top:8px;">
               <input id="inviteCode" placeholder="invite code (optional)" style="width:160px"/>
               <button id="btnSignUp" class="btn">Sign up</button>
               <button id="btnSignIn" class="btn alt">Sign in</button>
             </div>
-            <div class="muted" style="margin-top:8px;font-size:12px">Use an invite code at sign-up to become a creator.</div>
+            <div id="authStatus" class="authStatus info" style="display:none">Status</div>
+            <div class="muted" style="margin-top:8px;font-size:12px">Sign up with an invite code to become a creator (upload permission).</div>
           </div>
 
           <div id="signedInControls" style="display:none">
             <div style="display:flex;align-items:center;gap:8px;">
-              <div class="small">Signed as <strong id="displayUsername">…</strong></div>
+              <div class="muted">Signed as <strong id="displayUsername">…</strong></div>
               <button id="btnUploadToggle" class="btn">Upload</button>
               <button id="btnSignOut" class="btn warn">Sign out</button>
             </div>
@@ -135,7 +146,7 @@
   </div>
 
 <script>
-/* ---------- CONFIG (embedded keys, per your request) ---------- */
+/* ---------------- CONFIG (embedded keys) ---------------- */
 const SUPABASE = {
   url: 'https://uewvmldolwgihfkxwlsl.supabase.co',
   anonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVld3ZtbGRvbHdnaWhma3h3bHNsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjM5MzQ1MjksImV4cCI6MjA3OTUxMDUyOX0.b9C00OjIkAUDPztC8RtdHcwjdgX4OrShNW_pp6r-_qI'
@@ -149,21 +160,30 @@ const R2 = {
   secretKey: '1a501b5c35f214508f03666242c8bf831373df226931670e7705e11966435dce'
 };
 
-/* ---------- Invite codes (normalized) ---------- */
+/* ---------------- Invite codes (normalized) ---------------- */
 const INVITE_CODES_RAW = ["NO81R","6AB1XF","8HK6B7","XCGM4K","P5PZQD","OQF3D4","J4537G","1XVGPK","29XJ84","71WW H","XJH6SO","93ZDYK","QGKT1D","DNV5XF","SB5Q07","4WEMY7","D6D30X","WYTJVN","SCY9KK","MXHJV2","SD32YC","TEKQOT","ALR9HA","8VSSRR","A1M8K6","W5SW9H","J3SMMY","9082GG","YNSYTW","G3MF6","9CGYH6","10K3YQ","MQC9FF","S2GHSY","DX3XT3","KXJ2B0","TD1DRJ","YG9Y3N","R1T8J7","KPHOBN","KVKBW5","45HKQK","6BA667","DAG645","BB6C17","FCE8X9","5XYVQg","H37E3N","DABHDS","HSDH5D","R17ZY6","2VXWKM","AXV91X","6NVCQ6","G8TQR1","D83MP1","5PYMOD","PR9YGA","T19BM2","TDH57W","BH48W6","7QBSYN","NAZD3W","8YKA7Z","MT3MMJ","NXVX1Q","TBRFTZ","0B8Z7G","F9K2DM","HVPZNF","PHQZ7Q","CPDQ17","NN75QV","80085331","MYHJE2","Z9HEBY","ZKLMN4","JPRQS7","TXHWD3","MNBVC8","QLRTS5","RZXCV1","HJGKL9","PWTYR2","VBCSD6","LXMPQO","KZHTY4","NE726V","7ZDCNP","B8D3TB","2J3MWH","CKRYDK","PHMM2K","C5R1Q3","DNA2BW","A85AN6","QDS6TD","FRVXHG","3ZVWDV","RK49W4","7KGZCK","RTR9MW","S717A4","RA1YOY","6PF355","SPWYYR","4AZPVT","EFX17C","WF2Q16","óFJKBM","DFEKG7","RVRKJS","H4WKA0","C8PDC8","9WSQSA","P8Y8JD","QGCSTD","2750B5","8HKZGG","MVM9FN","YQ6BVE","ERMYW7","2KXF80","2RJASG","8A6G7B","JQ5Q8R","2RAAYG","814KA5","91817K","GQ3JB3","087EA3","VK8F74","RHHRMY","C5XK4G","73RJ17","8XYNDN","BDHFSV","H43H3V","NGBFNF","TTEGG6","3EXK80","FGV2EQ","XEGJ6B","AVS3JC","BVJBX3","89VXBN","IDDQD","M02EGT","SK9H6P","PGZHV","C2Y15E","JGH5NC","TPV8C5","6Z6YG","ASAJW4","62K5MR","6S9T2B","7519GB","VKAGK6","H92713","Z3J7YW","TRJ49W","Q63FBK","KL138J","G81PQF","9T2Y3N","7M4P8T","3K9X2J","1 R6W5F","33M2FH","1 5YFX6","VNXQN"];
 const INVITE_CODES = INVITE_CODES_RAW.map(c => String(c||'').toUpperCase().replace(/\s+/g,''));
 
-/* ---------- Small DOM helpers ---------- */
+/* ---------------- DOM helpers ---------------- */
 function id(n){ return document.getElementById(n); }
-function safe(s){ if(!s) return ''; return String(s).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+function showAuthMessage(text, type){
+  const el = id('authStatus');
+  el.innerText = text;
+  el.className = 'authStatus ' + (type === 'error' ? 'error' : type === 'success' ? 'success' : 'info');
+  el.style.display = '';
+}
+/* hide after a while optionally */
+function hideAuthMessage(afterMs=5000){
+  setTimeout(()=>{ id('authStatus').style.display='none'; }, afterMs);
+}
 
-/* ---------- State ---------- */
-let session = null; // { access_token, user }
+/* ---------------- State ---------------- */
+let session = null;
 let profile = null;
 
-/* ---------- Auth functions ---------- */
+/* ---------------- Auth flows (fixed sign-in body handling) ---------------- */
 async function signUp(email, password, inviteRaw){
-  const code = String(inviteRaw||'').toUpperCase().replace(/\s+/g,'');
+  const normalizedInvite = String(inviteRaw||'').toUpperCase().replace(/\s+/g,'');
   try {
     const res = await fetch(`${SUPABASE.url}/auth/v1/signup`, {
       method:'POST',
@@ -171,54 +191,78 @@ async function signUp(email, password, inviteRaw){
       body: JSON.stringify({ email, password })
     });
     const j = await res.json();
-    if(!res.ok) throw new Error(JSON.stringify(j));
-    // If session returned
+    if(!res.ok){
+      console.error('signup err', j);
+      showAuthMessage('Sign up failed: ' + (j?.message || JSON.stringify(j)), 'error');
+      return;
+    }
+    // If session returned immediately (some projects auto-confirm), use it.
     if(j && j.access_token && j.user){
       session = { access_token: j.access_token, user: j.user };
       localStorage.setItem('sup_session', JSON.stringify(session));
-      await postSignIn(code);
+      await postSignIn(normalizedInvite);
+      showAuthMessage('Sign-up successful. Confirm email; then sign in.', 'success');
     } else {
-      alert('Sign-up ok. Confirm email if required; then sign in. If your provider auto-confirms you will be able to sign in immediately.');
+      // Most teams will reach here: sign-up succeeded but email confirmation required.
+      showAuthMessage('Sign-up successful. Confirm email; then sign in.', 'success');
     }
+    hideAuthMessage(7000);
   } catch(err){
-    console.error('signUp error', err);
-    alert('Sign up failed: ' + (err.message||err));
+    console.error('signup exception', err);
+    showAuthMessage('Sign up error: ' + (err.message || err), 'error');
   }
 }
 
 async function signIn(email, password){
   try {
-    const form = new URLSearchParams();
-    form.set('grant_type','password'); form.set('email',email); form.set('password',password);
+    // Build URLSearchParams but let browser set Content-Type (avoid forcing wrong header)
+    const params = new URLSearchParams();
+    params.set('grant_type','password');
+    params.set('email', email);
+    params.set('password', password);
+
     const res = await fetch(`${SUPABASE.url}/auth/v1/token`, {
-      method:'POST', headers:{ 'Content-Type':'application/x-www-form-urlencoded', 'apikey': SUPABASE.anonKey }, body: form.toString()
+      method: 'POST',
+      headers: { 'apikey': SUPABASE.anonKey },
+      body: params // fetch sets application/x-www-form-urlencoded automatically
     });
-    const j = await res.json();
-    if(!res.ok) throw new Error(JSON.stringify(j));
+
+    // handle network / JSON errors
+    let j;
+    const text = await res.text();
+    try { j = text ? JSON.parse(text) : null; } catch(e){ j = { message: text }; }
+    if(!res.ok){
+      console.error('signin failed', j);
+      showAuthMessage('Sign in failed: ' + (j?.message || JSON.stringify(j)), 'error');
+      return;
+    }
+    // success
     session = { access_token: j.access_token, user: j.user };
     localStorage.setItem('sup_session', JSON.stringify(session));
     await postSignIn();
+    showAuthMessage('Signed in', 'success');
+    hideAuthMessage(3000);
   } catch(err){
-    console.error('signIn error', err);
-    alert('Sign in failed: ' + (err.message||err));
+    console.error('signin exception', err);
+    showAuthMessage('Sign in error: ' + (err.message || err), 'error');
   }
 }
 
 async function postSignIn(inviteNormalized){
-  // set UI
+  // switch UI
   id('signedOutControls').style.display = 'none';
   id('signedInControls').style.display = '';
   id('displayUsername').innerText = session.user.email || '(user)';
-  // ensure profile exists and patch creator flag if invite code valid
+
+  // ensure profile exists and optionally mark creator
   try {
     const headers = { 'apikey': SUPABASE.anonKey, 'Authorization': 'Bearer ' + session.access_token };
     const r = await fetch(`${SUPABASE.url}/rest/v1/profiles?id=eq.${session.user.id}`, { headers });
     if(r.ok){
       const rows = await r.json();
-      if(rows && rows.length > 0){
+      if(rows && rows.length>0){
         profile = rows[0];
         if(profile.username) id('displayUsername').innerText = profile.username;
-        // if inviteNormalized provided and valid and not already a creator -> patch
         if(inviteNormalized && INVITE_CODES.includes(inviteNormalized) && !profile.is_creator){
           await patchProfileCreator(inviteNormalized);
         }
@@ -232,10 +276,8 @@ async function postSignIn(inviteNormalized){
     } else {
       console.warn('profile fetch failed', r.status);
     }
-  } catch(e){
-    console.warn('profile init failed', e);
-  }
-  // show upload if creator
+  } catch(e){ console.warn('profile init failed', e); }
+
   refreshUploadVisibility();
   loadEverything();
 }
@@ -243,41 +285,42 @@ async function postSignIn(inviteNormalized){
 async function patchProfileCreator(code){
   try {
     const headers = { 'Content-Type':'application/json','apikey': SUPABASE.anonKey, 'Authorization': 'Bearer ' + session.access_token, 'Prefer':'return=representation' };
-    const p = await fetch(`${SUPABASE.url}/rest/v1/profiles?id=eq.${session.user.id}`, { method:'PATCH', headers, body: JSON.stringify({ is_creator: true, creator_code_used: code }) });
+    const p = await fetch(`${SUPABASE.url}/rest/v1/profiles?id=eq.${session.user.id}`, { method: 'PATCH', headers, body: JSON.stringify({ is_creator: true, creator_code_used: code }) });
     if(p.ok){ const rows = await p.json(); profile = rows[0] || profile; refreshUploadVisibility(); }
   } catch(e){ console.warn('patchCreator failed', e); }
 }
 
-/* restore session on page load */
+/* restore session */
 (function restore(){
   const s = localStorage.getItem('sup_session');
   if(s){ try{ session = JSON.parse(s); if(session && session.user) postSignIn(); } catch(e){ localStorage.removeItem('sup_session'); } }
 })();
 
-/* ---------- DOM event wiring (fixed) ---------- */
+/* ---------- UI wiring ---------- */
 id('btnSignUp').addEventListener('click', ()=> {
   const email = id('email').value.trim(), pw = id('password').value, code = id('inviteCode').value.trim();
-  if(!email || !pw) return alert('Email + password required');
+  if(!email || !pw) return showAuthMessage('Email and password are required.', 'error');
   signUp(email,pw,code);
 });
 id('btnSignIn').addEventListener('click', ()=> {
   const email = id('email').value.trim(), pw = id('password').value;
-  if(!email || !pw) return alert('Email + password required');
+  if(!email || !pw) return showAuthMessage('Email and password are required.', 'error');
   signIn(email,pw);
 });
 id('btnSignOut').addEventListener('click', ()=> {
   session = null; profile = null; localStorage.removeItem('sup_session');
   id('signedOutControls').style.display = ''; id('signedInControls').style.display = 'none'; id('uploadPanel').style.display = 'none'; id('displayUsername').innerText = '…';
+  showAuthMessage('Signed out', 'info'); hideAuthMessage(2500);
 });
 id('btnUploadToggle').addEventListener('click', ()=> {
-  if(id('uploadPanel').style.display === 'none' || id('uploadPanel').style.display === '') id('uploadPanel').style.display = ''; else id('uploadPanel').style.display = 'none';
+  id('uploadPanel').style.display = (id('uploadPanel').style.display === 'none' || id('uploadPanel').style.display === '') ? '' : 'none';
 });
 id('btnSearch').addEventListener('click', ()=> loadEverything());
 id('filterKind').addEventListener('change', ()=> loadEverything());
 id('orderMode').addEventListener('change', ()=> loadEverything());
 id('btnClearUpload').addEventListener('click', ()=> { id('upTitle').value=''; id('upDesc').value=''; id('upFile').value=''; id('upStatus').innerText='cleared'; });
 
-/* ---------- Content loading ---------- */
+/* ---------- content loading (unchanged) ---------- */
 async function loadEverything(){
   id('feedList').innerHTML = '<div class="muted">Loading feed…</div>';
   id('songsList').innerHTML = '<div class="muted">Loading songs…</div>';
@@ -349,7 +392,7 @@ function renderFiles(items){
   const wrap = document.createElement('div');
   files.forEach(f=>{
     const r2 = extractR2Url(f.description);
-    const row = document.createElement('div'); row.className='fileLink'; row.style.display='flex'; row.style.justifyContent='space-between'; row.style.alignItems='center'; row.style.marginBottom='8px';
+    const row = document.createElement('div'); row.style.display='flex'; row.style.justifyContent='space-between'; row.style.alignItems='center'; row.style.marginBottom='8px';
     row.innerHTML = `<div><strong>${safe(f.title||'(file)')}</strong><div class="muted">${safe((f.description||'').slice(0,120))}</div></div>`;
     const right = document.createElement('div');
     if(r2){ const a = document.createElement('a'); a.href=r2; a.download=''; a.className='btn alt'; a.innerText='Download'; right.appendChild(a); } else { right.appendChild(Object.assign(document.createElement('div'),{className:'muted',innerText:'No file URL'})); }
@@ -370,9 +413,10 @@ function extractExternalUrl(description){
   return m ? m[1] : null;
 }
 function shuffleArray(a){ const arr = a.slice(); for(let i=arr.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[arr[i],arr[j]]=[arr[j],arr[i]];} return arr; }
-function openContent(it){ if(it.id) { window.location.href = 'watch.html?id=' + encodeURIComponent(it.id); } else alert('No ID'); }
+function openContent(it){ if(it.id) window.location.href = 'watch.html?id=' + encodeURIComponent(it.id); else alert('No ID'); }
+function safe(s){ if(!s) return ''; return String(s).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
 
-/* ---------- Upload (client-side) ---------- */
+/* ---------- Upload visibility ---------- */
 function refreshUploadVisibility(){
   if(profile && profile.is_creator){
     id('uploadPanel').style.display = '';
@@ -383,7 +427,7 @@ function refreshUploadVisibility(){
   }
 }
 
-/* SigV4 (compact) */
+/* ---------- SigV4 helpers (same as before) ---------- */
 async function sha256Hex(data){
   const buff = (data instanceof ArrayBuffer) ? data : new TextEncoder().encode(data);
   const hash = await crypto.subtle.digest('SHA-256', buff);
@@ -439,12 +483,12 @@ async function uploadToR2Signed(baseUrl, objectPath, file, accessKey, secretKey)
   return resp;
 }
 
-/* Upload handler */
+/* ---------- Upload handler ---------- */
 id('btnDoUpload').addEventListener('click', async ()=>{
-  if(!session || !session.user) return alert('Sign in first');
-  if(!profile || !profile.is_creator) return alert('Only creators can upload');
+  if(!session || !session.user) return showAuthMessage('Sign in first', 'error');
+  if(!profile || !profile.is_creator) return showAuthMessage('Only creators can upload (use an invite code at sign-up).', 'error');
   const file = id('upFile').files[0];
-  if(!file) return alert('Choose a file');
+  if(!file) return showAuthMessage('Choose a file to upload.', 'error');
   id('upStatus').innerText = 'Preparing...';
   const kind = id('upKind').value;
   const title = id('upTitle').value.trim() || '(untitled)';
@@ -457,9 +501,9 @@ id('btnDoUpload').addEventListener('click', async ()=>{
   id('upStatus').innerText = 'Uploading to R2...';
   try {
     const resp = await uploadToR2Signed(R2.base, objectPath, file, R2.accessKey, R2.secretKey);
-    if(!(resp && resp.status >=200 && resp.status <300)) throw new Error('Upload failed or CORS blocked. Resp: ' + (resp ? resp.status : 'no response'));
+    if(!(resp && resp.status >=200 && resp.status <300)) throw new Error('Upload failed or CORS blocked. Resp: ' + (resp ? resp.status : 'no-response'));
     id('upStatus').innerText = 'Upload OK. Saving metadata...';
-    const payload = { author: session.user.id, kind, title, description: desc + '\n\nr2_url:' + objectUrl, duration_seconds: 0, is_draft: false, published_at: new Date().toISOString(), created_at: new Date().toISOString() };
+    const payload = { author: session.user.id, kind, title, description: desc + '\\n\\nr2_url:' + objectUrl, duration_seconds: 0, is_draft: false, published_at: new Date().toISOString(), created_at: new Date().toISOString() };
     const hdrs = {'Content-Type':'application/json','apikey': SUPABASE.anonKey, 'Authorization': 'Bearer ' + session.access_token, 'Prefer':'return=representation'};
     const ins = await fetch(`${SUPABASE.url}/rest/v1/contents`, { method:'POST', headers: hdrs, body: JSON.stringify(payload) });
     if(!ins.ok){ const t = await ins.text(); throw new Error('Supabase insert failed: ' + ins.status + ' ' + t); }
@@ -467,27 +511,22 @@ id('btnDoUpload').addEventListener('click', async ()=>{
     id('upStatus').innerText = 'Saved content. Refreshing feed...';
     id('upTitle').value=''; id('upDesc').value=''; id('upFile').value='';
     loadEverything();
+    showAuthMessage('Upload successful', 'success'); hideAuthMessage(3000);
   } catch(e){
     console.error('upload error', e);
     id('upStatus').innerText = 'Upload error: ' + (e.message || e);
-    alert('Upload failed: ' + (e.message || e));
+    showAuthMessage('Upload failed: ' + (e.message||e), 'error');
   }
 });
 
-/* ---------- utilities ---------- */
-function idExists(n){ return !!document.getElementById(n); }
-
-/* ---------- initial load ---------- */
+/* ---------- initial actions ---------- */
 loadEverything();
 refreshUploadVisibility();
 
 /* ---------- console hints ---------- */
 console.warn('This page contains embedded Supabase anon and R2 keys. Insecure for production.');
-console.info('If sign-in fails with "Invalid API key", replace the anonKey with your project anon key from Supabase dashboard.');
-console.info('If R2 upload fails with CORS, configure bucket CORS to allow your origin and methods GET, PUT, OPTIONS, HEAD');
+console.info('If sign-in still fails, open DevTools Network and paste the request/response for POST /auth/v1/token into chat.');
 
-/* ---------- helper function aliases used earlier ---------- */
-function id(n){ return document.getElementById(n); }
 </script>
 </body>
 </html>
