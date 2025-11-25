@@ -3,48 +3,46 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Lux Scepter — Realm</title>
+<title>Lux Scepter — Realm (Index)</title>
 <style>
   /* Theme: royal gold, royal blue, royal burgundy */
   :root{
-    --bg:#04050a;
+    --bg:#05060b;
     --gold:#D4AF37;
     --royal-blue:#0B3D91;
     --burgundy:#800020;
-    --muted:#111217;
-    --surface:#0b0b0f;
+    --muted:#0c0c10;
+    --card:#0b0b0f;
     --text:#eaeaea;
   }
   html,body{height:100%;margin:0;background:linear-gradient(180deg,var(--bg),#02030a);color:var(--text);font-family:"Chomsky","Times New Roman",serif}
-  .wrap{max-width:1200px;margin:28px auto;padding:20px}
+  .wrap{max-width:1200px;margin:28px auto;padding:22px}
   header{display:flex;align-items:center;gap:18px;margin-bottom:18px}
   .brand{display:flex;flex-direction:column}
-  h1{margin:0;color:var(--gold);letter-spacing:0.04em;font-size:28px}
+  h1{margin:0;color:var(--gold);letter-spacing:0.04em;font-size:30px}
   .tag{font-size:12px;color:#ddd}
   nav{margin-left:auto;display:flex;gap:10px;align-items:center}
-  .btn{background:transparent;border:1px solid rgba(212,175,55,0.16);color:var(--gold);padding:8px 12px;border-radius:8px;cursor:pointer}
-  .outline{border-color:rgba(11,61,145,0.15);color:var(--royal-blue)}
-  .danger{border-color:rgba(128,0,32,0.12);color:var(--burgundy)}
+  .btn{background:transparent;border:1px solid rgba(212,175,55,0.12);color:var(--gold);padding:8px 12px;border-radius:8px;cursor:pointer}
+  .btn.alt{border-color:rgba(11,61,145,0.12);color:var(--royal-blue)}
+  .btn.warn{border-color:rgba(128,0,32,0.12);color:var(--burgundy)}
   .grid{display:grid;grid-template-columns:1fr 360px;gap:18px}
   .card{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));padding:14px;border-radius:10px;border:1px solid rgba(255,255,255,0.03)}
   .sectionTitle{color:var(--gold);font-size:14px;margin-bottom:10px}
-  .feedItem{display:flex;gap:12px;padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.02);margin-bottom:10px}
+  .feedItem{display:flex;gap:12px;padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.02);margin-bottom:10px;background:linear-gradient(0deg,rgba(255,255,255,0.008),transparent)}
   .thumb{width:150px;height:90px;background:#06060a;border-radius:6px;overflow:hidden;display:flex;align-items:center;justify-content:center}
   .meta{flex:1}
   .small{font-size:13px;color:#cfcfcf}
   .muted{color:#9a9a9a}
-  .compact{font-size:12px;color:#bbb}
-  .colActions{display:flex;flex-direction:column;gap:8px;align-items:flex-end}
   input[type="text"],input[type="email"],input[type="password"],select,textarea{width:100%;padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.03);background:transparent;color:var(--text)}
-  textarea{min-height:76px;resize:vertical}
-  .auth{display:flex;gap:10px;align-items:center}
-  .row{display:flex;gap:10px}
+  textarea{min-height:70px;resize:vertical}
+  .authInline{display:flex;gap:8px;align-items:center}
+  .uploadBox{border:1px dashed rgba(255,255,255,0.03);padding:12px;border-radius:8px;margin-top:10px}
   .smallNote{font-size:12px;color:#bbb;margin-top:8px}
-  .embedWrap iframe{width:100%;height:220px;border-radius:8px;border:0;background:#000}
-  .audioRow{display:flex;gap:10px;align-items:center}
+  .embedWrap iframe{width:100%;height:220px;border-radius:6px;border:0;background:#000}
+  .audioRow{display:flex;gap:10px;align-items:center;margin-bottom:8px}
   .fileLink{display:flex;justify-content:space-between;align-items:center;padding:8px;border-radius:6px;border:1px solid rgba(255,255,255,0.02);margin-bottom:8px}
-  .search{display:flex;gap:8px;margin-bottom:12px}
-  .pill{padding:6px 10px;border-radius:999px;background:rgba(255,255,255,0.02);font-size:13px;border:1px solid rgba(255,255,255,0.02)}
+  .pill{padding:6px 10px;border-radius:999px;background:rgba(255,255,255,0.02);font-size:13px;border:1px solid rgba(255,255,255,0.03)}
+  .toggle{display:inline-block;padding:6px 8px;border-radius:6px;border:1px solid rgba(255,255,255,0.03);cursor:pointer}
   footer{margin-top:18px;color:#999;font-size:12px;text-align:center}
   @media (max-width:980px){ .grid{grid-template-columns:1fr} .thumb{width:120px;height:72px} .embedWrap iframe{height:180px} }
 </style>
@@ -54,23 +52,28 @@
     <header>
       <div class="brand">
         <h1>Lux Scepter — Realm</h1>
-        <div class="tag">Rule the feed. Own the crown.</div>
+        <div class="tag">Invite-only creators. Rule the feed. Own the crown.</div>
       </div>
 
       <nav>
-        <div id="userArea" class="auth card" style="padding:10px">
-          <!-- dynamic auth UI here -->
-          <div id="signedOutControls">
-            <input id="email" type="email" placeholder="email" style="width:170px"/>
-            <input id="password" type="password" placeholder="password" style="width:170px"/>
-            <button class="btn" id="btnSignIn">Sign in</button>
-            <button class="btn outline" id="btnSignUp">Sign up</button>
+        <div id="userArea" class="card" style="padding:10px;display:flex;align-items:center;gap:8px">
+          <div id="signedOutControls" style="display:flex;flex-direction:column;gap:8px">
+            <div class="authInline">
+              <input id="email" type="email" placeholder="email" style="width:190px"/>
+              <input id="password" type="password" placeholder="password" style="width:170px"/>
+            </div>
+            <div class="authInline">
+              <input id="inviteCode" type="text" placeholder="invite code (optional for creator)" style="width:200px"/>
+              <button class="btn" id="btnSignUp">Sign up</button>
+              <button class="btn alt" id="btnSignIn">Sign in</button>
+            </div>
+            <div class="small muted">Sign up with invite code to become a creator (upload permission).</div>
           </div>
 
           <div id="signedInControls" style="display:none;align-items:center;gap:8px">
-            <div class="small">Signed in as <strong id="displayUsername">…</strong></div>
-            <button class="btn" id="btnUpload" title="Upload (opens uploader)">Upload</button>
-            <button class="btn danger" id="btnSignOut">Sign out</button>
+            <div class="small">Signed as <strong id="displayUsername">…</strong></div>
+            <button class="btn" id="btnUploadToggle">Upload</button>
+            <button class="btn warn" id="btnSignOut">Sign out</button>
           </div>
         </div>
       </nav>
@@ -78,11 +81,14 @@
 
     <div class="grid">
       <main>
-        <!-- Search + filters -->
-        <div class="card" style="margin-bottom:12px">
-          <div class="search">
-            <input id="q" type="text" placeholder="Search title, description, username..." />
-            <select id="filterKind">
+        <div class="card" style="margin-bottom:12px;display:flex;justify-content:space-between;align-items:center">
+          <div>
+            <div style="font-weight:700">Search / Controls</div>
+            <div class="small muted">Filter the realm feed.</div>
+          </div>
+          <div style="display:flex;gap:8px;align-items:center">
+            <input id="q" type="text" placeholder="search titles or descriptions" style="width:340px"/>
+            <select id="filterKind" style="width:170px">
               <option value="">All kinds</option>
               <option value="edict">Edict (vertical)</option>
               <option value="dominion">Dominion (horizontal)</option>
@@ -90,12 +96,12 @@
               <option value="song">Song</option>
               <option value="file">File</option>
             </select>
+            <div class="toggle" id="sortToggle">Sort: <span id="sortMode">chrono</span></div>
             <button class="btn" id="btnSearch">Search</button>
           </div>
-          <div class="smallNote">Filters: show vertical / horizontal posts, audio songs, or downloadable files. Embeds for YouTube, Instagram, Spotify, TikTok will render if the content row includes an external URL.</div>
         </div>
 
-        <!-- FEED -->
+        <!-- Feed -->
         <section class="card" id="feedCard">
           <div class="sectionTitle">Realm — Feed</div>
           <div id="feedList"><div class="muted">Loading feed…</div></div>
@@ -115,56 +121,49 @@
       </main>
 
       <aside>
-        <!-- External embeds column -->
-        <div class="card" id="embedsCard">
-          <div class="sectionTitle">Featured Embeds</div>
-          <div style="display:flex;flex-direction:column;gap:12px">
-            <div>
-              <div class="compact">YouTube</div>
-              <div id="ytEmbed" class="embedWrap"><div class="muted">Loading...</div></div>
+        <!-- Creator upload panel (hidden unless signed-in and creator) -->
+        <div id="uploadPanel" class="card" style="display:none">
+          <div class="sectionTitle">Upload (creators only)</div>
+          <div id="creatorBadge" class="small muted">Creator tools</div>
+          <div class="uploadBox">
+            <label>Kind</label>
+            <select id="upKind"><option value="edict">Edict (vertical)</option><option value="dominion">Dominion (horizontal)</option><option value="throne">Throne (long)</option><option value="song">Song (audio)</option><option value="file">File (download)</option></select>
+            <label>Title</label><input id="upTitle" type="text" placeholder="Title"/>
+            <label>Description (you can add 'r2_url:' or external_url, but uploader will save r2_url automatically)</label>
+            <textarea id="upDesc" placeholder="Description"></textarea>
+            <label>Choose file</label>
+            <input id="upFile" type="file" accept="video/*,audio/*,application/*" />
+            <div style="display:flex;gap:8px;margin-top:10px">
+              <button class="btn" id="btnDoUpload">Upload & Create</button>
+              <button class="btn alt" id="btnClearUpload">Clear</button>
             </div>
-            <div>
-              <div class="compact">Instagram</div>
-              <div id="igEmbed" class="embedWrap"><div class="muted">Loading...</div></div>
-            </div>
-            <div>
-              <div class="compact">Spotify</div>
-              <div id="spotEmbed" class="embedWrap"><div class="muted">Loading...</div></div>
-            </div>
-            <div>
-              <div class="compact">TikTok</div>
-              <div id="ttEmbed" class="embedWrap"><div class="muted">Loading...</div></div>
-            </div>
+            <div id="upStatus" class="smallNote muted" style="margin-top:10px">Status idle.</div>
           </div>
+          <div class="smallNote" style="margin-top:10px">Uploads use client-side signing to R2. Ensure bucket CORS allows your origin. You embedded keys — insecure for production.</div>
         </div>
 
-        <div class="card" style="margin-top:12px">
-          <div class="sectionTitle">Quick Controls</div>
-          <div style="display:flex;flex-direction:column;gap:8px">
-            <button class="btn" id="btnRefresh">Refresh feed</button>
-            <button class="btn outline" id="btnMyContents">My uploads</button>
-            <div class="smallNote">Upload requires auth. Upload page is separate (upload.html) — later we will integrate inline uploads and presigned URLs.</div>
-          </div>
+        <div class="card" style="margin-top:14px">
+          <div class="sectionTitle">Founding Bloodline</div>
+          <div class="small muted">Invite-only creators (250). Use one code at sign-up to become a creator.</div>
+          <div style="margin-top:8px"><span class="pill">♔ Unlimited Crown</span> <span class="pill">⚶ 10 Scepters/day (by tier)</span></div>
         </div>
       </aside>
     </div>
 
-    <footer class="muted">Lux Scepter — internal demo. Built for Founding Bloodline testing.</footer>
+    <footer class="muted">Lux Scepter — Founding Bloodline demo. Cloudflare R2 + Supabase demoized.</footer>
   </div>
 
 <script>
 /*
-  INDEX.HTML
-  - Single-file app: sign in / sign up + feed + songs + files + embeds
-  - Uses Supabase REST endpoints and the anon key embedded below (per your request).
-  - Uses Cloudflare R2 base URL and credentials variables (embedded) for direct links.
-  - Assumptions:
-    - Table `contents` exists with fields: id, author (uuid), kind, title, description, duration_seconds, published_at, created_at
-    - Table `profiles` exists with fields: id (uuid), username, avatar
-    - The upload process used earlier stores public R2 URL in the description as: "r2_url:https://.../object.mp4" or "external_url:https://youtube.com/..."
+  index.html — single-file app
+  - Sign up / sign in with invite codes for creator status
+  - Inline upload for creators: SigV4 client-side to Cloudflare R2 (embedded keys)
+  - Insert rows into Supabase contents table via REST
+  - Uses Supabase anon key (embedded) — you asked for it
+  - IMPORTANT: CORS on R2 must be configured for your domain (GET, PUT, OPTIONS, HEAD; headers Content-Type and x-amz-*)
 */
 
-//// CONFIG (you asked to embed these — this is visible to anyone who opens the HTML) ////
+/* ----------------  CONFIG (embedded as requested) ---------------- */
 const SUPABASE = {
   url: 'https://uewvmldolwgihfkxwlsl.supabase.co',
   anonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVld3ZtbGRvbHdnaWhma3h3bHNsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjM5MzQ1MjksImV4cCI6MjA3OTUxMDUyOX0.b9C00OjIkAUDPztC8RtdHcwjdgX4OrShNW_pp6r-_qI'
@@ -178,311 +177,413 @@ const R2 = {
   secretKey: '1a501b5c35f214508f03666242c8bf831373df226931670e7705e11966435dce'
 };
 
-//// Utilities ////
-function el(q){ return document.querySelector(q); }
-function elAll(q){ return Array.from(document.querySelectorAll(q)); }
-function show(id){ el(id).style.display=''; }
-function hide(id){ el(id).style.display='none'; }
-function setHTML(id, html){ el(id).innerHTML = html; }
+/* ---------------- Invite codes list (user supplied). We'll normalize (uppercase, remove spaces) for matching */
+const INVITE_CODES_RAW = [
+"NO81R","6AB1XF","8HK6B7","XCGM4K","P5PZQD","OQF3D4","J4537G","1XVGPK","29XJ84","71WW H","XJH6SO","93ZDYK","QGKT1D","DNV5XF","SB5Q07","4WEMY7","D6D30X","WYTJVN","SCY9KK","MXHJV2","SD32YC","TEKQOT","ALR9HA","8VSSRR","A1M8K6","W5SW9H","J3SMMY","9082GG","YNSYTW","G3MF6","9CGYH6","10K3YQ","MQC9FF","S2GHSY","DX3XT3","KXJ2B0","TD1DRJ","YG9Y3N","R1T8J7","KPHOBN","KVKBW5","45HKQK","6BA667","DAG645","BB6C17","FCE8X9","5XYVQg","H37E3N","DABHDS","HSDH5D","R17ZY6","2VXWKM","AXV91X","6NVCQ6","G8TQR1","D83MP1","5PYMOD","PR9YGA","T19BM2","TDH57W","BH48W6","7QBSYN","NAZD3W","8YKA7Z","MT3MMJ","NXVX1Q","TBRFTZ","0B8Z7G","F9K2DM","HVPZNF","PHQZ7Q","CPDQ17","NN75QV","80085331","MYHJE2","Z9HEBY","ZKLMN4","JPRQS7","TXHWD3","MNBVC8","QLRTS5","RZXCV1","HJGKL9","PWTYR2","VBCSD6","LXMPQO","KZHTY4","NE726V","7ZDCNP","B8D3TB","2J3MWH","CKRYDK","PHMM2K","C5R1Q3","DNA2BW","A85AN6","QDS6TD","FRVXHG","3ZVWDV","RK49W4","7KGZCK","RTR9MW","S717A4","RA1YOY","6PF355","SPWYYR","4AZPVT","EFX17C","WF2Q16","óFJKBM","DFEKG7","RVRKJS","H4WKA0","C8PDC8","9WSQSA","P8Y8JD","QGCSTD","2750B5","8HKZGG","MVM9FN","YQ6BVE","ERMYW7","2KXF80","2RJASG","8A6G7B","JQ5Q8R","2RAAYG","814KA5","91817K","GQ3JB3","087EA3","VK8F74","RHHRMY","C5XK4G","73RJ17","8XYNDN","BDHFSV","H43H3V","NGBFNF","TTEGG6","3EXK80","FGV2EQ","XEGJ6B","AVS3JC","BVJBX3","89VXBN","IDDQD","M02EGT","SK9H6P","PGZHV","C2Y15E","JGH5NC","TPV8C5","6Z6YG","ASAJW4","62K5MR","6S9T2B","7519GB","VKAGK6","H92713","Z3J7YW","TRJ49W","Q63FBK","KL138J","G81PQF","9T2Y3N","7M4P8T","3K9X2J","1 R6W5F","33M2FH","1 5YFX6","VNXQN"
+];
+const INVITE_CODES = INVITE_CODES_RAW.map(c => String(c||'').toUpperCase().replace(/\s+/g,''));
+
+/* ---------------- Utilities ---------------- */
+const $ = sel => document.querySelector(sel);
 function safe(s){ if(!s) return ''; return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+function nowIso(){ return new Date().toISOString(); }
 
-//// Auth: sign up / sign in / sign out ////
-let session = null; // {access_token, user}
-let profile = null; // profile row (if exists)
+/* ---------------- State ---------------- */
+let session = null; // { access_token, user }
+let profile = null;
 
-async function signUp(email, password){
-  const resp = await fetch(`${SUPABASE.url}/auth/v1/signup`, {
-    method:'POST',
-    headers:{ 'Content-Type':'application/json', 'apikey': SUPABASE.anonKey },
-    body: JSON.stringify({ email, password })
-  });
-  const j = await resp.json();
-  if(!resp.ok) throw new Error(JSON.stringify(j));
-  // Sometimes returns user/session, sometimes not.
-  if(j && j.user && j.access_token){ session = { access_token: j.access_token, user: j.user }; localStorage.setItem('sup_session', JSON.stringify(session)); await afterSignIn(); }
-  else { alert('Sign up OK. Confirm email if required, then sign in.'); }
-}
-
-async function signIn(email, password){
-  // token exchange endpoint
-  const form = new URLSearchParams();
-  form.set('grant_type','password');
-  form.set('email',email);
-  form.set('password',password);
-  const resp = await fetch(`${SUPABASE.url}/auth/v1/token`, {
-    method:'POST',
-    headers:{ 'Content-Type':'application/x-www-form-urlencoded', 'apikey': SUPABASE.anonKey },
-    body: form.toString()
-  });
-  const j = await resp.json();
-  if(!resp.ok) throw new Error(JSON.stringify(j));
-  session = { access_token: j.access_token, user: j.user };
-  localStorage.setItem('sup_session', JSON.stringify(session));
-  await afterSignIn();
-}
-
-async function signOut(){
-  session = null; profile = null;
-  localStorage.removeItem('sup_session');
-  el('#signedInControls').style.display='none';
-  el('#signedOutControls').style.display='';
-  el('#displayUsername').innerText = '…';
-  setHTML('#status','Signed out');
-}
-
-async function afterSignIn(){
-  // show signed-in UI, fetch/create profile
-  el('#signedOutControls').style.display='none';
-  el('#signedInControls').style.display='';
-  el('#displayEmail') && (el('#displayEmail').innerText = session.user.email || '');
-  // fetch profile row
+/* ---------------- Auth flows ---------------- */
+async function signUpFlow(email, password, inviteCodeRaw){
+  // basic sign up
+  const inviteNormalized = String(inviteCodeRaw||'').toUpperCase().replace(/\s+/g,'');
   try {
-    const res = await fetch(`${SUPABASE.url}/rest/v1/profiles?id=eq.${session.user.id}`, {
-      headers: { 'apikey': SUPABASE.anonKey, 'Authorization': 'Bearer ' + session.access_token }
+    const res = await fetch(`${SUPABASE.url}/auth/v1/signup`, {
+      method: 'POST',
+      headers: {'Content-Type':'application/json','apikey':SUPABASE.anonKey},
+      body: JSON.stringify({email, password})
     });
-    const rows = await res.json();
-    if(rows && rows.length>0){ profile = rows[0]; el('#displayUsername').innerText = profile.username || session.user.email; }
-    else {
-      // create profile minimal row with id=user.id
-      const insert = await fetch(`${SUPABASE.url}/rest/v1/profiles`, {
-        method:'POST',
-        headers:{ 'Content-Type':'application/json', 'apikey': SUPABASE.anonKey, 'Authorization': 'Bearer ' + session.access_token },
-        body: JSON.stringify({ id: session.user.id, username: session.user.email.split('@')[0] })
-      });
-      if(insert.ok){ const created = await insert.json(); profile = created[0] || null; el('#displayUsername').innerText = profile ? profile.username : session.user.email; }
-      else { el('#displayUsername').innerText = session.user.email; }
+    const j = await res.json();
+    if(!res.ok) throw new Error(JSON.stringify(j));
+    // If response contains session info, use it. Otherwise prompt user to sign in.
+    if(j && j.access_token && j.user){
+      session = { access_token: j.access_token, user: j.user };
+      localStorage.setItem('sup_session', JSON.stringify(session));
+      await postSignIn(inviteNormalized);
+    } else {
+      // Signup requires email confirmation; ask user to sign in after confirmed.
+      alert('Sign-up successful. Confirm email if required, then sign in.');
     }
-  } catch(e){
-    console.warn('profile load failed',e);
-    el('#displayUsername').innerText = session.user.email;
+  } catch(err){
+    console.error('signup error', err);
+    alert('Sign up failed: ' + (err.message || err));
   }
 }
 
-(function restoreSession(){
+async function signInFlow(email, password){
+  try{
+    const form = new URLSearchParams();
+    form.set('grant_type','password');
+    form.set('email',email);
+    form.set('password',password);
+    const res = await fetch(`${SUPABASE.url}/auth/v1/token`, {
+      method:'POST',
+      headers:{ 'Content-Type':'application/x-www-form-urlencoded','apikey':SUPABASE.anonKey },
+      body: form.toString()
+    });
+    const j = await res.json();
+    if(!res.ok) throw new Error(JSON.stringify(j));
+    session = { access_token: j.access_token, user: j.user };
+    localStorage.setItem('sup_session', JSON.stringify(session));
+    await postSignIn();
+  } catch(e){
+    console.error('signin error', e);
+    alert('Sign in failed: ' + (e.message||e));
+  }
+}
+
+async function postSignIn(inviteNormalized){
+  // show UI and ensure profile row exists. If inviteNormalized provided and matches, set is_creator.
+  $('.signedOutControls').style.display = 'none';
+  $('#signedInControls').style.display = '';
+  $('#displayUsername').innerText = session.user.email || '(user)';
+  // fetch profile
+  try {
+    const headers = {'apikey': SUPABASE.anonKey, 'Authorization': 'Bearer ' + session.access_token};
+    const r = await fetch(`${SUPABASE.url}/rest/v1/profiles?id=eq.${session.user.id}`, { headers });
+    if(r.ok){
+      const rows = await r.json();
+      if(rows && rows.length>0){
+        profile = rows[0];
+        if(profile.username) $('#displayUsername').innerText = profile.username;
+        // if inviteNormalized passed and not already creator, patch profile to become creator
+        if(inviteNormalized && INVITE_CODES.includes(inviteNormalized) && !profile.is_creator){
+          await patchProfileAsCreator(inviteNormalized);
+        }
+      } else {
+        // create a profile row
+        const usernameDefault = session.user.email.split('@')[0];
+        const payload = { id: session.user.id, username: usernameDefault, is_creator: false };
+        // set creator if inviteNormalized matches
+        if(inviteNormalized && INVITE_CODES.includes(inviteNormalized)) { payload.is_creator = true; payload.creator_code_used = inviteNormalized; }
+        const c = await fetch(`${SUPABASE.url}/rest/v1/profiles`, { method:'POST', headers: {...headers, 'Content-Type':'application/json','Prefer':'return=representation'}, body: JSON.stringify(payload) });
+        if(c.ok){ const created = await c.json(); profile = created[0] || null; if(profile && profile.username) $('#displayUsername').innerText = profile.username; }
+      }
+    } else {
+      console.warn('profile fetch failed', r.status);
+    }
+  } catch(e){ console.warn('profile init failed', e); }
+  // show upload panel if creator
+  refreshUploadVisibility();
+  loadEverything();
+}
+
+async function patchProfileAsCreator(code){
+  try {
+    const headers = {'Content-Type':'application/json','apikey': SUPABASE.anonKey, 'Authorization': 'Bearer ' + session.access_token, 'Prefer':'return=representation'};
+    const p = await fetch(`${SUPABASE.url}/rest/v1/profiles?id=eq.${session.user.id}`, { method: 'PATCH', headers, body: JSON.stringify({ is_creator: true, creator_code_used: code }) });
+    if(p.ok){ const rows = await p.json(); profile = rows[0] || profile; refreshUploadVisibility(); }
+  } catch(e){ console.warn('patchCreator failed',e) }
+}
+
+/* Restore session if present */
+(function restore(){
   const s = localStorage.getItem('sup_session');
-  if(s){ try{ session = JSON.parse(s); afterSignIn(); }catch(e){ localStorage.removeItem('sup_session'); } }
+  if(s){ try{ session = JSON.parse(s); postSignIn(); } catch(e){ localStorage.removeItem('sup_session'); } }
 })();
 
-//// Event bindings ////
-el('#btnSignUp').addEventListener('click', async ()=>{
-  const email = el('#email').value.trim(), pw = el('#password').value;
+/* ---------------- DOM bindings ---------------- */
+$('#btnSignUp').addEventListener('click', ()=> {
+  const email = $('#email').value.trim(), pw = $('#password').value;
+  const code = $('#inviteCode').value.trim();
   if(!email || !pw) return alert('Email + password required');
-  try{ await signUp(email,pw); loadEverything(); } catch(e){ alert('Sign up error: ' + (e.message||e)); console.error(e); }
+  signUpFlow(email,pw,code);
 });
-el('#btnSignIn').addEventListener('click', async ()=>{
-  const email = el('#email').value.trim(), pw = el('#password').value;
+$('#btnSignIn').addEventListener('click', ()=> {
+  const email = $('#email').value.trim(), pw = $('#password').value;
   if(!email || !pw) return alert('Email + password required');
-  try{ await signIn(email,pw); loadEverything(); } catch(e){ alert('Sign in error: ' + (e.message||e)); console.error(e); }
+  signInFlow(email,pw);
 });
-el('#btnSignOut').addEventListener('click', ()=> signOut());
-el('#btnUpload').addEventListener('click', ()=> location.href = 'upload.html'); // separate page for uploads
-el('#btnSearch').addEventListener('click', ()=> loadEverything());
-el('#btnRefresh').addEventListener('click', ()=> loadEverything());
-el('#btnMyContents').addEventListener('click', ()=> loadEverything(true));
+$('#btnSignOut').addEventListener('click', ()=> {
+  session = null; profile = null; localStorage.removeItem('sup_session');
+  $('.signedOutControls').style.display = '';
+  $('#signedInControls').style.display = 'none';
+  $('#uploadPanel').style.display = 'none';
+  $('#displayUsername').innerText = '…';
+});
+$('#sortToggle').addEventListener('click', ()=> {
+  $('#sortMode').innerText = $('#sortMode').innerText === 'chrono' ? 'algo' : 'chrono';
+  loadEverything();
+});
+$('#btnSearch').addEventListener('click', ()=> loadEverything());
+$('#btnUploadToggle').addEventListener('click', ()=> {
+  // toggle upload panel
+  if($('#uploadPanel').style.display === 'none' || $('#uploadPanel').style.display === '') $('#uploadPanel').style.display = '';
+  else $('#uploadPanel').style.display = 'none';
+});
 
-//// Content loading ////
-async function loadEverything(onlyMine=false){
-  setHTML('#feedList','<div class="muted">Loading feed…</div>');
-  setHTML('#songsList','<div class="muted">Loading songs…</div>');
-  setHTML('#filesList','<div class="muted">Loading files…</div>');
-  // build query
-  const q = (el('#q').value||'').trim();
-  const kindFilter = el('#filterKind').value || '';
-  // For feed: get latest contents (limit 50), include author relationship using select expansion
-  // REST request: /rest/v1/contents?select=*,author:author(username)&order=coalesce(published_at,created_at.desc)
-  let filter = '';
-  if(kindFilter) filter += `kind=eq.${encodeURIComponent(kindFilter)}&`;
-  if(onlyMine && session && session.user) filter += `author=eq.${session.user.id}&`;
+/* ---------------- Content loading ---------------- */
+async function loadEverything(){
+  $('#feedList').innerHTML = '<div class="muted">Loading feed…</div>';
+  $('#songsList').innerHTML = '<div class="muted">Loading songs…</div>';
+  $('#filesList').innerHTML = '<div class="muted">Loading files…</div>';
+
+  const q = ($('#q').value||'').trim();
+  const kindFilter = $('#filterKind').value || '';
+  const sortMode = $('#sortMode').innerText;
+  // build query: simple: select all with author:profiles(username)
+  let filterParts = [];
+  if(kindFilter) filterParts.push(`kind=eq.${encodeURIComponent(kindFilter)}`);
   if(q) {
-    // simple text search: title or description ilike %q% or author username match
-    filter += `or=(title.ilike.*${encodeURIComponent(q)}*,description.ilike.*${encodeURIComponent(q)}*)&`;
+    // use ilike queries for title or description
+    filterParts.push(`or=(title.ilike.*${encodeURIComponent(q)}*,description.ilike.*${encodeURIComponent(q)}*)`);
   }
-  const url = `${SUPABASE.url}/rest/v1/contents?select=*,author:profiles(username)&order=coalesce(published_at,created_at.desc)&${filter}limit=50`;
+  const filterQ = filterParts.length ? '&' + filterParts.join('&') : '';
+  let url = `${SUPABASE.url}/rest/v1/contents?select=*,author:profiles(username)&limit=200${filterQ}`;
+  // order
+  if(sortMode === 'chrono') url += '&order=coalesce(published_at,created_at).desc';
+  // fetch
   try {
-    const headers = { 'apikey': SUPABASE.anonKey };
+    const headers = {'apikey': SUPABASE.anonKey};
     if(session && session.access_token) headers['Authorization'] = 'Bearer ' + session.access_token;
     const res = await fetch(url, { headers });
-    if(!res.ok) throw new Error('Supabase responded ' + res.status);
-    const rows = await res.json();
-    renderFeed(rows || []);
-    renderSongs(rows || []);
-    renderFiles(rows || []);
-    // pick a recommended external embed (first external_url found)
-    pickEmbeds(rows || []);
+    if(!res.ok) throw new Error('Supabase error ' + res.status);
+    let rows = await res.json();
+    if(sortMode === 'algo'){
+      // naive 'algorithmic' shuffle / score — demo: random shuffle (placeholder)
+      rows = shuffleArray(rows);
+    }
+    renderFeed(rows);
+    renderSongs(rows);
+    renderFiles(rows);
   } catch(e){
-    console.error('loadEverything',e);
-    setHTML('#feedList','<div class="muted">Failed to load feed — check console.</div>');
-    setHTML('#songsList','<div class="muted">Failed to load songs.</div>');
-    setHTML('#filesList','<div class="muted">Failed to load files.</div>');
+    console.error('loadEverything', e);
+    $('#feedList').innerHTML = '<div class="muted">Failed to load feed — check console.</div>';
+    $('#songsList').innerHTML = '<div class="muted">Failed to load songs.</div>';
+    $('#filesList').innerHTML = '<div class="muted">Failed to load files.</div>';
   }
 }
 
 function renderFeed(items){
-  if(!items || items.length===0){ setHTML('#feedList','<div class="muted">No posts yet.</div>'); return; }
+  if(!items || items.length===0){ $('#feedList').innerHTML = '<div class="muted">No posts yet.</div>'; return; }
   const container = document.createElement('div');
   items.forEach(it=>{
-    if(it.kind === 'song' || it.kind === 'file') return; // songs/files shown separately
+    if(it.kind === 'song' || it.kind === 'file') return;
     const f = document.createElement('div'); f.className='feedItem';
     const thumb = document.createElement('div'); thumb.className='thumb';
     thumb.innerHTML = thumbnailFor(it);
     const meta = document.createElement('div'); meta.className='meta';
-    meta.innerHTML = `<div style="display:flex;align-items:center;gap:8px">
-        <div style="font-weight:700">${safe(it.title || '(Untitled)')}</div>
-        <div class="compact muted">by ${safe(it.author && it.author.username || 'unknown')}</div>
-      </div>
-      <div class="small" style="margin-top:8px">${safe(it.description || '').split('\\n').slice(0,2).join('<br>')}</div>
-      `;
-    const actions = document.createElement('div'); actions.className='colActions';
-    const playBtn = document.createElement('button'); playBtn.className='btn'; playBtn.innerText='Open';
-    playBtn.addEventListener('click', ()=> openContent(it));
-    actions.appendChild(playBtn);
+    meta.innerHTML = `<div style="display:flex;justify-content:space-between;align-items:center"><div><strong>${safe(it.title||'(Untitled)')}</strong><div class="compact muted">by ${safe(it.author && it.author.username || 'unknown')}</div></div><div class="small muted">${it.published_at ? new Date(it.published_at).toLocaleString() : 'draft'}</div></div><div class="small" style="margin-top:8px">${safe((it.description||'').split('\\n').slice(0,3).join(' '))}</div>`;
+    const actions = document.createElement('div'); actions.style.display='flex'; actions.style.flexDirection='column';
+    const openBtn = document.createElement('button'); openBtn.className='btn'; openBtn.innerText='Open'; openBtn.onclick = ()=> openContent(it);
+    actions.appendChild(openBtn);
     f.appendChild(thumb); f.appendChild(meta); f.appendChild(actions);
     container.appendChild(f);
   });
-  setHTML('#feedList',''); el('#feedList').appendChild(container);
+  $('#feedList').innerHTML = ''; $('#feedList').appendChild(container);
 }
 
 function renderSongs(items){
   const songs = (items||[]).filter(i=>i.kind==='song');
-  if(songs.length===0){ setHTML('#songsList','<div class="muted">No songs yet.</div>'); return; }
+  if(songs.length===0){ $('#songsList').innerHTML = '<div class="muted">No songs yet.</div>'; return; }
   const wrap = document.createElement('div');
   songs.forEach(s=>{
     const r2 = extractR2Url(s.description) || extractExternalUrl(s.description);
     const row = document.createElement('div'); row.className='audioRow';
-    row.innerHTML = `<div style="flex:1"><strong>${safe(s.title||'(untitled)')}</strong><div class="compact muted">by ${safe(s.author && s.author.username || 'unknown')}</div></div>`;
+    const left = document.createElement('div'); left.style.flex='1'; left.innerHTML = `<strong>${safe(s.title||'(untitled)')}</strong><div class="compact muted">by ${safe(s.author && s.author.username || 'unknown')}</div>`;
+    row.appendChild(left);
     if(r2){
       const audio = document.createElement('audio'); audio.controls=true; audio.src = r2; audio.style.width='100%';
       row.appendChild(audio);
     } else {
-      const link = document.createElement('a'); link.href='#'; link.innerText='No audio URL'; row.appendChild(link);
+      const a = document.createElement('div'); a.className='small muted'; a.innerText='No audio URL';
+      row.appendChild(a);
     }
     wrap.appendChild(row);
   });
-  setHTML('#songsList',''); el('#songsList').appendChild(wrap);
+  $('#songsList').innerHTML = ''; $('#songsList').appendChild(wrap);
 }
 
 function renderFiles(items){
   const files = (items||[]).filter(i=>i.kind==='file' || (i.description && i.description.includes('r2_url')));
-  if(files.length===0){ setHTML('#filesList','<div class="muted">No files available for download.</div>'); return; }
+  if(files.length===0){ $('#filesList').innerHTML = '<div class="muted">No files available for download.</div>'; return; }
   const wrap = document.createElement('div');
   files.forEach(f=>{
     const r2 = extractR2Url(f.description);
     const row = document.createElement('div'); row.className='fileLink';
-    row.innerHTML = `<div><strong>${safe(f.title||'(file)')}</strong><div class="compact muted">${safe(f.description||'')}</div></div>`;
+    const left = document.createElement('div'); left.innerHTML = `<strong>${safe(f.title||'(file)')}</strong><div class="compact muted">${safe(f.description||'')}</div>`;
+    row.appendChild(left);
     const right = document.createElement('div');
     if(r2){
       const a = document.createElement('a'); a.href = r2; a.download=''; a.className='pill'; a.innerText='Download';
       right.appendChild(a);
     } else {
-      const a = document.createElement('a'); a.href = '#'; a.className='pill'; a.innerText='No file URL';
+      const a = document.createElement('div'); a.className='pill'; a.innerText='No file URL';
       right.appendChild(a);
     }
     row.appendChild(right);
     wrap.appendChild(row);
   });
-  setHTML('#filesList',''); el('#filesList').appendChild(wrap);
+  $('#filesList').innerHTML = ''; $('#filesList').appendChild(wrap);
 }
 
+/* ---------------- Helpers ---------------- */
 function thumbnailFor(it){
-  // attempt to show a simple label or external thumbnail if available
-  const ext = extractExternalUrl(it.description);
-  if(ext && isYouTube(ext)){
-    const id = youtubeID(ext);
-    return `<img src="https://img.youtube.com/vi/${id}/hqdefault.jpg" style="width:100%;height:100%;object-fit:cover"/>`;
+  const r2 = extractR2Url(it.description);
+  if(r2 && (it.kind === 'edict' || it.kind === 'dominion' || it.kind === 'throne')) {
+    // attempt to show first frame? No easy way — show kind label
+    return `<div style="text-align:center;color:#bbb;font-size:13px">${safe((it.kind||'content').toUpperCase())}</div>`;
   }
-  // else show kind badge
   return `<div style="text-align:center;color:#bbb;font-size:13px">${safe((it.kind||'content').toUpperCase())}</div>`;
 }
-
-//// Helpers to read r2_url and external_url from description
 function extractR2Url(description){
   if(!description) return null;
-  const m = description.match(/r2_url:\\s*(https?:\\/\\/\\S+)/i);
-  if(m) return m[1];
-  // tolerate "r2_url:https..."
-  const m2 = description.match(/r2_url:(https?:\\/\\/\\S+)/i);
-  if(m2) return m2[1];
-  return null;
+  const m = description.match(/r2_url:\s*(https?:\/\/\S+)/i) || description.match(/r2_url:(https?:\/\/\S+)/i);
+  return m ? m[1] : null;
 }
 function extractExternalUrl(description){
   if(!description) return null;
-  const m = description.match(/external_url:\\s*(https?:\\/\\/\\S+)/i) || description.match(/(https?:\\/\\/\\S+)/i);
+  const m = description.match(/external_url:\s*(https?:\/\/\S+)/i) || description.match(/(https?:\/\/\S+)/i);
   return m ? m[1] : null;
 }
+function shuffleArray(a){ const arr = a.slice(); for(let i=arr.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[arr[i],arr[j]]=[arr[j],arr[i]];} return arr; }
+function openContent(it){ if(it.id) location.href = 'watch.html?id=' + encodeURIComponent(it.id); else alert('No ID'); }
 
-//// Embed pickers ////
-function pickEmbeds(rows){
-  // find first youtube, instagram, spotify, tiktok urls in contents
-  const all = (rows || []).map(r => ({...r, ext: extractExternalUrl(r.description)})).filter(x=>x.ext);
-  const yt = all.find(x=>isYouTube(x.ext));
-  const ig = all.find(x=>isInstagram(x.ext));
-  const sp = all.find(x=>isSpotify(x.ext));
-  const tt = all.find(x=>isTikTok(x.ext));
-  setHTML('#ytEmbed', yt ? youtubeEmbedHtml(youtubeID(yt.ext)) : '<div class="muted">No YouTube found</div>');
-  setHTML('#igEmbed', ig ? instagramEmbedHtml(ig.ext) : '<div class="muted">No Instagram found</div>');
-  setHTML('#spotEmbed', sp ? spotifyEmbedHtml(sp.ext) : '<div class="muted">No Spotify found</div>');
-  setHTML('#ttEmbed', tt ? tiktokEmbedHtml(tt.ext) : '<div class="muted">No TikTok found</div>');
+/* ---------------- Upload (client-side signing to R2) ---------------- */
+function refreshUploadVisibility(){
+  if(profile && profile.is_creator){
+    $('#uploadPanel').style.display = '';
+    $('#creatorBadge').innerText = 'Creator: ' + (profile.username || session.user.email.split('@')[0]);
+  } else {
+    $('#uploadPanel').style.display = 'none';
+  }
 }
 
-function isYouTube(url){ return /youtube.com|youtu.be/.test(url); }
-function isInstagram(url){ return /instagram.com/.test(url); }
-function isSpotify(url){ return /open\.spotify\.com|spotify:/.test(url); }
-function isTikTok(url){ return /tiktok.com/.test(url); }
+/* SigV4 helper functions (uses SubtleCrypto) */
+async function sha256Hex(data){
+  const buff = (data instanceof ArrayBuffer) ? data : new TextEncoder().encode(data);
+  const hash = await crypto.subtle.digest('SHA-256', buff);
+  return Array.from(new Uint8Array(hash)).map(b=>b.toString(16).padStart(2,'0')).join('');
+}
+async function hmacBytes(keyBytes, msg){
+  const cryptoKey = await crypto.subtle.importKey('raw', keyBytes, {name:'HMAC', hash:'SHA-256'}, false, ['sign']);
+  const sig = await crypto.subtle.sign('HMAC', cryptoKey, new TextEncoder().encode(msg));
+  return new Uint8Array(sig);
+}
+function toHex(u8){ return Array.from(u8).map(b=>b.toString(16).padStart(2,'0')).join(''); }
+async function getSigningKey(secret, dateStamp, region, service){
+  const kDate = await hmacBytes(new TextEncoder().encode('AWS4' + secret), dateStamp);
+  const kRegion = await hmacBytes(kDate, region);
+  const kService = await hmacBytes(kRegion, service);
+  const kSigning = await hmacBytes(kService, 'aws4_request');
+  return kSigning;
+}
 
-function youtubeID(url){
-  // supports youtu.be and youtube.com/watch?v=
+async function uploadToR2Signed(baseUrl, objectPath, file, accessKey, secretKey){
+  const url = new URL(baseUrl);
+  const host = url.host;
+  const method = 'PUT';
+  const service = 's3';
+  const region = 'auto'; // Cloudflare R2 sometimes accepts 'auto' or 'us-east-1'
+  const now = new Date();
+  const amzDate = now.toISOString().replace(/[:-]|\.\d{3}/g,'') + 'Z';
+  const dateStamp = amzDate.slice(0,8);
+  const payloadArray = await file.arrayBuffer();
+  const payloadHash = await sha256Hex(payloadArray);
+
+  const canonicalUri = objectPath;
+  const canonicalQueryString = '';
+  const canonicalHeaders = `host:${host}\nx-amz-content-sha256:${payloadHash}\nx-amz-date:${amzDate}\n`;
+  const signedHeaders = 'host;x-amz-content-sha256;x-amz-date';
+  const canonicalRequest = [method, canonicalUri, canonicalQueryString, canonicalHeaders, signedHeaders, payloadHash].join('\n');
+  const canonicalRequestHash = await sha256Hex(new TextEncoder().encode(canonicalRequest));
+  const credentialScope = `${dateStamp}/${region}/${service}/aws4_request`;
+  const stringToSign = ['AWS4-HMAC-SHA256', amzDate, credentialScope, canonicalRequestHash].join('\n');
+  const signingKey = await getSigningKey(secretKey, dateStamp, region, service);
+  const signature = toHex(await hmacBytes(signingKey, stringToSign));
+  const authorization = `AWS4-HMAC-SHA256 Credential=${accessKey}/${credentialScope}, SignedHeaders=${signedHeaders}, Signature=${signature}`;
+  const uploadUrl = baseUrl + canonicalUri;
+
+  const resp = await fetch(uploadUrl, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': file.type || 'application/octet-stream',
+      'x-amz-date': amzDate,
+      'x-amz-content-sha256': payloadHash,
+      'Authorization': authorization,
+      'x-amz-acl': 'public-read'
+    },
+    body: file
+  });
+  return resp;
+}
+
+/* Upload button handler */
+$('#btnDoUpload').addEventListener('click', async ()=>{
+  if(!session || !session.user) return alert('Sign in first');
+  if(!profile || !profile.is_creator) return alert('Only creators can upload. Use a valid invite code at sign-up.');
+  const file = $('#upFile').files[0];
+  if(!file) return alert('Choose a file.');
+  $('#upStatus').innerText = 'Preparing upload...';
+  const kind = $('#upKind').value;
+  const title = $('#upTitle').value.trim() || '(untitled)';
+  let desc = $('#upDesc').value.trim() || '';
+
+  const ts = Date.now();
+  const safeName = file.name.replace(/[^a-zA-Z0-9.\-_]/g,'_');
+  const key = `${kind}/${ts}_${Math.random().toString(36).slice(2,9)}_${safeName}`;
+  const objectPath = `${R2.bucketPath}/${key}`; // /luxscepter-uploads/...
+  const objectUrl = `${R2.base}${objectPath}`;
+
+  $('#upStatus').innerText = 'Uploading to R2 (this may take time)...';
+
   try {
-    const u = new URL(url);
-    if(u.hostname.includes('youtu.be')) return u.pathname.slice(1);
-    if(u.searchParams.get('v')) return u.searchParams.get('v');
-    // maybe /embed/ID
-    const m = u.pathname.match(/embed\\/([^\\/]+)/);
-    return m ? m[1] : null;
-  } catch(e){ return null; }
-}
-function youtubeEmbedHtml(id){
-  if(!id) return '<div class="muted">Invalid YouTube</div>';
-  return `<iframe src="https://www.youtube.com/embed/${id}" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`;
-}
-function instagramEmbedHtml(url){
-  // Instagram embedding via iframe usually blocked; fallback to link preview
-  return `<iframe src="https://r.jina.ai/http://${encodeURIComponent('textise dot iitty? placeholder')}" style="height:220px"></iframe>
-    <!-- Instagram embed requires their script and may not allow cross-origin iframe; use server-side oEmbed for best results or show a link. -->`;
-}
-function spotifyEmbedHtml(url){
-  // convert open.spotify to embed if possible
-  try {
-    const u = new URL(url);
-    // path like /track/{id} or /playlist/{id}
-    const parts = u.pathname.split('/').filter(Boolean);
-    if(parts.length >= 2){
-      const kind = parts[0], id = parts[1];
-      return `<iframe src="https://open.spotify.com/embed/${kind}/${id}" frameborder="0" allow="encrypted-media"></iframe>`;
+    const resp = await uploadToR2Signed(R2.base, objectPath, file, R2.accessKey, R2.secretKey);
+    if(!(resp && resp.status && resp.status >=200 && resp.status <300)){
+      // CORS or signature issue: resp may be opaque
+      throw new Error('Upload failed or CORS blocked (see console). Response status: ' + (resp ? resp.status : 'no-response'));
     }
-  } catch(e){}
-  return `<div class="muted">Invalid Spotify URL</div>`;
-}
-function tiktokEmbedHtml(url){
-  // TikTok embed often requires their script; fallback to link
-  return `<iframe src="https://www.tiktok.com/embed/${escapeHtmlForIframe(url)}" frameborder="0" allowfullscreen></iframe>`;
-}
-function escapeHtmlForIframe(v){ return encodeURIComponent(v); }
+    $('#upStatus').innerText = 'Upload completed. Saving metadata...';
+    // insert into Supabase contents table
+    const payload = {
+      author: session.user.id,
+      kind: kind,
+      title: title,
+      description: desc + '\\n\\nr2_url:' + objectUrl,
+      duration_seconds: 0,
+      is_draft: false,
+      published_at: nowIso(),
+      created_at: nowIso()
+    };
+    const hdrs = {'Content-Type':'application/json','apikey': SUPABASE.anonKey, 'Authorization': 'Bearer ' + session.access_token, 'Prefer':'return=representation'};
+    const ins = await fetch(`${SUPABASE.url}/rest/v1/contents`, { method:'POST', headers: hdrs, body: JSON.stringify(payload) });
+    if(!ins.ok) { const t = await ins.text(); throw new Error('Supabase insert failed: ' + ins.status + ' ' + t); }
+    const created = await ins.json();
+    $('#upStatus').innerText = 'Saved content. ID: ' + (created[0] && created[0].id ? created[0].id : '(unknown)') + '. Refreshing feed...';
+    // clear form and refresh
+    $('#upFile').value = ''; $('#upTitle').value=''; $('#upDesc').value='';
+    loadEverything();
+  } catch(e){
+    console.error('upload error', e);
+    $('#upStatus').innerText = 'Upload error: ' + (e.message || e);
+    alert('Upload failed: ' + (e.message || e));
+  }
+});
 
-function openContent(it){
-  // open a simple viewer overlay or new page; for now open watch.html?id=ID if present
-  if(it.id) location.href = 'watch.html?id=' + encodeURIComponent(it.id);
-  else alert('No ID');
+/* ---------------- Utility: refresh upload visibility on load ---------------- */
+function refreshUploadPanelOnProfile(){
+  refreshUploadVisibility();
 }
 
-function setHTMLRaw(sel, html){ el(sel).innerHTML = html; }
+/* ---------------- Quick helpers for DOM selection (class names) ---------------- */
+function $(s){ return document.querySelector(s); }
+function $all(s){ return document.querySelectorAll(s); }
 
-//// Startup ////
+/* ---------------- Initial load ---------------- */
 loadEverything();
 
-//// Security / CORS notes (display in console so you don't miss it) ////
-console.log('CONFIG: Supabase URL', SUPABASE.url);
-console.warn('Security: Supabase anon key and R2 secret key are embedded in this page. This is insecure. Use server-signed URLs and server-side secrets for production.');
-console.info('If R2 media fails with CORS errors, set bucket CORS to allow your domain and methods GET, PUT, OPTIONS, and allow headers: Content-Type, x-amz-*');
+/* ---------------- CORS & Security NOTE (console) ---------------- */
+console.warn('Security: This page contains embedded Supabase anon and R2 keys. This is insecure for production.');
+console.info('If you get CORS errors on R2, configure bucket CORS: allow origin yourdomain.com (or * for testing), methods GET, PUT, OPTIONS, HEAD; allowed headers: Content-Type, x-amz-*, x-amz-date; expose headers: ETag; max-age:86400.');
 
 </script>
 </body>
