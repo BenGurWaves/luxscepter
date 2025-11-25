@@ -1,351 +1,168 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Lux Scepter — Founding Bloodline (v0.0)</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lux Scepter — Founding Bloodline</title>
 <style>
-  /* Fonts: fallback stack; you must provide Chomsky font in your production assets.
-     This file doesn't embed Chomsky to avoid licensing issues. */
-  :root{
-    --bg:#0e0e0e;
-    --deep-1:#571728;
-    --deep-2:#35005a;
-    --accent:#5600a1;
-    --gold:#bd8e20;
-    --white:#f7f7f7;
-    --muted:#bdbdbd;
-    --maxw:1100px;
+  @import url('https://fonts.googleapis.com/css2?family=Chomsky&display=swap');
+  body {
+    margin: 0;
+    font-family: 'Times New Roman', serif;
+    background-color: #0e0e0e;
+    color: #bd8e20;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
   }
-  html,body{height:100%;margin:0;background:var(--bg);color:var(--white);font-family:"Times New Roman",serif; -webkit-font-smoothing:antialiased;}
-  .wrap{max-width:var(--maxw);margin:48px auto;padding:36px}
-  header{display:flex;justify-content:space-between;align-items:center;margin-bottom:28px}
-  .brand{display:flex;align-items:center;gap:18px}
-  .logo{
-    display:flex;flex-direction:column;justify-content:center;
-    width:70px;height:70px;border-radius:12px;
-    background: linear-gradient(135deg,var(--deep-2),var(--accent));
-    box-shadow: 0 6px 30px rgba(0,0,0,0.6), inset 0 -6px 12px rgba(0,0,0,0.2);
-    padding:8px;color:var(--gold);font-weight:700;font-size:20px;
+  h1 {
+    font-family: 'Chomsky', sans-serif;
+    font-size: 3em;
+    color: #bd8e20;
+    margin-bottom: 0.5em;
   }
-  .brand h1{font-family:Chomsky, "Times New Roman", serif; margin:0; font-size:22px; letter-spacing:1px}
-  .brand p{margin:0;color:var(--muted);font-size:13px}
-  .nav {display:flex;gap:12px;align-items:center}
-  .btn {
-    border:1px solid rgba(255,255,255,0.06);background:transparent;color:var(--white);
-    padding:10px 14px;border-radius:10px;font-weight:600;cursor:pointer;
+  .container {
+    background: #0e0e0e;
+    border: 2px solid #571728;
+    padding: 2em;
+    border-radius: 12px;
+    width: 100%;
+    max-width: 400px;
+    box-shadow: 0 0 30px rgba(189,142,32,0.5);
   }
-  .btn-primary{background:linear-gradient(90deg,var(--gold),#caa63a);color:#0b0b0b}
-  .hero{
-    display:grid;grid-template-columns:1fr 420px;gap:36px;align-items:center;margin-bottom:30px;
-    background: linear-gradient(180deg, rgba(0,0,0,0.35), rgba(0,0,0,0.2));
-    padding:28px;border-radius:14px;border:1px solid rgba(255,255,255,0.03);
+  input {
+    width: 100%;
+    padding: 0.8em;
+    margin: 0.5em 0;
+    border-radius: 6px;
+    border: 1px solid #35005a;
+    background: #0e0e0e;
+    color: #bd8e20;
   }
-  .hero .copy h2{font-size:36px;margin:0 0 12px 0;font-family:Chomsky, "Times New Roman", serif}
-  .hero .copy p{color:var(--muted);margin:0 0 18px 0;line-height:1.45}
-  .features{display:flex;gap:12px;flex-wrap:wrap}
-  .pill{padding:8px 10px;border-radius:10px;background:rgba(255,255,255,0.03);font-size:13px;color:var(--muted);border:1px solid rgba(255,255,255,0.02)}
-  /* Right column: auth box */
-  .card{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));padding:18px;border-radius:12px}
-  .form-row{display:flex;flex-direction:column;margin-bottom:12px}
-  .form-row label{font-size:12px;color:var(--muted);margin-bottom:6px}
-  .input{background:transparent;border:1px solid rgba(255,255,255,0.06);padding:10px 12px;border-radius:8px;color:var(--white);outline:none}
-  .small{font-size:12px;color:var(--muted)}
-  .muted{color:var(--muted)}
-  footer{margin-top:28px;color:var(--muted);font-size:13px;text-align:center}
-  .uploader{margin-top:18px;border-radius:10px;padding:12px;border:1px dashed rgba(255,255,255,0.04);background:linear-gradient(180deg, rgba(255,255,255,0.005), transparent)}
-  .disabled{opacity:0.45;pointer-events:none}
-  /* Oracle Edge indicator (visual suggestion) */
-  .oracle-edge{
-    position:fixed;right:8px;top:50%;transform:translateY(-50%);width:6px;height:120px;border-radius:6px;
-    background:linear-gradient(180deg,var(--gold), rgba(189,142,32,0.6));box-shadow:0 6px 18px rgba(0,0,0,0.6);
+  button {
+    width: 100%;
+    padding: 0.8em;
+    margin-top: 0.5em;
+    border-radius: 6px;
+    border: none;
+    background: #5600a1;
+    color: #fff;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.2s;
   }
-  .status{margin-top:10px;font-size:13px;color:var(--muted)}
-  .small-note{font-size:12px;color:var(--muted);margin-top:8px}
-  code{background:rgba(255,255,255,0.02);padding:4px 8px;border-radius:6px;font-family:monospace;font-size:12px}
-  @media (max-width:980px){ .hero{grid-template-columns:1fr} .wrap{margin:18px} .logo{width:56px;height:56px} }
+  button:hover {
+    background: #35005a;
+  }
+  .toggle {
+    text-align: center;
+    margin-top: 1em;
+    color: #bd8e20;
+    cursor: pointer;
+  }
+  .error {
+    color: #ff5555;
+    margin-top: 0.5em;
+  }
 </style>
 </head>
 <body>
-  <div class="oracle-edge" title="Oracle Edge (prototype)"></div>
+<h1>Lux Scepter</h1>
+<div class="container">
+  <form id="auth-form">
+    <input type="text" id="email" placeholder="Email" required>
+    <input type="password" id="password" placeholder="Password" required>
+    <input type="text" id="invite" placeholder="Invite Code (optional)">
+    <button type="submit" id="submit-btn">Sign Up</button>
+    <div class="error" id="error-msg"></div>
+  </form>
+  <div class="toggle" id="toggle-auth">Already have an account? Sign In</div>
+</div>
 
-  <div class="wrap">
-    <header>
-      <div class="brand">
-        <div class="logo">♔</div>
-        <div>
-          <h1>Lux Scepter</h1>
-          <p>Rule the feed. Own the crown.</p>
-        </div>
-      </div>
+<script type="module">
+import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
 
-      <nav class="nav">
-        <button id="btnExplore" class="btn">Explore Realm</button>
-        <button id="btnSignIn" class="btn">Sign in</button>
-      </nav>
-    </header>
+const supabaseUrl = 'https://uewvmldolwgihfkxwlsl.supabase.co'
+const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVld3ZtbGRvbHdnaWhma3h3bHNsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjM5MzQ1MjksImV4cCI6MjA3OTUxMDUyOX0.b9C00OjIkAUDPztC8RtdHcwjdgX4OrShNW_pp6r-_qI'
+const supabase = createClient(supabaseUrl, supabaseKey)
 
-    <main class="hero" role="main">
-      <div class="copy">
-        <h2>Founding Bloodline — Invite-only (v0.0)</h2>
-        <p>Welcome to the realm. This early release grants creators exclusive upload privileges via one-time invite codes. Sign up to claim your Founding Pass. If you have an invite code, enter it during signup to unlock creator features immediately.</p>
-        <div class="features">
-          <div class="pill">Edict • Short vertical</div>
-          <div class="pill">Dominion • Horizontal cinematic</div>
-          <div class="pill">Throne • Long-form</div>
-          <div class="pill">Missives • Private DMs</div>
-          <div class="pill">Crown ♔ • Unlimited (founders)</div>
-        </div>
-        <div class="small-note">Note: Invite codes are single-use. Creator role is attached to your account after successful redemption.</div>
-      </div>
+let isSignUp = true
 
-      <aside class="card">
-        <div id="authBox">
-          <div class="form-row">
-            <label for="email">Email</label>
-            <input id="email" class="input" type="email" placeholder="you@domain.com" />
-          </div>
-          <div class="form-row">
-            <label for="password">Password</label>
-            <input id="password" class="input" type="password" placeholder="Choose a strong password" />
-          </div>
-          <div class="form-row">
-            <label for="invite">Invite Code (optional)</label>
-            <input id="invite" class="input" type="text" placeholder="Enter your 5-character invite" maxlength="10" />
-          </div>
+const form = document.getElementById('auth-form')
+const toggle = document.getElementById('toggle-auth')
+const errorMsg = document.getElementById('error-msg')
+const submitBtn = document.getElementById('submit-btn')
 
-          <div style="display:flex;gap:10px;margin-top:8px">
-            <button id="btnSignup" class="btn btn-primary">Sign up</button>
-            <button id="btnLogin" class="btn">Sign in</button>
-          </div>
-          <div id="authMsg" class="status"></div>
-        </div>
+toggle.addEventListener('click', () => {
+  isSignUp = !isSignUp
+  submitBtn.textContent = isSignUp ? 'Sign Up' : 'Sign In'
+  toggle.textContent = isSignUp ? 'Already have an account? Sign In' : "Don't have an account? Sign Up"
+  errorMsg.textContent = ''
+})
 
-        <div id="userPanel" style="display:none">
-          <div style="display:flex;justify-content:space-between;align-items:center">
-            <div>
-              <div id="userEmail" style="font-weight:700"></div>
-              <div id="userRoles" class="muted" style="font-size:13px"></div>
-            </div>
-            <div>
-              <button id="btnSignOut" class="btn">Sign out</button>
-            </div>
-          </div>
+form.addEventListener('submit', async (e) => {
+  e.preventDefault()
+  errorMsg.textContent = ''
 
-          <div id="creatorArea" class="uploader disabled" title="Creator uploader. Requires creator role">
-            <div style="font-weight:700">Uploader (Creators only)</div>
-            <div class="small">Upload a file to the realm. This is a client-side demo hook. Production: you must wire secure server-side uploads to R2 or Supabase Storage.</div>
-            <div style="margin-top:10px">
-              <input id="fileInput" type="file" />
-              <button id="btnUpload" class="btn" style="margin-left:8px">Upload</button>
-            </div>
-            <div id="uploadMsg" class="status"></div>
-          </div>
-        </div>
+  const email = document.getElementById('email').value.trim()
+  const password = document.getElementById('password').value.trim()
+  const invite = document.getElementById('invite').value.trim().toUpperCase()
 
-      </aside>
-    </main>
-
-    <footer>
-      Founding release · Invite-only · Max 250 creators initially · LuxScepter &copy; Founding Bloodline
-    </footer>
-  </div>
-
-  <!-- Supabase CDN (official) -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/supabase.min.js"></script>
-
-  <script>
-/*
-  Supabase setup:
-  - URL and anon key are embedded per your instruction.
-  - IMPORTANT: for production rotate keys and use server-side secret handling where needed.
-*/
-const SUPABASE_URL = "https://uewvmldolwgihfkxwlsl.supabase.co";
-const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVld3ZtbGRvbHdnaWhma3h3bHNsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjM5MzQ1MjksImV4cCI6MjA3OTUxMDUyOX0.b9C00OjIkAUDPztC8RtdHcwjdgX4OrShNW_pp6r-_qI";
-
-const supabase = supabasejs.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
-/*
-  Behavior:
-  - Signup: create user via supabase.auth.signUp
-  - Then immediately try to redeem invite if provided:
-      -> check invite_codes table for row where code = provided AND used = false
-      -> perform atomic update: set used=true, used_by=user.id, used_at=now() WHERE code=... AND used=false
-      -> if update count == 1 -> assign profile metadata in 'profiles' table: is_creator = true
-  - For simplicity this example writes a row in profiles (if not exists) and stores is_creator boolean.
-*/
-const $ = id => document.getElementById(id);
-const authMsg = $('authMsg');
-const userPanel = $('userPanel');
-const authBox = $('authBox');
-const userEmail = $('userEmail');
-const userRoles = $('userRoles');
-const creatorArea = $('creatorArea');
-const uploadMsg = $('uploadMsg');
-
-async function setMessage(msg, isError = false){
-  authMsg.textContent = msg;
-  authMsg.style.color = isError ? '#ff8a8a' : 'var(--muted)';
-}
-
-async function signup() {
-  setMessage('Signing up...');
-  const email = $('email').value.trim();
-  const password = $('password').value;
-  const invite = $('invite').value.trim().toUpperCase();
-
-  if (!email || !password) { setMessage('Email and password required.', true); return; }
-
-  // Supabase signup
-  try {
-    const { data, error } = await supabase.auth.signUp({ email, password });
-    if (error) { setMessage(error.message || 'Signup failed', true); return; }
-
-    // Supabase automatically returns a user session in certain configurations
-    setMessage('Signed up. Verifying invite code...');
-    // Wait briefly for auth propagation
-    await new Promise(r => setTimeout(r, 600));
-
-    // fetch user
-    const { data: userData } = await supabase.auth.getUser();
-    const user = userData?.user;
-    if (!user) {
-      setMessage('Signup succeeded. Please confirm your email if required by the system.', false);
-      // show limited UI
-      await refreshUI();
-      return;
-    }
-
-    // try redeem invite if provided
+  if (isSignUp) {
+    // Check invite code if provided
+    let isCreator = false
     if (invite) {
-      const redeemed = await tryRedeemInvite(invite, user.id);
-      if (redeemed) {
-        setMessage('Invite redeemed. Creator privileges granted.');
+      const { data: codeData, error: codeError } = await supabase
+        .from('invite_codes')
+        .select('*')
+        .eq('code', invite)
+        .single()
+      if (codeError || !codeData) {
+        errorMsg.textContent = 'Invalid invite code'
+        return
       } else {
-        setMessage('Invite invalid or already used. You are signed up as a public user.', true);
+        isCreator = true
+        // Delete used code
+        await supabase.from('invite_codes').delete().eq('code', invite)
       }
-    } else {
-      setMessage('Signup complete. No invite used. You are a public user.');
     }
-    await refreshUI();
-  } catch (err) {
-    setMessage('Unexpected error during signup', true);
-    console.error(err);
-  }
-}
 
-async function login() {
-  setMessage('Signing in...');
-  const email = $('email').value.trim();
-  const password = $('password').value;
-  if (!email || !password) { setMessage('Email and password required.', true); return; }
-  const { data, error } = await supabase.auth.signInWithPassword({ email, password });
-  if (error) { setMessage(error.message || 'Login failed', true); return; }
-  setMessage('Signed in.');
-  await refreshUI();
-}
+    // Sign up
+    const { data, error } = await supabase.auth.signUp({
+      email: email,
+      password: password
+    })
 
-async function signout() {
-  await supabase.auth.signOut();
-  setMessage('Signed out.');
-  await refreshUI();
-}
+    if (error) {
+      errorMsg.textContent = error.message
+      return
+    }
 
-async function tryRedeemInvite(code, userId) {
-  // Attempt an atomic "claim" on invite_codes where used = false
-  // We use a rpc-like atomic approach via update with where used=false
-  const { data: precheck } = await supabase
-    .from('invite_codes')
-    .select('code, used')
-    .eq('code', code)
-    .limit(1);
+    // Insert profile
+    await supabase.from('profiles').insert({
+      id: data.user.id,
+      email: email,
+      is_creator: isCreator
+    })
 
-  if (!precheck || precheck.length === 0) return false;
-  if (precheck[0].used) return false;
+    // Redirect to home
+    window.location.href = 'home.html'
 
-  // atomic update
-  const { data, error, count } = await supabase
-    .from('invite_codes')
-    .update({ used: true, used_by: userId, used_at: new Date().toISOString() })
-    .eq('code', code)
-    .eq('used', false)
-    .select();
-
-  if (error) { console.error('redeem error', error); return false; }
-  if (!data || data.length === 0) return false;
-
-  // Grant creator role in profiles table
-  const profilePayload = { id: userId, is_creator: true, updated_at: new Date().toISOString() };
-  // Upsert into profiles
-  const upsert = await supabase.from('profiles').upsert(profilePayload).select();
-  if (upsert.error) { console.warn('profile upsert failed', upsert.error); }
-  return true;
-}
-
-async function refreshUI(){
-  const { data: userData } = await supabase.auth.getUser();
-  const user = userData?.user;
-  if (!user) {
-    authBox.style.display = 'block';
-    userPanel.style.display = 'none';
-    return;
-  }
-  authBox.style.display = 'none';
-  userPanel.style.display = 'block';
-  userEmail.textContent = user.email || user.id;
-
-  // fetch profile to see if is_creator
-  const { data: profile } = await supabase.from('profiles').select('is_creator').eq('id', user.id).single();
-  const isCreator = profile?.is_creator === true;
-  userRoles.textContent = isCreator ? 'Roles: Creator (founder) · Crowns ♔' : 'Roles: Public member';
-  if (isCreator) {
-    creatorArea.classList.remove('disabled');
   } else {
-    creatorArea.classList.add('disabled');
+    // Sign in
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email: email,
+      password: password
+    })
+    if (error) {
+      errorMsg.textContent = error.message
+      return
+    }
+    window.location.href = 'home.html'
   }
-}
-
-/* Upload stub: demonstrates client-side upload for creators.
-   Production: do signed uploads to Cloudflare R2 or Supabase Storage server-side.
-*/
-$('btnUpload').addEventListener('click', async () => {
-  uploadMsg.textContent = '';
-  const file = $('fileInput').files[0];
-  if (!file) { uploadMsg.textContent = 'Select a file first.'; return; }
-
-  const { data: userData } = await supabase.auth.getUser();
-  const user = userData?.user;
-  if (!user) { uploadMsg.textContent = 'Sign in first.'; return; }
-
-  const { data: profile } = await supabase.from('profiles').select('is_creator').eq('id', user.id).single();
-  if (!profile?.is_creator) { uploadMsg.textContent = 'You are not a creator.'; return; }
-
-  uploadMsg.textContent = 'Pretend uploading... (demo)';
-
-  // This is a demo placeholder. For production:
-  // 1) Request a signed upload URL from your server that holds R2 credentials.
-  // 2) PUT the file to the signed URL.
-  // 3) Save metadata to your DB: title, uploader_id, src_url, duration, thumb, type, etc.
-  await new Promise(r => setTimeout(r, 900));
-  uploadMsg.textContent = 'Upload simulated. Implement server upload for production.';
-});
-
-/* Event bindings */
-$('btnSignup').addEventListener('click', signup);
-$('btnLogin').addEventListener('click', login);
-$('btnSignOut').addEventListener('click', signout);
-$('btnSignIn').addEventListener('click', () => { window.scrollTo({ top: 0, behavior: 'smooth' }); $('email').focus(); });
-
-/* On load: check session */
-window.addEventListener('load', async () => {
-  // refresh UI according to session
-  await refreshUI();
-});
-
-// auth state change
-supabase.auth.onAuthStateChange((event, session) => {
-  refreshUI();
-});
-  </script>
+})
+</script>
 </body>
 </html>
