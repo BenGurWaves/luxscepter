@@ -1,417 +1,351 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Lux Scepter — Founding Bloodline (v0.0)</title>
-  <!-- Fonts: Chomsky ideally, fallback to Times New Roman -->
-  <style>
-    /* Minimal reset */
-    *{box-sizing:border-box;margin:0;padding:0}
-    html,body{height:100%}
-    body{
-      background:#0e0e0e; /* primary black */
-      color:#ddd;
-      font-family:"Times New Roman", Georgia, serif;
-      -webkit-font-smoothing:antialiased;
-      -moz-osx-font-smoothing:grayscale;
-      line-height:1.4;
-      padding:24px;
-    }
-
-    /* Container */
-    .wrap{max-width:1100px;margin:0 auto;display:grid;grid-template-columns:1fr 420px;gap:28px;align-items:start}
-    header{grid-column:1 / -1;display:flex;align-items:center;justify-content:space-between;margin-bottom:18px}
-    .brand{display:flex;align-items:center;gap:12px}
-    .logo{
-      font-family:"Chomsky", "Times New Roman", serif; /* use Chomsky if available */
-      font-size:28px;
-      color:#bd8e20; /* regal gold */
-      letter-spacing:1px;
-    }
-    .tag{color:#bbb;font-size:13px}
-    .panel{
-      background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
-      border:1px solid rgba(189,142,32,0.08);
-      padding:20px;border-radius:12px;box-shadow:0 6px 30px rgba(5,5,5,0.6);
-    }
-
-    /* Left column (product) */
-    .hero{padding:28px;border-radius:12px;background:linear-gradient(180deg, rgba(86,0,161,0.06), rgba(87,23,40,0.02));border-left:6px solid #5600a1}
-    h1{font-size:32px;color:#fff;margin-bottom:8px}
-    p.lead{color:#cfcfcf;margin-bottom:16px}
-
-    /* Right column (auth) */
-    form{display:flex;flex-direction:column;gap:12px}
-    label{font-size:13px;color:#cfcfcf}
-    input[type="text"], input[type="email"], input[type="password"], input[type="file"], select{
-      background: #0b0b0b; border:1px solid rgba(189,142,32,0.12); color:#eee; padding:10px 12px; border-radius:8px; font-size:14px;
-    }
-    .btn{
-      background: linear-gradient(90deg,#571728,#5600a1);
-      color:#fff;padding:10px 14px;border-radius:10px;border:none;font-weight:600;cursor:pointer;
-      box-shadow: 0 6px 14px rgba(86,0,161,0.18);
-    }
-    .btn.secondary{background:transparent;border:1px solid rgba(189,142,32,0.14);color:#bd8e20}
-    .muted{color:#999;font-size:13px}
-    .success{color:#9fd89f}
-    .danger{color:#ff8b8b}
-
-    /* Invite code list (collapsed) */
-    .code-count{font-size:13px;color:#cdb67a}
-    .small{font-size:13px;color:#bbb}
-
-    /* Footer */
-    footer{grid-column:1 / -1;margin-top:18px;color:#8b8b8b;font-size:13px}
-
-    /* Oracle Edge visual hint (right edge) */
-    .oracle-edge {
-      position:fixed; right:0; top:40%; transform:translateY(-50%); width:6px; height:120px;
-      background:linear-gradient(#bd8e20,#571728);
-      border-radius:6px 0 0 6px; box-shadow:0 6px 20px rgba(86,0,161,0.14);
-      z-index:9999;
-    }
-
-    /* Responsive */
-    @media (max-width:980px){
-      .wrap{grid-template-columns:1fr; padding-bottom:40px}
-    }
-  </style>
-
-  <!-- Supabase JS (CDN) -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Lux Scepter — Founding Bloodline (v0.0)</title>
+<style>
+  /* Fonts: fallback stack; you must provide Chomsky font in your production assets.
+     This file doesn't embed Chomsky to avoid licensing issues. */
+  :root{
+    --bg:#0e0e0e;
+    --deep-1:#571728;
+    --deep-2:#35005a;
+    --accent:#5600a1;
+    --gold:#bd8e20;
+    --white:#f7f7f7;
+    --muted:#bdbdbd;
+    --maxw:1100px;
+  }
+  html,body{height:100%;margin:0;background:var(--bg);color:var(--white);font-family:"Times New Roman",serif; -webkit-font-smoothing:antialiased;}
+  .wrap{max-width:var(--maxw);margin:48px auto;padding:36px}
+  header{display:flex;justify-content:space-between;align-items:center;margin-bottom:28px}
+  .brand{display:flex;align-items:center;gap:18px}
+  .logo{
+    display:flex;flex-direction:column;justify-content:center;
+    width:70px;height:70px;border-radius:12px;
+    background: linear-gradient(135deg,var(--deep-2),var(--accent));
+    box-shadow: 0 6px 30px rgba(0,0,0,0.6), inset 0 -6px 12px rgba(0,0,0,0.2);
+    padding:8px;color:var(--gold);font-weight:700;font-size:20px;
+  }
+  .brand h1{font-family:Chomsky, "Times New Roman", serif; margin:0; font-size:22px; letter-spacing:1px}
+  .brand p{margin:0;color:var(--muted);font-size:13px}
+  .nav {display:flex;gap:12px;align-items:center}
+  .btn {
+    border:1px solid rgba(255,255,255,0.06);background:transparent;color:var(--white);
+    padding:10px 14px;border-radius:10px;font-weight:600;cursor:pointer;
+  }
+  .btn-primary{background:linear-gradient(90deg,var(--gold),#caa63a);color:#0b0b0b}
+  .hero{
+    display:grid;grid-template-columns:1fr 420px;gap:36px;align-items:center;margin-bottom:30px;
+    background: linear-gradient(180deg, rgba(0,0,0,0.35), rgba(0,0,0,0.2));
+    padding:28px;border-radius:14px;border:1px solid rgba(255,255,255,0.03);
+  }
+  .hero .copy h2{font-size:36px;margin:0 0 12px 0;font-family:Chomsky, "Times New Roman", serif}
+  .hero .copy p{color:var(--muted);margin:0 0 18px 0;line-height:1.45}
+  .features{display:flex;gap:12px;flex-wrap:wrap}
+  .pill{padding:8px 10px;border-radius:10px;background:rgba(255,255,255,0.03);font-size:13px;color:var(--muted);border:1px solid rgba(255,255,255,0.02)}
+  /* Right column: auth box */
+  .card{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));padding:18px;border-radius:12px}
+  .form-row{display:flex;flex-direction:column;margin-bottom:12px}
+  .form-row label{font-size:12px;color:var(--muted);margin-bottom:6px}
+  .input{background:transparent;border:1px solid rgba(255,255,255,0.06);padding:10px 12px;border-radius:8px;color:var(--white);outline:none}
+  .small{font-size:12px;color:var(--muted)}
+  .muted{color:var(--muted)}
+  footer{margin-top:28px;color:var(--muted);font-size:13px;text-align:center}
+  .uploader{margin-top:18px;border-radius:10px;padding:12px;border:1px dashed rgba(255,255,255,0.04);background:linear-gradient(180deg, rgba(255,255,255,0.005), transparent)}
+  .disabled{opacity:0.45;pointer-events:none}
+  /* Oracle Edge indicator (visual suggestion) */
+  .oracle-edge{
+    position:fixed;right:8px;top:50%;transform:translateY(-50%);width:6px;height:120px;border-radius:6px;
+    background:linear-gradient(180deg,var(--gold), rgba(189,142,32,0.6));box-shadow:0 6px 18px rgba(0,0,0,0.6);
+  }
+  .status{margin-top:10px;font-size:13px;color:var(--muted)}
+  .small-note{font-size:12px;color:var(--muted);margin-top:8px}
+  code{background:rgba(255,255,255,0.02);padding:4px 8px;border-radius:6px;font-family:monospace;font-size:12px}
+  @media (max-width:980px){ .hero{grid-template-columns:1fr} .wrap{margin:18px} .logo{width:56px;height:56px} }
+</style>
 </head>
 <body>
-  <div class="oracle-edge" title="Oracle Edge (demo)"></div>
+  <div class="oracle-edge" title="Oracle Edge (prototype)"></div>
 
   <div class="wrap">
     <header>
       <div class="brand">
-        <div class="logo">Lux Scepter <span style="font-size:18px;color:#bd8e20">♔</span></div>
-        <div class="tag small">Rule the feed. Own the crown.</div>
+        <div class="logo">♔</div>
+        <div>
+          <h1>Lux Scepter</h1>
+          <p>Rule the feed. Own the crown.</p>
+        </div>
       </div>
-      <div class="small">Version 0.0 — Founding Bloodline · Invite-only</div>
+
+      <nav class="nav">
+        <button id="btnExplore" class="btn">Explore Realm</button>
+        <button id="btnSignIn" class="btn">Sign in</button>
+      </nav>
     </header>
 
-    <section class="panel hero">
-      <h1>Founding Bloodline — v0.0</h1>
-      <p class="lead">Invite-only launch. 250 creators. This page lets privileged creators redeem their invite code, create an account (Supabase), and upload a file that will attempt to land in Supabase Storage and your Cloudflare dev R2 path.</p>
-
-      <div style="display:flex;gap:10px;flex-wrap:wrap">
-        <div class="panel" style="min-width:220px;flex:1">
-          <div class="small">Realm features (v0.0)</div>
-          <ul class="small" style="margin-top:8px;line-height:1.6;color:#dcdcdc">
-            <li>Realm feed (chrono + algo)</li>
-            <li>Edict & Dominion uploads & playback</li>
-            <li>Oracle Edge demo</li>
-            <li>Unlimited Crown ♔ + 10 Scepter 𐀣</li>
-          </ul>
+    <main class="hero" role="main">
+      <div class="copy">
+        <h2>Founding Bloodline — Invite-only (v0.0)</h2>
+        <p>Welcome to the realm. This early release grants creators exclusive upload privileges via one-time invite codes. Sign up to claim your Founding Pass. If you have an invite code, enter it during signup to unlock creator features immediately.</p>
+        <div class="features">
+          <div class="pill">Edict • Short vertical</div>
+          <div class="pill">Dominion • Horizontal cinematic</div>
+          <div class="pill">Throne • Long-form</div>
+          <div class="pill">Missives • Private DMs</div>
+          <div class="pill">Crown ♔ • Unlimited (founders)</div>
         </div>
-
-        <div class="panel" style="min-width:220px;flex:1">
-          <div class="small">Founding Pass</div>
-          <div style="margin-top:8px;color:#cfcfcf">Founding Bloodline Pass price & status will be managed in the dashboard (not in this demo).</div>
-        </div>
-      </div>
-    </section>
-
-    <aside class="panel" id="authPanel">
-      <h3 style="margin-bottom:8px">Creator Signup / Sign-in</h3>
-      <div class="small" style="margin-bottom:12px">Only valid invite codes allow creator accounts and upload privileges.</div>
-
-      <form id="signupForm" onsubmit="return false;">
-        <label>Email</label>
-        <input id="email" type="email" required placeholder="you@domain.com" />
-        <label>Username</label>
-        <input id="username" type="text" required placeholder="username (public)" />
-        <label>Password</label>
-        <input id="password" type="password" required placeholder="min 6 chars" />
-        <label>Invite Code</label>
-        <input id="invite" type="text" required maxlength="6" placeholder="XXXXXX" />
-        <div style="display:flex;gap:8px;margin-top:6px">
-          <button class="btn" id="doSignup">Sign up (create)</button>
-          <button class="btn secondary" id="doSignin">Sign in</button>
-        </div>
-
-        <div id="authMsg" style="margin-top:12px"></div>
-
-        <hr style="margin:12px 0;border:none;border-top:1px solid rgba(255,255,255,0.03)" />
-        <div>
-          <div class="small">Developer notes:</div>
-          <div class="small muted" style="margin-top:6px">Supabase URL and anon key are embedded for dev convenience. Move these calls to a server in production.</div>
-        </div>
-      </form>
-
-      <div style="margin-top:14px">
-        <div class="code-count">Creator invite pool: <strong id="codesRemaining">260</strong> codes embedded</div>
-        <div class="small muted" style="margin-top:6px">Codes are checked client-side here. In production, always check/mark them server-side.</div>
+        <div class="small-note">Note: Invite codes are single-use. Creator role is attached to your account after successful redemption.</div>
       </div>
 
-      <hr style="margin:12px 0;border:none;border-top:1px solid rgba(255,255,255,0.03)" />
+      <aside class="card">
+        <div id="authBox">
+          <div class="form-row">
+            <label for="email">Email</label>
+            <input id="email" class="input" type="email" placeholder="you@domain.com" />
+          </div>
+          <div class="form-row">
+            <label for="password">Password</label>
+            <input id="password" class="input" type="password" placeholder="Choose a strong password" />
+          </div>
+          <div class="form-row">
+            <label for="invite">Invite Code (optional)</label>
+            <input id="invite" class="input" type="text" placeholder="Enter your 5-character invite" maxlength="10" />
+          </div>
 
-      <div id="uploaderWrap" style="display:none">
-        <h4 style="margin-bottom:8px">Uploader (creator)</h4>
-        <div class="small" style="margin-bottom:8px">Upload files to your dev bucket. This attempts Supabase Storage first, then tries a direct PUT to Cloudflare dev path (may fail).</div>
-
-        <input type="file" id="fileInput" />
-        <div style="display:flex;gap:8px;margin-top:8px">
-          <button class="btn" id="doUpload">Upload</button>
-          <button class="btn secondary" id="doLogout">Sign out</button>
+          <div style="display:flex;gap:10px;margin-top:8px">
+            <button id="btnSignup" class="btn btn-primary">Sign up</button>
+            <button id="btnLogin" class="btn">Sign in</button>
+          </div>
+          <div id="authMsg" class="status"></div>
         </div>
 
-        <div id="uploadMsg" style="margin-top:12px"></div>
-      </div>
-    </aside>
+        <div id="userPanel" style="display:none">
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <div>
+              <div id="userEmail" style="font-weight:700"></div>
+              <div id="userRoles" class="muted" style="font-size:13px"></div>
+            </div>
+            <div>
+              <button id="btnSignOut" class="btn">Sign out</button>
+            </div>
+          </div>
 
-    <footer class="panel">
-      <div style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap">
-        <div class="small">Domain: luxscepter.com · Github: private · Netlify hosting · Supabase auth & storage (dev)</div>
-        <div class="small" style="color:#bd8e20">Royal glyphs: Crown ♔ · Scepter 𐀣</div>
-      </div>
+          <div id="creatorArea" class="uploader disabled" title="Creator uploader. Requires creator role">
+            <div style="font-weight:700">Uploader (Creators only)</div>
+            <div class="small">Upload a file to the realm. This is a client-side demo hook. Production: you must wire secure server-side uploads to R2 or Supabase Storage.</div>
+            <div style="margin-top:10px">
+              <input id="fileInput" type="file" />
+              <button id="btnUpload" class="btn" style="margin-left:8px">Upload</button>
+            </div>
+            <div id="uploadMsg" class="status"></div>
+          </div>
+        </div>
+
+      </aside>
+    </main>
+
+    <footer>
+      Founding release · Invite-only · Max 250 creators initially · LuxScepter &copy; Founding Bloodline
     </footer>
   </div>
 
+  <!-- Supabase CDN (official) -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/supabase.min.js"></script>
+
   <script>
-    /************************************************************************
-     * CONFIG (DEV) - you asked that these be pasted inline. Keep secure.
-     * In production, do NOT expose secrets in client code.
-     ************************************************************************/
-    const SUPABASE_URL = 'https://uewvmldolwgihfkxwlsl.supabase.co';
-    const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVld3ZtbGRvbHdnaWhma3h3bHNsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjM5MzQ1MjksImV4cCI6MjA3OTUxMDUyOX0.b9C00OjIkAUDPztC8RtdHcwjdgX4OrShNW_pp6r-_qI';
-    const CLOUDFLARE_R2_PUB_DEV = 'https://pub-896ac4804d024c16a6eddd0fcc22782e.r2.dev/luxscepter-uploads';
+/*
+  Supabase setup:
+  - URL and anon key are embedded per your instruction.
+  - IMPORTANT: for production rotate keys and use server-side secret handling where needed.
+*/
+const SUPABASE_URL = "https://uewvmldolwgihfkxwlsl.supabase.co";
+const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVld3ZtbGRvbHdnaWhma3h3bHNsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjM5MzQ1MjksImV4cCI6MjA3OTUxMDUyOX0.b9C00OjIkAUDPztC8RtdHcwjdgX4OrShNW_pp6r-_qI";
 
-    // Initialize Supabase client
-    const supabase = supabaseJs.createClient
-      ? supabaseJs.createClient(SUPABASE_URL, SUPABASE_ANON) // some cdn builds expose supabaseJs
-      : supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
+const supabase = supabasejs.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-    /************************************************************************
-     * THE 260 INVITE CODES (embedded as requested)
-     ************************************************************************/
-    const INVITE_CODES = [
-"7XK9M","2B4QW","Y8L1Z","N5P3R","J9D6V","C2H4A","M7T8K","W3X5Q","L1Z9N","R6P2B",
-"V8D4J","A5H7C","K3T9M","Q1X6W","Z8L2Y","P4N7R","D9J3V","H2C5A","T7M1K","X4W8Q",
-"L6Z3N","B9R2P","J5D8V","C1H7A","M4T2K","W9X3Q","Z5L6Y","R1P8B","D7J4V","H3C9A",
-"T2M5K","X8W1Q","L4Z7N","B3R6P","J1D9V","C5H2A","M8T4K","W2X7Q","Z9L3Y","R5P1B",
-"D8J6V","H4C2A","T9M7K","X3W5Q","L2Z8N","B6R4P","J7D1V","C9H5A","M1T3K","W6X2Q",
-"Z4L9Y","R8P5B","D2J7V","H5C1A","T3M6K","X9W4Q","L7Z2N","B1R3P","J6D5V","C8H9A",
-"M2T1K","W5X8Q","Z3L4Y","R7P9B","D1J2V","H6C8A","T5M3K","X2W7Q","L9Z5N","B4R1P",
-"J2D7V","C3H6A","M9T5K","W1X9Q","Z7L8Y","R3P4B","D5J9V","H8C4A","T1M2K","X6W3Q",
-"L5Z1N","B8R7P","J3D4V","C6H2X","M5T9K","9QW4X","3L2ZY","1R8PB","6D7JV","4H3CA",
-"2T5MK","7X8WQ","5L4ZN","9B6RP","1J9DV","8C5HA","4M2TK","7W9XQ","2Z1LY","6R3PB",
-"5D8JV","3H4CA","9T7MK","1X5WQ","8L2ZN","4B7RP","2J1DV","6C9HA","5M3TK","3W6XQ",
-"9Z4LY","1R2PB","8D5JV","4H1CA","7T8MK","2X3WQ","6L9ZN","5B4RP","3J7DV","9C2HA",
-"1M5TK","8W1XQ","4Z6LY","7R9PB","2D3JV","6H5CA","5T1MK","3X4WQ","9L7ZN","1B2RP",
-"8J6DV","4C3HA","7M9TK","2W5XQ","6Z8LY","5R1PB","3D4JV","9H7CA","1T2MK","8X6WQ",
-"4L3ZN","7B9RP","2J5DV","6C1HA","5M8TK","3W4XQ","9Z7LY","1R3PB","8D9JV","4H6CA",
-"7T2MK","2X5WQ","6L1ZN","5B8RP","3J4DV","9C7HA","1M3TK","8W6XQ","4Z9LY","7R2PB",
-"2D5JV","6H1CA","5T8MK","3X7WQ","9L4ZN","1B6RP","8J3DV","4C9HA","7M5TK","2W1XQ",
-"6Z4LY","5R7PB","3D2JV","9H8CA","1T6MK","8X3WQ","4L9ZN","7B5RP","2J8DV","6C4HA",
-"5M1TK","3W7XQ","9Z2LY","1R9PB","8D6JV","4H2CA","7T5MK","2X1WQ","6L7ZN","5B3RP",
-"3J9DV","9C6HA","1M4TK","8W2XQ","4Z5LY","7R1PB","2D8JV","6H4CA","5T7MK","3X9WQ",
-"9L6ZN","1B5RP","8J2DV","4C8HA","7M1TK","2W3XQ","6Z9LY","5R4PB","3D7JV","9H2CA",
-"1T5MK","8X1WQ","4L6ZN","7B8RP","2J4DV","6C3HA","5M9TK","3W2XQ","9Z5LY","1R7PB",
-"8D4JV","4H9CA","7T3MK","2X6WQ","6L8ZN","5B1RP","3J5DV","9C4HA","1M7TK","8W9XQ",
-"4Z2LY","7R6PB","2D1JV","6H8CA","5T4MK","3X2WQ","9L5ZN","1B9RP","8J7DV","4C6HA",
-"7M3TK","2W4XQ","6Z1LY","5R8PB","3D9JV","9H5CA","1T4MK","8X7WQ","4L2ZN","7B3RP",
-"2J6DV","6C2HA","5M7TK","3W9XQ","9Z8LY","1R4PB","8D1JV","4H7CA","7T6MK","2X9WQ",
-"6L5ZN","5B2RP","3J8DV","9C1HA","1M6TK","8W4XQ","4Z7LY","7R3PB","2D9JV","6H2CA",
-"5T9MK","3X1WQ","9L8ZN","1B4RP","8J5DV","4C7HA","7M2TK","2W8XQ","6Z3LY","5R6PB",
-"3D1JV","9H4CA","1T8MK","8X2WQ","4L7ZN","7B1RP","2J3DV","6C5HA","5M6TK","3W8XQ",
-"9Z1LY","1R5PB","8D2JV","4H8CA","7T1MK","2X4WQ","6L2ZN","5B9RP","3J1DV","9C8HA",
-"1M9TK","8W7XQ","4Z3LY","7R4PB","2D6JV","6H3CA","5T2MK","3X8WQ","9L1ZN","1B7RP",
-"8J4DV","4C5HA","7M6TK","2W9XQ","6Z2LY","5R4PB","3D7JV","9H2CA","1T5MK","8X1WQ",
-"4L6ZN","7B8RP","2J4DV","6C3HA","5M9TK","3W2XQ","9Z5LY","1R7PB","8D4JV","4H9CA",
-"7T3MK","2X6WQ","6L8ZN","5B1RP","3J5DV","9C4HA","1M7TK","8W9XQ","4Z2LY","7R6PB",
-"2D1JV","6H8CA","5T4MK","3X2WQ","9L5ZN","1B9RP","8J7DV","4C6HA","7M3TK","2W4XQ",
-"6Z1LY","5R8PB","3D9JV","9H5CA","1T4MK","8X7WQ","4L2ZN","7B3RP","2J6DV","6C2HA",
-"5M7TK","3W9XQ","9Z8LY","1R4PB","8D1JV","4H7CA","7T6MK","2X9WQ","6L5ZN","5B2RP",
-"3J8DV","9C1HA","1M6TK","8W4XQ","4Z7LY","7R3PB","2D9JV","6H2CA","5T9MK","3X1WQ",
-"9L8ZN","1B4RP","8J5DV","4C7HA","7M2TK","2W8XQ","6Z3LY","5R6PB","3D1JV","9H4CA",
-"1T8MK"
-    ];
+/*
+  Behavior:
+  - Signup: create user via supabase.auth.signUp
+  - Then immediately try to redeem invite if provided:
+      -> check invite_codes table for row where code = provided AND used = false
+      -> perform atomic update: set used=true, used_by=user.id, used_at=now() WHERE code=... AND used=false
+      -> if update count == 1 -> assign profile metadata in 'profiles' table: is_creator = true
+  - For simplicity this example writes a row in profiles (if not exists) and stores is_creator boolean.
+*/
+const $ = id => document.getElementById(id);
+const authMsg = $('authMsg');
+const userPanel = $('userPanel');
+const authBox = $('authBox');
+const userEmail = $('userEmail');
+const userRoles = $('userRoles');
+const creatorArea = $('creatorArea');
+const uploadMsg = $('uploadMsg');
 
-    // For quick lookup (case-insensitive)
-    const INVITES_SET = new Set(INVITE_CODES.map(c => c.toUpperCase()));
+async function setMessage(msg, isError = false){
+  authMsg.textContent = msg;
+  authMsg.style.color = isError ? '#ff8a8a' : 'var(--muted)';
+}
 
-    /************************************************************************
-     * UI wiring
-     ************************************************************************/
-    const emailEl = document.getElementById('email');
-    const usernameEl = document.getElementById('username');
-    const passwordEl = document.getElementById('password');
-    const inviteEl = document.getElementById('invite');
-    const authMsg = document.getElementById('authMsg');
-    const codesRemaining = document.getElementById('codesRemaining');
+async function signup() {
+  setMessage('Signing up...');
+  const email = $('email').value.trim();
+  const password = $('password').value;
+  const invite = $('invite').value.trim().toUpperCase();
 
-    const signupBtn = document.getElementById('doSignup');
-    const signinBtn = document.getElementById('doSignin');
-    const uploaderWrap = document.getElementById('uploaderWrap');
-    const fileInput = document.getElementById('fileInput');
-    const uploadMsg = document.getElementById('uploadMsg');
-    const doUpload = document.getElementById('doUpload');
-    const doLogout = document.getElementById('doLogout');
+  if (!email || !password) { setMessage('Email and password required.', true); return; }
 
-    // Track used codes locally for this demo (server-side persistence recommended)
-    const usedCodes = new Set();
+  // Supabase signup
+  try {
+    const { data, error } = await supabase.auth.signUp({ email, password });
+    if (error) { setMessage(error.message || 'Signup failed', true); return; }
 
-    function showAuthMessage(msg, kind='muted'){
-      authMsg.innerHTML = `<div class="${kind}">${msg}</div>`;
-    }
-    function showUploadMessage(msg, kind='muted'){
-      uploadMsg.innerHTML = `<div class="${kind}">${msg}</div>`;
+    // Supabase automatically returns a user session in certain configurations
+    setMessage('Signed up. Verifying invite code...');
+    // Wait briefly for auth propagation
+    await new Promise(r => setTimeout(r, 600));
+
+    // fetch user
+    const { data: userData } = await supabase.auth.getUser();
+    const user = userData?.user;
+    if (!user) {
+      setMessage('Signup succeeded. Please confirm your email if required by the system.', false);
+      // show limited UI
+      await refreshUI();
+      return;
     }
 
-    function updateCodesRemaining(){
-      codesRemaining.textContent = INVITE_CODES.length - usedCodes.size;
-    }
-    updateCodesRemaining();
-
-    // Basic validation
-    function validateInvite(code){
-      if(!code) return false;
-      code = code.trim().toUpperCase();
-      return INVITES_SET.has(code) && !usedCodes.has(code);
-    }
-
-    // Sign up flow: validates invite then calls Supabase signUp
-    signupBtn.addEventListener('click', async (e)=>{
-      const email = emailEl.value.trim();
-      const username = usernameEl.value.trim();
-      const password = passwordEl.value;
-      const invite = inviteEl.value.trim().toUpperCase();
-
-      if(!email || !username || !password || !invite){
-        showAuthMessage('Fill all fields', 'danger'); return;
-      }
-      if(password.length < 6){ showAuthMessage('Password must be at least 6 chars', 'danger'); return; }
-
-      if(!validateInvite(invite)){
-        showAuthMessage('Invalid or already-used invite code', 'danger'); return;
-      }
-
-      showAuthMessage('Signing up…', 'muted');
-
-      try {
-        const { data, error } = await supabase.auth.signUp({
-          email,
-          password
-        }, {
-          data: { username, is_creator: true, invite_code: invite }
-        });
-
-        if(error){
-          showAuthMessage('SignUp error: ' + error.message, 'danger');
-          return;
-        }
-
-        // On success: mark code used (local demo); server persist is required in production
-        usedCodes.add(invite);
-        updateCodesRemaining();
-
-        showAuthMessage('Signup successful. Confirm your email (if required). You may now sign in.', 'success');
-      } catch(err){
-        console.error(err);
-        showAuthMessage('Unexpected error during signup', 'danger');
-      }
-    });
-
-    // Sign in flow
-    signinBtn.addEventListener('click', async (e)=>{
-      const email = emailEl.value.trim();
-      const password = passwordEl.value;
-      if(!email || !password){ showAuthMessage('Enter email and password to sign in', 'danger'); return; }
-
-      showAuthMessage('Signing in…', 'muted');
-
-      try {
-        const { data, error } = await supabase.auth.signInWithPassword({ email, password });
-        if(error){
-          showAuthMessage('Sign in error: ' + error.message, 'danger'); return;
-        }
-        showAuthMessage('Signed in. Creator privileges granted (if invite was valid).', 'success');
-        // show uploader
-        uploaderWrap.style.display = 'block';
-      } catch(err){
-        console.error(err);
-        showAuthMessage('Unexpected sign-in error', 'danger');
-      }
-    });
-
-    // Logout
-    doLogout.addEventListener('click', async ()=>{
-      await supabase.auth.signOut();
-      uploaderWrap.style.display = 'none';
-      showAuthMessage('Signed out', 'muted');
-    });
-
-    // Upload handler
-    doUpload.addEventListener('click', async ()=>{
-      const file = fileInput.files[0];
-      if(!file){ showUploadMessage('Choose a file first', 'danger'); return; }
-
-      showUploadMessage('Preparing upload…', 'muted');
-
-      // 1) Try Supabase Storage (recommended)
-      const filePath = `creators/${Date.now()}_${file.name}`;
-      try {
-        // Note: requires a bucket called 'lux-uploads' created in Supabase storage.
-        const { data: upData, error: upError } = await supabase.storage.from('lux-uploads').upload(filePath, file, {
-          cacheControl: '3600',
-          upsert: false
-        });
-
-        if(upError){
-          console.warn('Supabase storage error', upError);
-          showUploadMessage('Supabase upload failed: ' + upError.message, 'danger');
-        } else {
-          showUploadMessage('Uploaded to Supabase storage: ' + filePath, 'success');
-        }
-      } catch(err){
-        console.warn('Supabase upload exception', err);
-        showUploadMessage('Supabase upload exception (see console)', 'danger');
-      }
-
-      // 2) Try direct PUT to Cloudflare dev endpoint (best-effort)
-      try {
-        showUploadMessage('Attempting Cloudflare dev PUT (best-effort)...', 'muted');
-
-        // IMPORTANT: many R2 setups block unsigned PUTs. This demo will try to PUT to your dev URL.
-        const url = CLOUDFLARE_R2_PUB_DEV + '/' + encodeURIComponent(file.name);
-        const resp = await fetch(url, {
-          method: 'PUT',
-          body: file,
-          // If your endpoint needs headers, add them here (Authorization etc).
-        });
-
-        if(resp.ok){
-          showUploadMessage('Cloudflare dev upload OK: ' + url, 'success');
-        } else {
-          console.warn('Cloudflare PUT failed', resp.status, await resp.text());
-          showUploadMessage('Cloudflare PUT failed: ' + resp.status + ' (check server signing)', 'danger');
-        }
-      } catch(err){
-        console.warn('Cloudflare PUT exception', err);
-        showUploadMessage('Cloudflare upload error (see console) — likely requires signed URL/server-side', 'danger');
-      }
-    });
-
-    // Optional: detect auth state change
-    supabase.auth.onAuthStateChange((event, session) => {
-      if(session && session.user){
-        uploaderWrap.style.display = 'block';
-        showAuthMessage('Authenticated as ' + (session.user.email || session.user.id), 'success');
+    // try redeem invite if provided
+    if (invite) {
+      const redeemed = await tryRedeemInvite(invite, user.id);
+      if (redeemed) {
+        setMessage('Invite redeemed. Creator privileges granted.');
       } else {
-        uploaderWrap.style.display = 'none';
+        setMessage('Invite invalid or already used. You are signed up as a public user.', true);
       }
-    });
+    } else {
+      setMessage('Signup complete. No invite used. You are a public user.');
+    }
+    await refreshUI();
+  } catch (err) {
+    setMessage('Unexpected error during signup', true);
+    console.error(err);
+  }
+}
 
-    // Accessibility: quick paste for invite (developer convenience)
-    inviteEl.addEventListener('paste', (ev)=>{
-      setTimeout(()=>{ inviteEl.value = inviteEl.value.toUpperCase().replace(/[^A-Z0-9]/g,'').substr(0,6); }, 5);
-    });
+async function login() {
+  setMessage('Signing in...');
+  const email = $('email').value.trim();
+  const password = $('password').value;
+  if (!email || !password) { setMessage('Email and password required.', true); return; }
+  const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+  if (error) { setMessage(error.message || 'Login failed', true); return; }
+  setMessage('Signed in.');
+  await refreshUI();
+}
 
-    // END
+async function signout() {
+  await supabase.auth.signOut();
+  setMessage('Signed out.');
+  await refreshUI();
+}
+
+async function tryRedeemInvite(code, userId) {
+  // Attempt an atomic "claim" on invite_codes where used = false
+  // We use a rpc-like atomic approach via update with where used=false
+  const { data: precheck } = await supabase
+    .from('invite_codes')
+    .select('code, used')
+    .eq('code', code)
+    .limit(1);
+
+  if (!precheck || precheck.length === 0) return false;
+  if (precheck[0].used) return false;
+
+  // atomic update
+  const { data, error, count } = await supabase
+    .from('invite_codes')
+    .update({ used: true, used_by: userId, used_at: new Date().toISOString() })
+    .eq('code', code)
+    .eq('used', false)
+    .select();
+
+  if (error) { console.error('redeem error', error); return false; }
+  if (!data || data.length === 0) return false;
+
+  // Grant creator role in profiles table
+  const profilePayload = { id: userId, is_creator: true, updated_at: new Date().toISOString() };
+  // Upsert into profiles
+  const upsert = await supabase.from('profiles').upsert(profilePayload).select();
+  if (upsert.error) { console.warn('profile upsert failed', upsert.error); }
+  return true;
+}
+
+async function refreshUI(){
+  const { data: userData } = await supabase.auth.getUser();
+  const user = userData?.user;
+  if (!user) {
+    authBox.style.display = 'block';
+    userPanel.style.display = 'none';
+    return;
+  }
+  authBox.style.display = 'none';
+  userPanel.style.display = 'block';
+  userEmail.textContent = user.email || user.id;
+
+  // fetch profile to see if is_creator
+  const { data: profile } = await supabase.from('profiles').select('is_creator').eq('id', user.id).single();
+  const isCreator = profile?.is_creator === true;
+  userRoles.textContent = isCreator ? 'Roles: Creator (founder) · Crowns ♔' : 'Roles: Public member';
+  if (isCreator) {
+    creatorArea.classList.remove('disabled');
+  } else {
+    creatorArea.classList.add('disabled');
+  }
+}
+
+/* Upload stub: demonstrates client-side upload for creators.
+   Production: do signed uploads to Cloudflare R2 or Supabase Storage server-side.
+*/
+$('btnUpload').addEventListener('click', async () => {
+  uploadMsg.textContent = '';
+  const file = $('fileInput').files[0];
+  if (!file) { uploadMsg.textContent = 'Select a file first.'; return; }
+
+  const { data: userData } = await supabase.auth.getUser();
+  const user = userData?.user;
+  if (!user) { uploadMsg.textContent = 'Sign in first.'; return; }
+
+  const { data: profile } = await supabase.from('profiles').select('is_creator').eq('id', user.id).single();
+  if (!profile?.is_creator) { uploadMsg.textContent = 'You are not a creator.'; return; }
+
+  uploadMsg.textContent = 'Pretend uploading... (demo)';
+
+  // This is a demo placeholder. For production:
+  // 1) Request a signed upload URL from your server that holds R2 credentials.
+  // 2) PUT the file to the signed URL.
+  // 3) Save metadata to your DB: title, uploader_id, src_url, duration, thumb, type, etc.
+  await new Promise(r => setTimeout(r, 900));
+  uploadMsg.textContent = 'Upload simulated. Implement server upload for production.';
+});
+
+/* Event bindings */
+$('btnSignup').addEventListener('click', signup);
+$('btnLogin').addEventListener('click', login);
+$('btnSignOut').addEventListener('click', signout);
+$('btnSignIn').addEventListener('click', () => { window.scrollTo({ top: 0, behavior: 'smooth' }); $('email').focus(); });
+
+/* On load: check session */
+window.addEventListener('load', async () => {
+  // refresh UI according to session
+  await refreshUI();
+});
+
+// auth state change
+supabase.auth.onAuthStateChange((event, session) => {
+  refreshUI();
+});
   </script>
 </body>
 </html>
