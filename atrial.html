@@ -6,29 +6,18 @@
 <title>Lux Scepter — Founding Bloodline</title>
 <link rel="preload" href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&display=swap" as="style">
 <style>
-/* ===================== THEME / FONTS ===================== */
 :root{
-  --bg:#080808;            /* deep charcoal */
-  --paper:#0f0e0d;         /* slightly warmer background card */
-  --gold:#C9A84A;          /* dignified gold */
-  --ivory:#F6F2EA;         /* main text */
-  --tan:#CBB896;           /* secondary */
+  --bg:#080808;
+  --paper:#0f0e0d;
+  --gold:#C9A84A;
+  --ivory:#F6F2EA;
+  --tan:#CBB896;
   --accent:#9B7A3B;
   --muted: rgba(201,168,74,0.08);
   --max-width: 1100px;
+  --word-font: 'Playfair Display', 'Times New Roman', serif;
+  --ui-font: 'Times New Roman', serif;
 }
-
-/* If you host Chomsky.woff2, uncomment and point below for a perfect wordmark:
-@font-face{
-  font-family: 'Chomsky';
-  src: url('/fonts/Chomsky.woff2') format('woff2');
-  font-weight:700;
-  font-style:normal;
-  font-display:swap;
-}
-Then change --word-font to 'Chomsky', 'Playfair Display', serif;
-*/
-:root{ --word-font: 'Playfair Display', 'Times New Roman', serif; --ui-font: 'Times New Roman', serif; }
 
 /* mobile-first reset */
 *{box-sizing:border-box}
@@ -100,15 +89,34 @@ body{
   gap:10px;
   pointer-events:none;
 }
-.crown{
-  width:108px;
-  height:108px;
+.crown-badge {
+  width:120px;
+  height:120px;
+  border-radius:20px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
   transform:translateY(6px);
   opacity:0;
-  filter: drop-shadow(0 12px 36px rgba(0,0,0,0.6));
-  transition:transform 700ms cubic-bezier(.2,.9,.28,1), opacity .6s ease;
+  background: linear-gradient(180deg, rgba(201,168,74,0.12), rgba(201,168,74,0.04));
+  border: 2px solid rgba(201,168,74,0.26);
+  box-shadow: 0 18px 40px rgba(0,0,0,0.6), inset 0 -8px 18px rgba(0,0,0,0.12);
+  transition: transform 700ms cubic-bezier(.2,.9,.28,1), opacity .6s ease;
+  font-family: var(--word-font);
 }
-.crown--visible{ transform:translateY(0); opacity:1; }
+.crown-badge--visible{ transform:translateY(0); opacity:1; }
+
+/* glyph itself */
+.crown-glyph {
+  font-size:54px;              /* adjust scale */
+  color:var(--gold);
+  line-height:1;
+  transform:translateY(2px);
+  text-shadow: 0 2px 0 rgba(0,0,0,0.45), 0 6px 18px rgba(0,0,0,0.55);
+  will-change: transform;
+  display:inline-block;
+  font-variant: small-caps;
+}
 
 /* wordmark */
 .wordmark{
@@ -250,13 +258,14 @@ body{
 
 /* reduced motion */
 @media (prefers-reduced-motion: reduce){
-  .hairline, .wordmark span, .crown, .tag { transition: none !important; animation: none !important; transform:none !important; }
+  .hairline, .wordmark span, .crown-badge, .tag { transition: none !important; animation: none !important; transform:none !important; }
 }
 
 /* larger screens */
 @media(min-width:780px){
   .wordmark{ font-size:2.8rem }
-  .crown{ width:140px; height:140px }
+  .crown-badge{ width:150px; height:150px; border-radius:22px }
+  .crown-glyph{ font-size:66px }
   .testimonial{ left:28px; bottom:152px }
   .cta{ bottom:72px }
 }
@@ -270,24 +279,10 @@ body{
     <div class="shimmer" aria-hidden="true"></div>
 
     <div class="logo" id="logo">
-      <!-- dignified crown SVG (matte gold; simple, elegant) -->
-      <svg class="crown" id="crown" viewBox="0 0 128 128" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img">
-        <defs>
-          <linearGradient id="goldGrad" x1="0" x2="1">
-            <stop offset="0" stop-color="#E9D6A0"/>
-            <stop offset="1" stop-color="#B68F3A"/>
-          </linearGradient>
-          <filter id="soft" x="-50%" y="-50%" width="200%" height="200%">
-            <feGaussianBlur stdDeviation="2.0" result="b"/>
-            <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
-          </filter>
-        </defs>
-        <g filter="url(#soft)">
-          <path d="M12 90 L28 46 L46 66 L64 36 L82 66 L100 46 L116 90 Z" fill="url(#goldGrad)" stroke="rgba(0,0,0,0.14)" stroke-width="2"/>
-          <rect x="12" y="90" width="92" height="12" rx="6" fill="#2d241c"/>
-          <circle cx="64" cy="52" r="7" fill="#b68aff" opacity="0.95"></circle>
-        </g>
-      </svg>
+      <!-- Badge using the glyph ♔ for a crisp minimal royal mark -->
+      <div class="crown-badge" id="crownBadge" aria-hidden="false" role="img" aria-label="Crown emblem">
+        <span class="crown-glyph" aria-hidden="true">♔</span>
+      </div>
 
       <div id="wordmark" class="wordmark" aria-label="LUX SCEPTER" role="heading"></div>
       <div id="tagline" class="tag">Rule the feed. Own the crown.</div>
@@ -346,7 +341,8 @@ const supabase = createClient(supabaseUrl, supabaseKey)
 
 /* ====== ELEMENTS ====== */
 const hairline = document.getElementById('hairline')
-const crown = document.getElementById('crown')
+const crownBadge = document.getElementById('crownBadge')
+const crownGlyph = document.querySelector('.crown-glyph')
 const wordmark = document.getElementById('wordmark')
 const tagline = document.getElementById('tagline')
 const liveCount = document.getElementById('liveCount')
@@ -381,17 +377,13 @@ function buildWord(){
 buildWord()
 
 function reveal(){
-  // show crown with dignified easing
-  crown.classList.add('crown--visible')
-  // reveal letters with small stagger
+  crownBadge.classList.add('crown-badge--visible')
   const spans = wordmark.querySelectorAll('span')
   wordmark.style.opacity = 1
   spans.forEach((sp, i)=>{
     setTimeout(()=>{ sp.style.opacity=1; sp.style.transform='translateY(0)'; }, 160 + i*72)
   })
-  // tagline fade
   setTimeout(()=> { tagline.style.opacity=1; tagline.style.transform='translateY(0)'; }, 160 + spans.length*72 + 120)
-  // show CTA & UI gently
   setTimeout(()=> {
     document.getElementById('cta').classList.add('fade')
     document.getElementById('topRight').classList.add('fade')
@@ -405,17 +397,17 @@ hairline.addEventListener('animationend', ()=>{
   reveal()
 })
 
-/* Crown subtle parallax (tiny) */
+/* Glyph subtle parallax (tiny) */
 const MAX = 4
 document.addEventListener('pointermove', (e)=>{
-  const r = crown.getBoundingClientRect()
+  const r = crownBadge.getBoundingClientRect()
   const cx = r.left + r.width/2
   const cy = r.top + r.height/2
   const dx = (e.clientX - cx)/r.width * MAX
   const dy = (e.clientY - cy)/r.height * MAX
-  crown.style.transform = `translate(${dx}px, ${dy}px)`
+  crownBadge.style.transform = `translate(${dx}px, ${dy}px)`
 })
-document.addEventListener('pointerleave', ()=> crown.style.transform = '')
+document.addEventListener('pointerleave', ()=> crownBadge.style.transform = '')
 
 /* ====== Testimonials rotation (dignified) ====== */
 const TESTS = [
@@ -518,8 +510,7 @@ authForm.addEventListener('submit', async (ev)=>{
 
 /* ====== boot fallback ====== */
 document.addEventListener('DOMContentLoaded', ()=>{
-  // If hairline animation didn't trigger (rare), force reveal after 2s
-  setTimeout(()=>{ if(!crown.classList.contains('crown--visible')) reveal() }, 2200)
+  setTimeout(()=>{ if(!crownBadge.classList.contains('crown-badge--visible')) reveal() }, 2200)
 })
 
 /* small accessibility */
