@@ -5,60 +5,52 @@
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
 <title>Lux Scepter — Realm</title>
 <style>
-  /* Fonts: Chomsky for headings (fallback), Times New Roman for body */
-  @font-face { font-family: 'Chomsky'; src: local('Chomsky'), local('Georgia'); }
+  @font-face{font-family:Chomsky;src:local('Chomsky'),local('Georgia')}
   :root{
-    --bg:#0f1111;
-    --off:#141414;
-    --maroon:#571728;
-    --deepviolet:#35005a;
-    --royal:#5600a1;
-    --gold:#bd8e20;
-    --muted:#9b8b6d;
-    --glass: rgba(255,255,255,0.03);
+    --bg:#0f1111;--maroon:#571728;--deepviolet:#35005a;--royal:#5600a1;--gold:#bd8e20;--muted:#9b8b6d;--glass:rgba(255,255,255,0.03)
   }
   html,body{height:100%;margin:0;background:linear-gradient(180deg,var(--bg),#09080a);color:var(--gold);font-family:"Times New Roman",serif;font-size:15px}
-  /* layout */
-  .wrap { display:grid; grid-template-columns:320px 1fr 360px; gap:18px; padding:20px; min-height:100vh; box-sizing:border-box; }
-  .card { background: linear-gradient(180deg, rgba(255,255,255,0.01), rgba(0,0,0,0.15)); border-radius:12px; border:1px solid var(--maroon); padding:14px; box-shadow: 0 10px 40px rgba(0,0,0,0.6); }
-  h1{font-family:Chomsky, serif;font-size:28px;margin:0 0 12px 0;color:var(--gold)}
-  .muted { color:var(--muted); font-size:13px }
-  input,select,textarea { width:100%; padding:10px; margin-top:8px; border-radius:8px; background:#0b0b0b; color:var(--gold); border:1px solid var(--deepviolet); box-sizing:border-box; }
-  button { padding:10px 12px; border-radius:10px; border:none; cursor:pointer; font-weight:600; }
-  .btn-primary { background:var(--royal); color:#fff }
-  .btn-plain { background:transparent; border:1px solid var(--glass); color:var(--gold) }
-  .profile-row { display:flex; gap:12px; align-items:center }
-  .avatar { width:68px;height:68px;border-radius:10px;background:#0a0a0a;border:2px solid var(--deepviolet);display:flex;align-items:center;justify-content:center;font-family:Chomsky;color:var(--gold);font-size:26px }
-  .banner { width:100%;height:84px;border-radius:8px;background:linear-gradient(90deg, rgba(86,0,161,0.15), rgba(87,23,40,0.1)); margin-bottom:10px;border:1px solid rgba(255,255,255,0.03) }
-  .small { font-size:13px }
-  /* feed */
-  .feed { display:flex; flex-direction:column; gap:12px; }
-  .post { border-radius:10px; padding:12px; background: linear-gradient(180deg, rgba(255,255,255,0.01), rgba(0,0,0,0.06)); border:1px solid rgba(255,255,255,0.02) }
-  .meta { display:flex; gap:8px; align-items:center; margin-bottom:8px }
-  video{ width:100%; border-radius:8px; background:black }
-  /* oracle bar (right-edge animated) */
-  #oracle-bar { position:fixed; right:12px; top:40vh; width:48px;height:56px;border-radius:10px;border-left:4px solid var(--gold); display:flex; align-items:center; justify-content:center; writing-mode:vertical-rl; cursor:pointer; font-family:Chomsky; color:var(--gold); background:linear-gradient(90deg, rgba(189,142,32,0.03), rgba(189,142,32,0.01)); z-index:1000 }
-  #oracle-full { position:fixed; right:0; top:0; bottom:0; width:420px; transform:translateX(420px); transition:transform .28s ease; z-index:999 }
-  #oracle-full.open { transform:translateX(0) }
-  #oracle-full .inner { padding:20px; height:100%; background:linear-gradient(180deg,#070407,#0c0709); border-left:6px solid var(--gold); color:var(--gold) }
-  /* player modal */
-  #player { position:fixed; inset:0; display:none; align-items:center; justify-content:center; background:rgba(0,0,0,0.85); z-index:1200 }
-  #player.show { display:flex }
-  .player-card { width:92%; max-width:1000px; padding:18px; border-radius:12px; background:linear-gradient(180deg,#0b0b0b,#150815); border:1px solid rgba(255,255,255,0.03) }
-  /* responsive */
-  @media(max-width:980px){ .wrap{grid-template-columns:1fr; padding:12px} #oracle-bar{display:none} #oracle-full{display:none} }
+  .topbar{display:flex;align-items:center;gap:12px;padding:18px 20px 0 20px}
+  .brand{font-family:Chomsky;color:var(--gold);font-size:20px}
+  .muted{color:var(--muted);font-size:13px}
+  .wrap{display:grid;grid-template-columns:320px 1fr 360px;gap:18px;padding:20px;min-height:calc(100vh - 72px);box-sizing:border-box}
+  .card{background:linear-gradient(180deg,rgba(255,255,255,0.01),rgba(0,0,0,0.06));border-radius:12px;border:1px solid var(--maroon);padding:14px;box-shadow:0 10px 40px rgba(0,0,0,0.6)}
+  h1{font-family:Chomsky;margin:0 0 12px 0;color:var(--gold)}
+  input,select,textarea{width:100%;padding:10px;margin-top:8px;border-radius:8px;background:#0b0b0b;color:var(--gold);border:1px solid var(--deepviolet);box-sizing:border-box}
+  button{padding:10px 12px;border-radius:10px;border:none;cursor:pointer;font-weight:600}
+  .btn-primary{background:var(--royal);color:#fff}
+  .btn-plain{background:transparent;border:1px solid var(--glass);color:var(--gold)}
+  .profile-row{display:flex;gap:12px;align-items:center}
+  .avatar{width:68px;height:68px;border-radius:10px;background:#0a0a0a;border:2px solid var(--deepviolet);display:flex;align-items:center;justify-content:center;font-family:Chomsky;color:var(--gold);font-size:26px}
+  .banner{width:100%;height:84px;border-radius:8px;background:linear-gradient(90deg,rgba(86,0,161,0.15),rgba(87,23,40,0.1));margin-bottom:10px;border:1px solid rgba(255,255,255,0.03)}
+  .feed{display:flex;flex-direction:column;gap:12px}
+  .post{border-radius:10px;padding:12px;background:linear-gradient(180deg,rgba(255,255,255,0.01),rgba(0,0,0,0.06));border:1px solid rgba(255,255,255,0.02)}
+  .meta{display:flex;gap:8px;align-items:center;margin-bottom:8px}
+  video{width:100%;border-radius:8px;background:black}
+  #oracle-bar{position:fixed;right:12px;top:40vh;width:48px;height:56px;border-radius:10px;border-left:4px solid var(--gold);display:flex;align-items:center;justify-content:center;writing-mode:vertical-rl;cursor:pointer;font-family:Chomsky;color:var(--gold);background:linear-gradient(90deg,rgba(189,142,32,0.03),rgba(189,142,32,0.01));z-index:1000}
+  #oracle-full{position:fixed;right:0;top:0;bottom:0;width:420px;transform:translateX(420px);transition:transform .28s ease;z-index:999}
+  #oracle-full.open{transform:translateX(0)}
+  #oracle-full .inner{padding:20px;height:100%;background:linear-gradient(180deg,#070407,#0c0709);border-left:6px solid var(--gold);color:var(--gold)}
+  #player{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,0.85);z-index:1200}
+  #player.show{display:flex}
+  .player-card{width:92%;max-width:1000px;padding:18px;border-radius:12px;background:linear-gradient(180deg,#0b0b0b,#150815);border:1px solid rgba(255,255,255,0.03)}
+  @media(max-width:980px){.wrap{grid-template-columns:1fr;padding:12px}#oracle-bar{display:none}#oracle-full{display:none}}
+  /* small helpers */
+  .small{font-size:13px;color:var(--muted)}
+  .flex-between{display:flex;justify-content:space-between;align-items:center}
+  .row{display:flex;gap:8px;align-items:center}
 </style>
 </head>
 <body>
-  <div style="display:flex;align-items:center;gap:16px;padding:18px 20px 0 20px">
-    <div style="font-family:Chomsky;color:var(--gold);font-size:20px">Lux Scepter</div>
+  <div class="topbar">
+    <div class="brand">Lux Scepter</div>
     <div class="muted">Rule the feed. Own the crown.</div>
     <div style="margin-left:auto" id="signed-info" class="muted"></div>
-    <button id="signout" style="margin-left:12px" class="btn-plain">Sign out</button>
+    <button id="signout" class="btn-plain">Sign out</button>
   </div>
 
   <div class="wrap">
-    <!-- LEFT: profile & upload -->
+    <!-- LEFT -->
     <aside class="card">
       <div class="banner" id="banner"></div>
       <div class="profile-row">
@@ -73,10 +65,10 @@
       <hr style="border:1px solid rgba(255,255,255,0.02);margin:12px 0">
 
       <div id="invite-activation">
-        <label>Enter Invite Code to Activate Creator</label>
+        <label>Invite Code — Activate Creator</label>
         <input id="invite-code" placeholder="XXXXXX" />
         <button id="activate-code" class="btn-primary" style="margin-top:8px">Activate Invite</button>
-        <div class="muted small" id="invite-status"></div>
+        <div id="invite-status" class="muted small" style="margin-top:6px"></div>
       </div>
 
       <div id="uploader" style="margin-top:12px;display:none">
@@ -89,34 +81,46 @@
         </select>
         <label>Title</label>
         <input id="post-title" placeholder="Title" />
-        <label>Choose file (video preferred)</label>
+        <label>File (video preferred)</label>
         <input id="post-file" type="file" accept="video/*,image/*" />
         <label>Description</label>
         <textarea id="post-desc" rows="3" placeholder="Short description"></textarea>
-        <button id="upload-btn" class="btn-primary" style="margin-top:10px;width:100%">Upload to Cloudflare</button>
+        <button id="upload-btn" class="btn-primary" style="margin-top:10px;width:100%">Upload</button>
         <div id="upload-feedback" class="muted small" style="margin-top:8px"></div>
+
+        <hr style="border:1px solid rgba(255,255,255,0.02);margin:12px 0">
+
+        <div style="font-family:Chomsky;font-size:15px">Proclamation (24h)</div>
+        <label>Title</label>
+        <input id="story-title" placeholder="Proclamation title" />
+        <label>Body</label>
+        <textarea id="story-body" rows="3" placeholder="Short proclamation (visible 24h)"></textarea>
+        <button id="post-story" class="btn-plain" style="margin-top:8px;width:100%">Publish Proclamation</button>
+        <div id="story-feedback" class="muted small" style="margin-top:8px"></div>
       </div>
 
       <hr style="border:1px solid rgba(255,255,255,0.02);margin:12px 0">
 
       <div>
         <div class="muted small">Founding Bloodline</div>
-        <div id="founder-status" style="margin-top:8px" class="small muted">Not a founder</div>
+        <div id="founder-status" class="small muted" style="margin-top:8px">Not a founder</div>
         <button id="buy-pass" class="btn-plain" style="margin-top:8px">Buy Founding Pass — $149</button>
         <div style="margin-top:8px"><button id="gen-ref" class="btn-plain">Generate Referral Link</button></div>
         <div id="ref-info" class="small muted" style="margin-top:8px"></div>
       </div>
     </aside>
 
-    <!-- CENTER: feed -->
+    <!-- CENTER -->
     <main class="card">
-      <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px">
-        <h1 style="margin:0">Realm</h1>
-        <div class="muted small" style="margin-left:6px">Chrono / Algorithmic feed</div>
-        <div style="margin-left:auto;display:flex;gap:8px;align-items:center">
+      <div class="flex-between" style="margin-bottom:12px">
+        <div>
+          <h1 style="margin:0">Realm</h1>
+          <div class="muted small">Chronological or algorithmic feed</div>
+        </div>
+        <div class="row">
           <button id="chrono-btn" class="btn-plain">Chrono</button>
           <button id="algo-btn" class="btn-plain">Algo</button>
-          <label style="margin-left:12px" class="muted small">Auto-Advance <input id="auto-advance" type="checkbox" style="margin-left:6px"/></label>
+          <label class="muted small" style="margin-left:12px">Auto-Advance <input id="auto-advance" type="checkbox" style="margin-left:6px"/></label>
           <label class="muted small" style="margin-left:8px">Reign <select id="reign" style="background:#0b0b0b;border:1px solid var(--deepviolet);color:var(--gold)"><option>8</option><option>15</option><option>30</option><option>60</option></select>s</label>
         </div>
       </div>
@@ -125,10 +129,10 @@
       <div id="feed-empty" class="muted small" style="margin-top:12px;display:none">No posts yet.</div>
     </main>
 
-    <!-- RIGHT: stories & missives & profiles -->
+    <!-- RIGHT -->
     <aside class="card">
-      <div style="display:flex;justify-content:space-between;align-items:center">
-        <div style="font-family:Chomsky;font-size:16px">Proclamation (24h)</div>
+      <div class="flex-between">
+        <div style="font-family:Chomsky;font-size:16px">Proclamations</div>
         <div id="stories-count" class="muted small">0</div>
       </div>
       <div id="stories" style="margin-top:8px;max-height:160px;overflow:auto"></div>
@@ -153,164 +157,64 @@
     </aside>
   </div>
 
-  <!-- Oracle Edge vertical right-edge -->
+  <!-- Oracle edge -->
   <div id="oracle-bar">ORACLE</div>
-  <div id="oracle-full">
-    <div class="inner">
-      <div style="display:flex;justify-content:space-between;align-items:center">
-        <div style="font-family:Chomsky;font-size:18px">Oracle Edge</div>
-        <button id="oracle-close" class="btn-plain">Close</button>
-      </div>
-      <div style="margin-top:12px">
-        <input id="oracle-q" placeholder="Search titles, creators, tags..." />
-        <div id="oracle-results" style="margin-top:12px;max-height:72vh;overflow:auto"></div>
-      </div>
-    </div>
-  </div>
+  <div id="oracle-full"><div class="inner">
+    <div class="flex-between"><div style="font-family:Chomsky;font-size:18px">Oracle Edge</div><button id="oracle-close" class="btn-plain">Close</button></div>
+    <div style="margin-top:12px"><input id="oracle-q" placeholder="Search titles, creators, tags..." /><div id="oracle-results" style="margin-top:12px;max-height:72vh;overflow:auto"></div></div>
+  </div></div>
 
-  <!-- Player Modal -->
-  <div id="player">
-    <div class="player-card">
-      <div style="display:flex;justify-content:space-between;align-items:center">
-        <div style="font-family:Chomsky;font-size:18px" id="player-title"></div>
-        <div><button id="close-player" class="btn-plain">Close</button></div>
-      </div>
-      <div id="player-area" style="margin-top:12px"></div>
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-top:10px">
-        <div class="muted small" id="player-meta"></div>
-        <div style="display:flex;gap:8px">
-          <button id="crown-btn" class="btn-plain">♔ Crown</button>
-          <button id="scepter-btn" class="btn-plain">𐀣 Scepter</button>
-        </div>
-      </div>
+  <!-- Player modal -->
+  <div id="player"><div class="player-card">
+    <div class="flex-between"><div style="font-family:Chomsky;font-size:18px" id="player-title"></div><div><button id="close-player" class="btn-plain">Close</button></div></div>
+    <div id="player-area" style="margin-top:12px"></div>
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-top:10px">
+      <div class="muted small" id="player-meta"></div>
+      <div style="display:flex;gap:8px"><button id="crown-btn" class="btn-plain">♔ Crown</button><button id="scepter-btn" class="btn-plain">𐀣 Scepter</button></div>
+    </div>
+  </div></div>
+
+  <!-- Inbox modal (simple) -->
+  <div id="inbox-modal" style="display:none;position:fixed;inset:0;align-items:center;justify-content:center;background:rgba(0,0,0,0.8);z-index:1300">
+    <div style="width:92%;max-width:900px;background:#0b0b0b;border-radius:10px;padding:16px;border:1px solid rgba(255,255,255,0.03);color:var(--gold);">
+      <div class="flex-between"><div style="font-family:Chomsky;font-size:18px">Inbox</div><button id="close-inbox" class="btn-plain">Close</button></div>
+      <div id="inbox-content" style="margin-top:12px;max-height:70vh;overflow:auto"></div>
     </div>
   </div>
 
 <script type="module">
-/* --------------------------
-   CONFIG: Supabase + Cloudflare R2
-   --------------------------
-   You provided the Supabase URL + anon key in index.html.
-   Cloudflare R2 host and credentials are included below (you provided them).
-   BE AWARE: embedding secrets in client code is insecure. Keep for dev.
-*/
 import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
 
+/* ----------------- CONFIG ----------------- */
 const SUPABASE_URL = 'https://uewvmldolwgihfkxwlsl.supabase.co'
-const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVld3ZtbGRvbHdnaWhma3h3bHNsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjM5MzQ1MjksImV4cCI6MjA3OTUxMDUyOX0.b9C00OjIkAUDPztC8RtdHcwjdgX4OrShNW_pp6r-_qI'
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVld3ZtbGRvbHdnaWhmaWhma3h3bHNsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjM5MzQ1MjksImV4cCI6MjA3OTUxMDUyOX0.b9C00OjIkAUDPztC8RtdHcwjdgX4OrShNW_pp6r-_qI'
 const supabase = createClient(SUPABASE_URL, SUPABASE_KEY)
 
-/* Cloudflare R2 credentials (from your message). Keep for dev only. */
-const R2_ACCOUNT_HOST = '4aefdc871e931f0ca228941ee1599c02.r2.cloudflarestorage.com'
-const R2_BUCKET = 'luxscepter-uploads'
-const R2_ENDPOINT = `https://${R2_ACCOUNT_HOST}`
-const R2_ACCESS_KEY = 'e99af04b068a9a23ce46845e3ecf8efa' // Access Key ID you provided
-const R2_SECRET_KEY = '154bf5eaf1516e58c9055f8df68bd80640b848d498872b23e1eab43589559f4f' // Secret Access Key you provided
-
-/* --------------------------
-   UTILS: SigV4 signing (AWS style) using WebCrypto
-   Implements minimal SigV4 to PUT objects to R2 (service: s3)
-   -------------------------- */
-const enc = new TextEncoder()
-function toHex(buffer){ return Array.from(new Uint8Array(buffer)).map(b=>b.toString(16).padStart(2,'0')).join('') }
-async function sha256(data){ // input ArrayBuffer or string
-  if (typeof data === 'string') data = enc.encode(data)
-  const h = await crypto.subtle.digest('SHA-256', data)
-  return h
-}
-async function hmacSha256(key, data){ // key: ArrayBuffer, data: string or ArrayBuffer
-  const cryptoKey = await crypto.subtle.importKey('raw', key, { name: 'HMAC', hash:'SHA-256' }, false, ['sign'])
-  const sig = await crypto.subtle.sign('HMAC', cryptoKey, (typeof data === 'string') ? enc.encode(data) : data)
-  return sig
-}
-async function getSignatureKey(secret, dateStamp, regionName, serviceName){
-  const kDate = await hmacSha256(enc.encode('AWS4' + secret), dateStamp)
-  const kRegion = await hmacSha256(kDate, regionName)
-  const kService = await hmacSha256(kRegion, serviceName)
-  const kSigning = await hmacSha256(kService, 'aws4_request')
-  return kSigning
-}
-
-/* Build canonical request and Authorization header for PUT */
-async function buildSignature({ method, path, host, region='auto', service='s3', payloadArrayBuffer, headers={} }){
-  // Cloudflare R2 doesn't require a region; use 'us-east-1' for signing compatibility
-  const regionName = 'auto' // placeholder, use 'auto' then credential scope uses 'auto' too
-  const now = new Date()
-  const amzDate = now.toISOString().replace(/[:-]|\.\d{3}/g,'') + 'Z' // yyyyMMddTHHmmssZ
-  const dateStamp = amzDate.slice(0,8) // yyyyMMdd
-  const signedHeadersList = ['host','x-amz-content-sha256','x-amz-date']
-  // compute payload hash
-  const payloadHashBuf = await sha256(payloadArrayBuffer)
-  const payloadHashHex = toHex(payloadHashBuf)
-  // canonical request
-  const canonicalHeaders = `host:${host}\n` + `x-amz-content-sha256:${payloadHashHex}\n` + `x-amz-date:${amzDate}\n`
-  const canonicalRequest = [
-    method,
-    path,
-    '', // query string
-    canonicalHeaders,
-    signedHeadersList.join(';'),
-    payloadHashHex
-  ].join('\n')
-  const canonicalHash = toHex(await sha256(canonicalRequest))
-  // credential scope - Cloudflare recommends date/region/service/aws4_request; we'll use date/auto/s3/aws4_request
-  const credentialScope = `${dateStamp}/auto/s3/aws4_request`
-  const stringToSign = ['AWS4-HMAC-SHA256', amzDate, credentialScope, canonicalHash].join('\n')
-  const signingKey = await getSignatureKey(R2_SECRET_KEY, dateStamp, 'auto', 's3')
-  const signatureBuf = await hmacSha256(signingKey, stringToSign)
-  const signature = toHex(signatureBuf)
-  const authorizationHeader = `AWS4-HMAC-SHA256 Credential=${R2_ACCESS_KEY}/${credentialScope}, SignedHeaders=${signedHeadersList.join(';')}, Signature=${signature}`
-  return { authorizationHeader, amzDate, payloadHashHex }
-}
-
-/* --------------------------
-   PAGE STATE
-   -------------------------- */
+/* ---------- STATE ---------- */
 let me = null
 let posts = []
-let autoAdvance = false
-let sceptersLeft = 10
 
-/* DOM refs */
-const banner = document.getElementById('banner')
-const avatar = document.getElementById('avatar')
-const displayName = document.getElementById('display-name')
-const usernameEl = document.getElementById('username')
-const crownCount = document.getElementById('crown-count')
-const scepterCount = document.getElementById('scepter-count')
-const uploader = document.getElementById('uploader')
-const inviteSection = document.getElementById('invite-activation')
-const inviteStatus = document.getElementById('invite-status')
-const uploadBtn = document.getElementById('upload-btn')
-const uploadFeedback = document.getElementById('upload-feedback')
-const feedEl = document.getElementById('feed')
-const feedEmpty = document.getElementById('feed-empty')
-const oracleBar = document.getElementById('oracle-bar')
-const oracleFull = document.getElementById('oracle-full')
-const oracleClose = document.getElementById('oracle-close')
-const oracleQ = document.getElementById('oracle-q')
-const oracleResults = document.getElementById('oracle-results')
-const player = document.getElementById('player')
-const playerArea = document.getElementById('player-area')
-const playerTitle = document.getElementById('player-title')
-const playerMeta = document.getElementById('player-meta')
-const crownBtn = document.getElementById('crown-btn')
-const scepterBtn = document.getElementById('scepter-btn')
+/* ---------- DOM refs ---------- */
+const banner = document.getElementById('banner'), avatar = document.getElementById('avatar'), displayName = document.getElementById('display-name'), usernameEl = document.getElementById('username')
+const crownCount = document.getElementById('crown-count'), scepterCount = document.getElementById('scepter-count')
+const uploader = document.getElementById('uploader'), inviteStatus = document.getElementById('invite-status')
+const uploadBtn = document.getElementById('upload-btn'), uploadFeedback = document.getElementById('upload-feedback')
+const feedEl = document.getElementById('feed'), feedEmpty = document.getElementById('feed-empty')
+const oracleBar = document.getElementById('oracle-bar'), oracleFull = document.getElementById('oracle-full'), oracleClose = document.getElementById('oracle-close'), oracleQ = document.getElementById('oracle-q'), oracleResults = document.getElementById('oracle-results')
+const player = document.getElementById('player'), playerArea = document.getElementById('player-area'), playerTitle = document.getElementById('player-title'), playerMeta = document.getElementById('player-meta')
+const crownBtn = document.getElementById('crown-btn'), scepterBtn = document.getElementById('scepter-btn')
+const inboxBtn = document.getElementById('inbox'), inboxModal = document.getElementById('inbox-modal'), inboxContent = document.getElementById('inbox-content'), closeInbox = document.getElementById('close-inbox')
 
-/* SIGN-OUT */
-document.getElementById('signout').addEventListener('click', async () => {
-  await supabase.auth.signOut()
-  location.href = 'index.html'
-})
-
-/* Check auth on load */
+/* ---------- AUTH CHECK ---------- */
 window.addEventListener('load', async () => {
   const { data } = await supabase.auth.getUser()
   if (!data.user) { location.href = 'index.html'; return }
-  // load profile or create minimal profile
-  const { data: profile, error } = await supabase.from('profiles').select('*').eq('id', data.user.id).maybeSingle()
-  if (error) console.error(error)
-  me = profile || { id: data.user.id, email: data.user.email }
+  // ensure profile exists; if not, create minimal
+  const { data: profile } = await supabase.from('profiles').select('*').eq('id', data.user.id).maybeSingle()
+  if (!profile) {
+    await supabase.from('profiles').insert([{ id: data.user.id, email: data.user.email }])
+    me = { id: data.user.id, email: data.user.email }
+  } else me = profile
   renderProfile()
   await loadFeed()
   await loadStories()
@@ -318,7 +222,7 @@ window.addEventListener('load', async () => {
   subscribeRealtime()
 })
 
-/* Render profile */
+/* ---------- RENDER PROFILE ---------- */
 function renderProfile(){
   banner.style.background = me.banner_url ? `url(${me.banner_url}) center/cover` : ''
   avatar.textContent = me.display_name ? me.display_name[0].toUpperCase() : '✠'
@@ -326,41 +230,35 @@ function renderProfile(){
   usernameEl.textContent = me.username ? `@${me.username}` : '@guest'
   crownCount.textContent = me.crown_count || 0
   scepterCount.textContent = me.scepter_count_today || 0
-  document.getElementById('signed-info').textContent = (me.username || me.email.split('@')[0])
-  // show uploader if is_creator true
-  if (me.is_creator) uploader.style.display = 'block'
-  else uploader.style.display = 'none'
-  // founder
+  document.getElementById('signed-info').textContent = me.username || me.email.split('@')[0]
+  // show uploader + stories only for creators
+  document.getElementById('uploader').style.display = me.is_creator ? 'block' : 'none'
   document.getElementById('founder-status').textContent = me.is_founder ? `Founder #${me.founder_badge}` : 'Not a founder'
 }
 
-/* Invite activation flow (use invite_codes table) */
+/* ---------- INVITE ACTIVATE ---------- */
 document.getElementById('activate-code').addEventListener('click', async () => {
-  const code = document.getElementById('invite-code').value.trim().toUpperCase()
-  if (!code) { inviteStatus.textContent = 'Enter code'; return }
+  const raw = document.getElementById('invite-code').value.trim()
+  const code = raw.toUpperCase()
+  if (!code) { inviteStatus.textContent = 'Enter a code.'; return }
   inviteStatus.textContent = 'Checking...'
-  // look up invite
+  // check invite_codes table
   const { data, error } = await supabase.from('invite_codes').select('*').eq('code', code).single()
-  if (error || !data) { inviteStatus.textContent = 'Invalid code'; return }
-  if (data.used) { inviteStatus.textContent = 'Code already used'; return }
-  // mark used and set profile is_creator
-  const { error: upd } = await supabase.from('invite_codes').update({ used: true, used_by: me.id, used_at: new Date().toISOString() }).eq('code', code)
-  const { error: prof } = await supabase.from('profiles').update({ is_creator: true }).eq('id', me.id)
-  if (upd || prof) {
-    // still show UI even if DB returns weird things
-    inviteStatus.textContent = 'Activated. You are now a creator.'
-    me.is_creator = true
-    uploader.style.display = 'block'
-  } else {
-    inviteStatus.textContent = 'Activated. You are now a creator.'
-    me.is_creator = true
-    uploader.style.display = 'block'
-  }
+  if (error || !data) { inviteStatus.textContent = 'Invalid code.'; return }
+  if (data.used) { inviteStatus.textContent = 'Code already used.'; return }
+  // mark used + make user creator
+  await supabase.from('invite_codes').update({ used: true, used_by: me.id, used_at: new Date().toISOString() }).eq('code', code)
+  await supabase.from('profiles').update({ is_creator: true }).eq('id', me.id)
+  // refresh profile locally
+  const { data:profile } = await supabase.from('profiles').select('*').eq('id', me.id).single()
+  me = profile
+  renderProfile()
+  inviteStatus.textContent = 'Activated. You are now a creator.'
 })
 
-/* Upload to Cloudflare R2 via SigV4 signing in-browser, then save post record in Supabase */
+/* ---------- UPLOAD (Supabase Storage) ---------- */
 uploadBtn.addEventListener('click', async () => {
-  if (!me || !me.is_creator) { uploadFeedback.textContent = 'You must be an activated creator to upload.'; return }
+  if (!me || !me.is_creator) { uploadFeedback.textContent = 'You must activate a creator invite.'; return }
   const fileEl = document.getElementById('post-file')
   const title = document.getElementById('post-title').value.trim()
   const desc = document.getElementById('post-desc').value.trim()
@@ -368,103 +266,88 @@ uploadBtn.addEventListener('click', async () => {
   if (!fileEl.files.length) { uploadFeedback.textContent = 'Select a file.'; return }
   if (!title) { uploadFeedback.textContent = 'Enter a title.'; return }
   const file = fileEl.files[0]
-  uploadFeedback.textContent = 'Preparing upload...'
+  uploadFeedback.textContent = 'Uploading to Supabase Storage...'
   try {
-    // read file into ArrayBuffer (be aware of memory for large files)
-    const buffer = await file.arrayBuffer()
-    // build canonical path in bucket
-    const filename = `${me.id}/${Date.now()}_${file.name.replace(/\s+/g,'_')}`
-    const path = `/${R2_BUCKET}/${encodeURIComponent(filename)}`
-    // Build signature
-    const { authorizationHeader, amzDate, payloadHashHex } = await buildSignature({
-      method: 'PUT',
-      path,
-      host: R2_ACCOUNT_HOST,
-      payloadArrayBuffer: buffer
-    })
-    // Perform PUT
-    const url = `${R2_ENDPOINT}${path}`
-    const headers = {
-      'Host': R2_ACCOUNT_HOST,
-      'x-amz-date': amzDate,
-      'x-amz-content-sha256': payloadHashHex,
-      'Authorization': authorizationHeader,
-      // optional content-type
-      'Content-Type': file.type || 'application/octet-stream'
-    }
-    uploadFeedback.textContent = 'Uploading to Cloudflare R2...'
-    const res = await fetch(url, { method: 'PUT', headers, body: buffer })
-    if (!res.ok) {
-      const txt = await res.text()
-      throw new Error('R2 upload failed: ' + res.status + ' ' + txt)
-    }
-    // public URL to the object
-    // NOTE: Adjust if your R2 is fronted by a CDN domain; using direct storage endpoint:
-    const publicURL = `${R2_ENDPOINT}/${R2_BUCKET}/${encodeURIComponent(filename)}`
-    uploadFeedback.textContent = 'Upload complete. Saving post...'
-    // Save to Supabase posts
-    const { data: postRec, error: postErr } = await supabase.from('posts').insert([{
+    // prefer path: uploads/<userId>/<timestamp>_<name>
+    const path = `${me.id}/${Date.now()}_${file.name.replace(/\s+/g,'_')}`
+    const { data:uploadData, error:uploadErr } = await supabase.storage.from('uploads').upload(path, file, { cacheControl: '3600', upsert: false })
+    if (uploadErr) throw uploadErr
+    // get public url
+    const { data:publicUrlData } = supabase.storage.from('uploads').getPublicUrl(uploadData.path)
+    const publicURL = publicUrlData.publicUrl
+    uploadFeedback.textContent = 'Saving post...'
+    const { data:postRec, error:postErr } = await supabase.from('posts').insert([{
       owner_id: me.id,
       owner_username: me.username || displayName.textContent,
-      title,
-      description: desc,
-      post_type: type,
-      file_path: `${R2_BUCKET}/${filename}`,
-      file_url: publicURL,
-      crown_count: 0,
-      scepter_count: 0
+      title, description: desc, post_type: type,
+      file_path: uploadData.path, file_url: publicURL,
+      crown_count:0, scepter_count:0
     }]).select().single()
     if (postErr) throw postErr
-    uploadFeedback.textContent = 'Saved. Post is live.'
+    uploadFeedback.textContent = 'Uploaded and saved.'
     // clear inputs
-    fileEl.value = ''
-    document.getElementById('post-title').value = ''
-    document.getElementById('post-desc').value = ''
+    fileEl.value = ''; document.getElementById('post-title').value = ''; document.getElementById('post-desc').value = ''
     await loadFeed()
   } catch (err) {
     console.error(err)
-    uploadFeedback.textContent = 'Upload failed: ' + (err.message || err)
+    uploadFeedback.textContent = 'Upload failed: ' + (err.message || JSON.stringify(err))
   }
 })
 
-/* Load feed from Supabase */
+/* ---------- STORIES (Proclamations) ---------- */
+document.getElementById('post-story').addEventListener('click', async () => {
+  if (!me || !me.is_creator) { document.getElementById('story-feedback').textContent = 'Creators only.'; return }
+  const title = document.getElementById('story-title').value.trim()
+  const body = document.getElementById('story-body').value.trim()
+  if (!title || !body) { document.getElementById('story-feedback').textContent = 'Title + body required.'; return }
+  const expires_at = new Date(Date.now() + 24*3600*1000).toISOString()
+  const { error } = await supabase.from('stories').insert([{ owner_id: me.id, owner_username: me.username || displayName.textContent, title, body, created_at: new Date().toISOString(), expires_at }])
+  if (error) { console.error(error); document.getElementById('story-feedback').textContent = 'Failed to publish.'; return }
+  document.getElementById('story-feedback').textContent = 'Published.'
+  document.getElementById('story-title').value = ''; document.getElementById('story-body').value = ''
+  await loadStories()
+})
+
+async function loadStories(){
+  const { data } = await supabase.from('stories').select('*').gte('expires_at', new Date().toISOString()).order('created_at',{ascending:false})
+  const container = document.getElementById('stories'); container.innerHTML = ''
+  (data||[]).forEach(s => {
+    const el = document.createElement('div'); el.className='post'; el.innerHTML = `<div style="font-family:Chomsky">${escapeHtml(s.title)}</div><div class="muted small">${s.owner_username}</div><div class="muted small" style="margin-top:6px">${escapeHtml(s.body)}</div>`
+    container.appendChild(el)
+  })
+  document.getElementById('stories-count').textContent = (data||[]).length
+}
+
+/* ---------- FEED ---------- */
 async function loadFeed(){
-  const { data, error } = await supabase.from('posts').select('*').order('created_at', { ascending:false }).limit(200)
+  const { data, error } = await supabase.from('posts').select('*').order('created_at',{ascending:false}).limit(200)
   if (error) { console.error(error); feedEmpty.style.display='block'; return }
   posts = data || []
   renderFeed(posts)
 }
 
-/* Render feed */
 function renderFeed(list){
   feedEl.innerHTML = ''
   if (!list.length) { feedEmpty.style.display='block'; return } else feedEmpty.style.display='none'
   list.forEach(p => {
-    const d = document.createElement('div')
-    d.className = 'post'
+    const d = document.createElement('div'); d.className='post'
     d.innerHTML = `
-      <div class="meta">
-        <div style="font-family:Chomsky;font-size:16px">${escapeHtml(p.title)}</div>
-        <div style="margin-left:auto" class="muted small">${new Date(p.created_at).toLocaleString()}</div>
-      </div>
-      <div class="small muted">by ${escapeHtml(p.owner_username || '—')}</div>
+      <div class="meta"><div style="font-family:Chomsky;font-size:16px">${escapeHtml(p.title)}</div><div style="margin-left:auto" class="muted small">${new Date(p.created_at).toLocaleString()}</div></div>
+      <div class="muted small">by ${escapeHtml(p.owner_username || '—')}</div>
       <div style="margin-top:8px" id="media-${p.id}"></div>
       <div style="margin-top:8px;display:flex;gap:8px">
-        <button data-id="${p.id}" class="btn-plain play">Play</button>
-        <button data-id="${p.id}" class="btn-plain crown">♔ ${p.crown_count||0}</button>
-        <button data-id="${p.id}" class="btn-plain scepter">𐀣 ${p.scepter_count||0}</button>
-        <button data-url="${p.file_url}" class="btn-plain share">Share</button>
-      </div>
-    `
+         <button data-id="${p.id}" class="btn-plain play">Play</button>
+         <button data-id="${p.id}" class="btn-plain crown">♔ ${p.crown_count||0}</button>
+         <button data-id="${p.id}" class="btn-plain scepter">𐀣 ${p.scepter_count||0}</button>
+         <button data-url="${p.file_url}" class="btn-plain share">Share</button>
+      </div>`
     feedEl.appendChild(d)
-    // thumbnail: for videos, create small poster by using video element (no autoplay)
     const media = document.getElementById(`media-${p.id}`)
     if (p.file_url) {
-      const tag = document.createElement(p.file_url.match(/\.(jpe?g|png|gif)$/i) ? 'img' : 'video')
+      const isImage = /\.(jpe?g|png|gif|webp)$/i.test(p.file_url)
+      const tag = document.createElement(isImage ? 'img' : 'video')
       tag.src = p.file_url
-      if (tag.tagName.toLowerCase() === 'video') {
-        tag.controls = false; tag.style.maxHeight='360px'; tag.muted=true
-      } else tag.style.maxHeight='300px'
+      if (!isImage) { tag.controls=false; tag.muted=true; tag.style.maxHeight='360px' } else tag.style.maxHeight='300px'
       tag.style.width='100%'; tag.style.borderRadius='8px'
       tag.addEventListener('click', () => openPlayer(p))
       media.appendChild(tag)
@@ -472,170 +355,167 @@ function renderFeed(list){
   })
 }
 
-/* Play modal */
+/* ---------- PLAYER ---------- */
 function openPlayer(post){
-  player.classList.add('show')
-  playerTitle.textContent = post.title
-  playerMeta.textContent = `by ${post.owner_username || '—'} • ${post.post_type}`
+  player.classList.add('show'); playerTitle.textContent = post.title; playerMeta.textContent = `by ${post.owner_username || '—'} • ${post.post_type}`
   playerArea.innerHTML = ''
   if (post.file_url) {
-    const v = document.createElement('video')
-    v.src = post.file_url
-    v.controls = true
-    v.autoplay = true
-    v.style.width = '100%'
-    v.style.maxHeight = '70vh'
+    const v = document.createElement('video'); v.src = post.file_url; v.controls=true; v.autoplay=true; v.style.width='100%'; v.style.maxHeight='70vh'
     playerArea.appendChild(v)
-    // watch progress for auto crowns/scepters (basic)
     v.addEventListener('timeupdate', () => {
       const ratio = (v.duration && v.currentTime / v.duration) || 0
       if (ratio >= 0.8) crownBtn.classList.add('active')
       if (ratio >= 0.95) scepterBtn.classList.add('active')
     })
-    // auto-advance
     if (document.getElementById('auto-advance').checked) {
-      v.addEventListener('ended', async () => {
-        const idx = posts.findIndex(x => x.id === post.id)
-        const next = posts[idx+1]
-        if (next) setTimeout(()=>openPlayer(next), parseInt(document.getElementById('reign').value || 8)*1000)
+      v.addEventListener('ended', () => {
+        const idx = posts.findIndex(x=>x.id===post.id); const next = posts[idx+1]; if (next) setTimeout(()=>openPlayer(next), parseInt(document.getElementById('reign').value||8)*1000)
       })
     }
-    // buttons
     crownBtn.onclick = () => doCrown(post)
     scepterBtn.onclick = () => doScepter(post)
   }
 }
-document.getElementById('close-player').addEventListener('click', () => { player.classList.remove('show'); playerArea.innerHTML = '' })
+document.getElementById('close-player').addEventListener('click', ()=>{ player.classList.remove('show'); playerArea.innerHTML = '' })
 
-/* Crown (like) - unlimited */
+/* ---------- CROWN / SCEPTER ---------- */
 async function doCrown(post){
   try {
-    await supabase.from('posts').update({ crown_count: (post.crown_count || 0) + 1 }).eq('id', post.id)
-    await supabase.from('profiles').update({ crown_count: (me.crown_count || 0) +1 }).eq('id', me.id)
-    me.crown_count = (me.crown_count||0)+1
-    renderProfile()
-    await loadFeed()
+    await supabase.from('posts').update({ crown_count: (post.crown_count||0)+1 }).eq('id', post.id)
+    await supabase.from('profiles').update({ crown_count: (me.crown_count||0)+1 }).eq('id', me.id)
+    const { data:updated } = await supabase.from('profiles').select('*').eq('id', me.id).single()
+    me = updated; renderProfile(); await loadFeed()
   } catch(e){ console.error(e) }
 }
 
-/* Scepter - limited daily */
 async function doScepter(post){
   if ((me.scepter_count_today||0) >= 10) { alert('No scepters left today'); return }
   try {
-    await supabase.from('posts').update({ scepter_count: (post.scepter_count || 0) + 1 }).eq('id', post.id)
+    await supabase.from('posts').update({ scepter_count: (post.scepter_count||0)+1 }).eq('id', post.id)
     await supabase.from('profiles').update({ scepter_count_today: (me.scepter_count_today||0)+1 }).eq('id', me.id)
-    me.scepter_count_today = (me.scepter_count_today||0)+1
-    renderProfile()
-    await loadFeed()
+    const { data:updated } = await supabase.from('profiles').select('*').eq('id', me.id).single()
+    me = updated; renderProfile(); await loadFeed()
   } catch(e){ console.error(e) }
 }
 
-/* Stories (24h) */
-async function loadStories(){
-  const { data } = await supabase.from('stories').select('*').gte('expires_at', new Date().toISOString()).order('created_at',{ascending:false})
-  document.getElementById('stories').innerHTML = ''
-  (data||[]).forEach(s => {
-    const el = document.createElement('div'); el.className='post'; el.innerHTML = `<div style="font-family:Chomsky">${s.title}</div><div class="muted small">${s.owner_username}</div>`
-    document.getElementById('stories').appendChild(el)
+/* ---------- ORACLE SEARCH (fixed + debounced) ---------- */
+let oracleTimer = null
+oracleBar.addEventListener('click', ()=>{ oracleFull.classList.add('open'); document.body.style.transform='translateX(-220px)'; setTimeout(()=>oracleQ.focus(),260) })
+oracleClose.addEventListener('click', ()=>{ oracleFull.classList.remove('open'); document.body.style.transform=''; oracleResults.innerHTML=''; oracleQ.value='' })
+
+oracleQ.addEventListener('input', (e)=>{
+  clearTimeout(oracleTimer)
+  oracleTimer = setTimeout(()=>oracleSearch(e.target.value.trim()), 220)
+})
+
+async function oracleSearch(q){
+  oracleResults.innerHTML = ''
+  if (!q) return
+  // Search title OR description OR owner_username (case-insensitive)
+  // Use ilike for each field, combine via or
+  const ilike = `%${q}%`
+  const { data, error } = await supabase.from('posts').select('*').or(`title.ilike.${ilike},description.ilike.${ilike},owner_username.ilike.${ilike}`).limit(50)
+  if (error) { console.error(error); oracleResults.innerHTML = '<div class="muted small">Search failed</div>'; return }
+  if (!data || data.length===0) { oracleResults.innerHTML = '<div class="muted small">No results</div>'; return }
+  data.forEach(p => {
+    const el = document.createElement('div'); el.className='post'; el.style.cursor='pointer'; el.innerHTML = `<div style="font-family:Chomsky">${p.title}</div><div class="muted small">${p.owner_username}</div>`
+    el.addEventListener('click', ()=>{ oracleFull.classList.remove('open'); document.body.style.transform=''; openPlayer(p) })
+    oracleResults.appendChild(el)
   })
-  document.getElementById('stories-count').textContent = (data||[]).length
 }
 
-/* Send DM */
+/* ---------- MESSAGES (Missives) + INBOX (fixed) ---------- */
 document.getElementById('send-dm').addEventListener('click', async () => {
-  const to = document.getElementById('dm-to').value.trim().replace('@','')
+  const toRaw = document.getElementById('dm-to').value.trim()
+  const to = toRaw.replace('@','')
   const body = document.getElementById('dm-msg').value.trim()
   if (!to || !body) { document.getElementById('dm-status').textContent='Fill both fields'; return }
   const { data: recip } = await supabase.from('profiles').select('*').eq('username', to).maybeSingle()
   if (!recip) { document.getElementById('dm-status').textContent = 'No such user'; return }
-  await supabase.from('messages').insert([{ from_id: me.id, to_id: recip.id, body }])
+  await supabase.from('messages').insert([{ from_id: me.id, to_id: recip.id, body, created_at: new Date().toISOString() }])
   document.getElementById('dm-status').textContent = 'Missive sent'
   document.getElementById('dm-msg').value = ''
 })
 
-/* Profiles list */
+inboxBtn.addEventListener('click', async () => {
+  // load messages to me and from me
+  inboxContent.innerHTML = '<div class="muted small">Loading…</div>'
+  const { data } = await supabase.from('messages').select('*,from:from_id(username,display_name),to:to_id(username,display_name)').or(`from_id.eq.${me.id},to_id.eq.${me.id}`).order('created_at',{ascending:false}).limit(200)
+  inboxContent.innerHTML = ''
+  (data||[]).forEach(m => {
+    const isToMe = m.to_id === me.id
+    const header = isToMe ? `From @${m.from?.username||'—'}` : `To @${m.to?.username||'—'}`
+    const el = document.createElement('div'); el.className='post'; el.innerHTML = `<div style="font-family:Chomsky">${header} <span class="muted small" style="margin-left:10px">${new Date(m.created_at).toLocaleString()}</span></div><div class="muted small" style="margin-top:6px">${escapeHtml(m.body)}</div>`
+    inboxContent.appendChild(el)
+  })
+  inboxModal.style.display = 'flex'
+})
+closeInbox.addEventListener('click', ()=>{ inboxModal.style.display = 'none'; inboxContent.innerHTML = '' })
+
+/* ---------- PROFILES list ---------- */
 async function loadProfiles(){
   const { data } = await supabase.from('profiles').select('id,username,display_name,is_creator,crown_count').limit(60)
   const dom = document.getElementById('profiles'); dom.innerHTML = ''
   (data||[]).forEach(p => {
     const d = document.createElement('div'); d.className='small muted'; d.style.padding='6px 0'
-    d.innerHTML = `<strong style="color:var(--gold)">@${p.username||'—'}</strong> ${p.display_name||''} ${p.is_creator?'<span class="muted">• Creator</span>':''}`
+    d.innerHTML = `<strong style="color:var(--gold)">@${p.username||'—'}</strong> ${p.display_name||''} ${p.is_creator?'<span class="muted"> • Creator</span>':''}`
     dom.appendChild(d)
   })
 }
 
-/* Oracle Edge open/close */
-oracleBar.addEventListener('click', () => {
-  oracleFull.classList.add('open')
-  document.body.style.transform = 'translateX(-220px)'
-  setTimeout(()=>oracleQ.focus(),260)
-})
-oracleClose.addEventListener('click', () => { oracleFull.classList.remove('open'); document.body.style.transform = '' })
-
-oracleQ.addEventListener('input', async (e) => {
-  const q = e.target.value.trim()
-  oracleResults.innerHTML = ''
-  if (!q) return
-  const { data } = await supabase.from('posts').select('*').ilike('title', `%${q}%`).limit(30)
-  (data||[]).forEach(p => {
-    const el = document.createElement('div'); el.className='post'; el.style.cursor='pointer'
-    el.innerHTML = `<div style="font-family:Chomsky">${p.title}</div><div class="small muted">${p.owner_username}</div>`
-    el.addEventListener('click', () => { oracleFull.classList.remove('open'); document.body.style.transform = ''; openPlayer(p) })
-    oracleResults.appendChild(el)
-  })
-})
-
-/* Realtime subscription to refresh feed */
+/* ---------- SUBSCRIPTIONS ---------- */
 function subscribeRealtime(){
-  supabase.channel('public:posts').on('postgres_changes', { event:'*', schema:'public', table:'posts' }, payload => {
-    loadFeed()
-  }).subscribe()
+  supabase.channel('public:posts').on('postgres_changes', { event:'*', schema:'public', table:'posts' }, payload => { loadFeed() }).subscribe()
 }
 
-/* Chrono / Algo buttons */
-document.getElementById('chrono-btn').addEventListener('click', async () => {
-  posts.sort((a,b) => new Date(b.created_at) - new Date(a.created_at))
-  renderFeed(posts)
-})
-document.getElementById('algo-btn').addEventListener('click', async () => {
-  posts.sort((a,b) => ((b.crown_count||0)+(b.scepter_count||0)) - ((a.crown_count||0)+(a.scepter_count||0)) || (new Date(b.created_at)-new Date(a.created_at)))
-  renderFeed(posts)
-})
+/* ---------- CHRONO / ALGO ---------- */
+document.getElementById('chrono-btn').addEventListener('click', ()=>{ posts.sort((a,b)=>new Date(b.created_at)-new Date(a.created_at)); renderFeed(posts) })
+document.getElementById('algo-btn').addEventListener('click', ()=>{ posts.sort((a,b)=>((b.crown_count||0)+(b.scepter_count||0))-((a.crown_count||0)+(a.scepter_count||0)) || (new Date(b.created_at)-new Date(a.created_at))); renderFeed(posts) })
 
-/* Buy founding pass (mock) */
-document.getElementById('buy-pass').addEventListener('click', async () => {
-  if (me.is_founder) { alert('You already hold a Founding Pass'); return }
-  // Mock checkout: in prod use Stripe and server-side validation
+/* ---------- FOUNDER PASS + REFERRAL (kept simple) ---------- */
+document.getElementById('buy-pass').addEventListener('click', async ()=>{
+  if (me.is_founder) { alert('You already own a Founding Pass'); return }
   const badge = Math.floor(Math.random()*5000)+1
-  await supabase.from('profiles').update({ is_founder:true, founder_badge: badge }).eq('id', me.id)
-  me.is_founder = true; me.founder_badge = badge
-  renderProfile()
+  await supabase.from('profiles').update({ is_founder:true, founder_badge:badge }).eq('id', me.id)
+  const { data } = await supabase.from('profiles').select('*').eq('id', me.id).single()
+  me = data; renderProfile()
   alert('Purchased Founding Pass — Badge #' + badge)
 })
-
-/* Generate referral */
-document.getElementById('gen-ref').addEventListener('click', async () => {
+document.getElementById('gen-ref').addEventListener('click', async ()=>{
   const { data } = await supabase.from('referrals').insert([{ owner_id: me.id, created_at: new Date().toISOString(), count:0 }]).select().single()
   const url = `${location.origin}/index.html?ref=${data.id}`
   navigator.clipboard.writeText(url)
   document.getElementById('ref-info').textContent = 'Referral copied to clipboard'
 })
 
-/* Share link copy and feed button delegation */
-feedEl.addEventListener('click', (e) => {
-  const play = e.target.closest('.play')
-  const crown = e.target.closest('.crown')
-  const scep = e.target.closest('.scepter')
-  const share = e.target.closest('.share')
-  if (play) { const id = play.dataset.id; const p = posts.find(x=>x.id===id); if (p) openPlayer(p) }
-  if (crown) { const id = crown.dataset.id; const p = posts.find(x=>x.id===id); if (p) doCrown(p) }
-  if (scep) { const id = scep.dataset.id; const p = posts.find(x=>x.id===id); if (p) doScepter(p) }
-  if (share) { const url = share.dataset.url; navigator.clipboard.writeText(url); alert('Link copied') }
+/* ---------- INIT LOADS ---------- */
+async function initLoads(){
+  const { data: profile } = await supabase.from('profiles').select('*').eq('id', me.id).single()
+  me = profile; renderProfile()
+  await loadFeed(); await loadStories(); await loadProfiles()
+}
+async function loadInitial(){
+  const { data } = await supabase.auth.getUser()
+  if (!data.user) return
+  const { data: profile } = await supabase.from('profiles').select('*').eq('id', data.user.id).maybeSingle()
+  me = profile || { id: data.user.id, email: data.user.email }
+  await initLoads()
+}
+loadInitial()
+
+/* ---------- FEED BUTTON DELEGATION ---------- */
+feedEl.addEventListener('click', (e)=>{
+  const play = e.target.closest('.play'), crown = e.target.closest('.crown'), scep = e.target.closest('.scepter'), share = e.target.closest('.share')
+  if (play){ const id = play.dataset.id; const p = posts.find(x=>x.id===id); if (p) openPlayer(p) }
+  if (crown){ const id = crown.dataset.id; const p = posts.find(x=>x.id===id); if (p) doCrown(p) }
+  if (scep){ const id = scep.dataset.id; const p = posts.find(x=>x.id===id); if (p) doScepter(p) }
+  if (share){ const url = share.dataset.url; navigator.clipboard.writeText(url); alert('Link copied') }
 })
 
-/* Utilities */
+/* ---------- UTIL ---------- */
 function escapeHtml(s){ if(!s) return ''; return String(s).replace(/[&<>"']/g, c=>({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' })[c]) }
 
+document.getElementById('signout').addEventListener('click', async ()=>{ await supabase.auth.signOut(); location.href='index.html' })
 </script>
 </body>
 </html>
