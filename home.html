@@ -3,297 +3,142 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Lux Scepter — Realm</title>
+<title>Video Feed Upload</title>
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Chomsky&display=swap');
   body {
     margin: 0;
     font-family: 'Times New Roman', serif;
-    background-color: #0e0e0e;
-    color: #bd8e20;
-    overflow-x: hidden;
+    background-color: #0a0a0a;
+    color: #f0d07b;
   }
   header {
+    padding: 1em;
+    background: #35005a;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 1em 2em;
-    background: linear-gradient(90deg, #35005a, #5600a1);
-    box-shadow: 0 0 20px rgba(189,142,32,0.5);
   }
-  header h1 {
-    font-family: 'Chomsky', sans-serif;
-    font-size: 2em;
-    color: #bd8e20;
-  }
+  header h1 { margin: 0; font-family: 'Chomsky', sans-serif; }
   header button {
-    padding: 0.5em 1em;
-    border: none;
-    border-radius: 6px;
     background: #bd8e20;
-    color: #0e0e0e;
+    border: none;
+    padding: 0.5em 1em;
+    border-radius: 5px;
     cursor: pointer;
-    font-weight: bold;
   }
-  #realm-feed {
+  #upload-section {
+    padding: 2em;
+    border-bottom: 2px solid #bd8e20;
+  }
+  #feed {
+    padding: 2em;
     display: flex;
     flex-direction: column;
-    padding: 2em;
     gap: 2em;
   }
   .feed-item {
-    background: #0e0e0e;
-    border: 2px solid #571728;
-    border-radius: 12px;
+    background: #1a0a2e;
     padding: 1em;
-    box-shadow: 0 0 10px rgba(189,142,32,0.3);
-  }
-  .feed-item video {
-    width: 100%;
     border-radius: 8px;
+  }
+  video {
+    width: 100%;
+    border-radius: 5px;
     margin-top: 0.5em;
-  }
-  #upload-section {
-    margin: 2em;
-    padding: 1em;
-    border: 2px solid #5600a1;
-    border-radius: 12px;
-    background: #0e0e0e;
-  }
-  input, select {
-    width: 100%;
-    padding: 0.5em;
-    margin: 0.5em 0;
-    border-radius: 6px;
-    border: 1px solid #35005a;
-    background: #0e0e0e;
-    color: #bd8e20;
-  }
-  button.upload-btn {
-    background: #5600a1;
-    color: #fff;
-    font-weight: bold;
-    margin-top: 1em;
-  }
-  button.upload-btn:hover {
-    background: #35005a;
-  }
-  #oracle {
-    position: fixed;
-    top: 0;
-    right: 0;
-    width: 40px;
-    height: 100%;
-    background: linear-gradient(#bd8e20, transparent);
-    cursor: pointer;
-  }
-  #oracle-bar {
-    position: fixed;
-    top: 0;
-    right: -400px;
-    width: 400px;
-    height: 100%;
-    background: #0e0e0e;
-    border-left: 3px solid #bd8e20;
-    padding: 2em;
-    box-shadow: -5px 0 30px rgba(189,142,32,0.3);
-    transition: right 0.5s ease;
-    overflow-y: auto;
-  }
-  #oracle-bar input {
-    width: 100%;
-  }
-  .missives-section {
-    margin: 2em;
-    padding: 1em;
-    border: 2px solid #571728;
-    border-radius: 12px;
-  }
-  .message {
-    background: #35005a;
-    padding: 0.5em;
-    border-radius: 6px;
-    margin-bottom: 0.5em;
   }
 </style>
 </head>
 <body>
 
 <header>
-  <h1>Lux Scepter</h1>
+  <h1>Lux Scepter Feed</h1>
   <button id="logout">Logout</button>
 </header>
 
 <div id="upload-section">
-  <h2>Upload Royal Content</h2>
-  <select id="upload-type">
-    <option value="edict">Edict (Vertical)</option>
-    <option value="dominion">Dominion (Horizontal)</option>
-    <option value="throne">Throne (Long Form)</option>
-    <option value="proclamation">Proclamation (Story)</option>
-  </select>
-  <input type="file" id="file-input" accept="video/*">
-  <button class="upload-btn" id="upload-btn">Upload</button>
-  <div id="upload-status"></div>
+  <h2>Upload Video</h2>
+  <input type="file" id="video-file" accept="video/*">
+  <button id="upload-btn">Upload</button>
+  <div id="status"></div>
 </div>
 
-<section id="realm-feed">
-  <h2>Realm Feed</h2>
-  <button id="toggle-feed">Toggle Chrono / Algo</button>
+<section id="feed">
+  <h2>Video Feed</h2>
 </section>
-
-<div class="missives-section">
-  <h2>Missives (DMs)</h2>
-  <input type="text" id="dm-recipient" placeholder="Recipient @username">
-  <input type="text" id="dm-message" placeholder="Message">
-  <button id="send-dm">Send</button>
-  <div id="messages-container"></div>
-</div>
-
-<!-- Oracle Edge -->
-<div id="oracle"></div>
-<div id="oracle-bar">
-  <h3>Oracle Edge</h3>
-  <input type="text" id="oracle-input" placeholder="Search Edicts/Dominions/Thrones...">
-  <div id="oracle-results"></div>
-</div>
 
 <script type="module">
 import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
 
-const supabaseUrl = 'https://uewvmldolwgihfkxwlsl.supabase.co'
-const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVld3ZtbGRvbHdnaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhma';
+// Supabase credentials
+const supabaseUrl = 'YOUR_SUPABASE_URL';
+const supabaseKey = 'YOUR_SUPABASE_ANON_KEY';
 const supabase = createClient(supabaseUrl, supabaseKey);
 
-// Redirect to index if not logged in
+// Check auth
 async function checkAuth() {
   const user = supabase.auth.user();
-  if (!user) {
-    window.location.href = 'index.html';
-  } else {
-    loadFeed();
-    loadMissives();
-  }
+  if (!user) window.location.href = 'index.html';
+  else loadFeed();
 }
-
 checkAuth();
 
-// LOGOUT
+// Logout
 document.getElementById('logout').addEventListener('click', async () => {
   await supabase.auth.signOut();
   window.location.href = 'index.html';
 });
 
-// UPLOAD
+// Upload
 document.getElementById('upload-btn').addEventListener('click', async () => {
-  const file = document.getElementById('file-input').files[0];
-  const type = document.getElementById('upload-type').value;
+  const file = document.getElementById('video-file').files[0];
+  if (!file) return alert('Select a video');
+
   const user = supabase.auth.user();
 
-  if (!file) return alert('Select a file');
-
-  // Check if user is creator
-  const { data: profile } = await supabase
-    .from('profiles')
-    .select('*')
-    .eq('id', user.id)
-    .single();
-
-  if (!profile.is_creator) return alert('Only invited creators can upload');
-
   // Upload to Cloudflare R2
-  const formData = new FormData();
-  formData.append('file', file);
-
   try {
-    const res = await fetch('https://4aefdc871e931f0ca228941ee1599c02.r2.dev/luxscepter-uploads/' + file.name, {
+    const res = await fetch(`https://YOUR_CLOUDFLARE_R2_BUCKET_URL/${file.name}`, {
       method: 'PUT',
-      body: file,
+      body: file
     });
     if (!res.ok) throw new Error('Upload failed');
-    document.getElementById('upload-status').innerText = 'Upload successful!';
 
-    // Insert record into Supabase feed table
+    const videoUrl = `https://YOUR_CLOUDFLARE_R2_BUCKET_URL/${file.name}`;
+
+    // Add feed record to Supabase
     await supabase.from('feed').insert([{
       user_id: user.id,
-      type: type,
-      url: `https://4aefdc871e931f0ca228941ee1599c02.r2.dev/luxscepter-uploads/${file.name}`,
+      username: user.user_metadata.username || 'Creator',
+      url: videoUrl,
       created_at: new Date()
     }]);
 
+    document.getElementById('status').innerText = 'Upload successful!';
     loadFeed();
   } catch (err) {
-    document.getElementById('upload-status').innerText = 'Upload failed: ' + err.message;
+    document.getElementById('status').innerText = 'Upload failed: ' + err.message;
   }
 });
 
-// LOAD FEED
+// Load feed
 async function loadFeed() {
-  const { data: feed } = await supabase
+  const { data: videos } = await supabase
     .from('feed')
     .select('*')
     .order('created_at', { ascending: false });
 
-  const container = document.getElementById('realm-feed');
-  container.innerHTML = '<h2>Realm Feed</h2><button id="toggle-feed">Toggle Chrono / Algo</button>';
-
-  feed.forEach(item => {
+  const container = document.getElementById('feed');
+  container.innerHTML = '<h2>Video Feed</h2>';
+  videos.forEach(v => {
     const div = document.createElement('div');
     div.className = 'feed-item';
     div.innerHTML = `
-      <div><strong>@${item.user_id}</strong> - ${item.type}</div>
-      <video src="${item.url}" controls></video>
+      <strong>@${v.username}</strong>
+      <video src="${v.url}" controls></video>
     `;
     container.appendChild(div);
   });
 }
-
-// ORACLE EDGE
-const oracleBtn = document.getElementById('oracle');
-const oracleBar = document.getElementById('oracle-bar');
-oracleBtn.addEventListener('click', () => {
-  oracleBar.style.right = oracleBar.style.right === '0px' ? '-400px' : '0px';
-});
-
-document.getElementById('oracle-input').addEventListener('input', async (e) => {
-  const q = e.target.value;
-  if (!q) return document.getElementById('oracle-results').innerHTML = '';
-  const { data: results } = await supabase
-    .from('feed')
-    .select('*')
-    .ilike('type', `%${q}%`)
-    .order('created_at', { ascending: false });
-  const resContainer = document.getElementById('oracle-results');
-  resContainer.innerHTML = results.map(r => `<div>${r.type}: <a href="${r.url}" target="_blank">View</a></div>`).join('');
-});
-
-// MISSIVES
-document.getElementById('send-dm').addEventListener('click', async () => {
-  const recipient = document.getElementById('dm-recipient').value;
-  const message = document.getElementById('dm-message').value;
-  const user = supabase.auth.user();
-  if (!recipient || !message) return;
-  await supabase.from('missives').insert([{
-    sender_id: user.id,
-    recipient,
-    message,
-    created_at: new Date()
-  }]);
-  document.getElementById('dm-message').value = '';
-  loadMissives();
-});
-
-async function loadMissives() {
-  const user = supabase.auth.user();
-  const { data: msgs } = await supabase
-    .from('missives')
-    .select('*')
-    .or(`recipient.eq.${user.id},sender_id.eq.${user.id}`)
-    .order('created_at', { ascending: true });
-  const container = document.getElementById('messages-container');
-  container.innerHTML = msgs.map(m => `<div class="message"><strong>${m.sender_id}</strong>: ${m.message}</div>`).join('');
-}
-
 </script>
 
 </body>
