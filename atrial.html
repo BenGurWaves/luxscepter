@@ -1,0 +1,707 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Lux Scepter — Founding Bloodline</title>
+
+<!-- Attempt Chomsky import; fallback to serif if unavailable -->
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap');
+/* Chomsky not generally hosted; you can self-host later and replace font-family for .wordmark */
+:root{
+  --black:#000000;
+  --gold:#D4AF37;
+  --muted-gold: rgba(212,175,55,0.12);
+  --deep-purple:#35005a;
+  --blood:#8B0000;
+  --font-word: 'Playfair Display', 'Times New Roman', serif;
+  --ui-font: 'Times New Roman', serif;
+  --max-width: 1000px;
+  --particle-count: 12;
+}
+
+/* mobile-first layout */
+*{box-sizing:border-box}
+html,body{height:100%}
+body{
+  margin:0;
+  background:var(--black);
+  color:var(--gold);
+  font-family:var(--ui-font);
+  -webkit-font-smoothing:antialiased;
+  -moz-osx-font-smoothing:grayscale;
+  overflow:hidden;
+  min-height:100vh;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:20px;
+}
+
+/* stage */
+.stage{
+  width:100%;
+  height:100vh;
+  max-width:var(--max-width);
+  position:relative;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  flex-direction:column;
+  text-align:center;
+  pointer-events:auto;
+}
+
+/* central vertical line */
+.line-center{
+  position:absolute;
+  left:50%;
+  top:0;
+  transform:translateX(-50%) scaleY(0);
+  width:2px;
+  height:100%;
+  background:linear-gradient(180deg, var(--gold), rgba(212,175,55,0.6));
+  transform-origin:top;
+  box-shadow:0 0 18px rgba(212,175,55,0.25);
+  animation:drawLine 1.2s ease forwards 0.05s;
+}
+@keyframes drawLine{
+  from{transform:translateX(-50%) scaleY(0)}
+  to{transform:translateX(-50%) scaleY(1)}
+}
+
+/* faint pulse after initial draw */
+.line-center.pulse{
+  opacity:0.1;
+  animation: pulseLine 8s infinite ease-in-out;
+}
+@keyframes pulseLine{
+  0%{opacity:0.08}
+  50%{opacity:0.18}
+  100%{opacity:0.08}
+}
+
+/* flash overlay */
+.flash{
+  position:absolute;
+  inset:0;
+  background:var(--gold);
+  opacity:0;
+  pointer-events:none;
+  animation: flashIn .18s linear forwards;
+}
+@keyframes flashIn{
+  0%{opacity:1}
+  100%{opacity:0}
+}
+
+/* logo area */
+.logo-wrap{
+  position:relative;
+  z-index:8;
+  display:flex;
+  align-items:center;
+  flex-direction:column;
+  gap:10px;
+  transform:translateY(6vh);
+  pointer-events:none;
+}
+.crown {
+  width:92px;
+  height:92px;
+  transform-origin:center;
+  transform:scale(0) rotate(0deg);
+  filter: drop-shadow(0 8px 24px rgba(0,0,0,0.7));
+  animation: crownIn 900ms cubic-bezier(.2,.9,.28,1) .25s forwards;
+}
+@keyframes crownIn{
+  0%{transform:scale(0) rotate(0deg); opacity:0}
+  60%{transform:scale(1.05) rotate(270deg); opacity:1}
+  100%{transform:scale(1) rotate(360deg)}
+}
+
+/* wordmark letter by letter */
+.wordmark{
+  display:inline-block;
+  letter-spacing:0.06em;
+  font-family:var(--font-word);
+  color:var(--gold);
+  font-size:1.8rem;
+  font-weight:700;
+  opacity:0;
+  transform:translateY(6px);
+}
+.wordmark span{
+  opacity:0;
+  display:inline-block;
+  transform:translateY(6px);
+  will-change: transform, opacity;
+}
+.tagline{
+  font-size:12px;
+  margin-top:4px;
+  opacity:0;
+  transform:translateY(8px);
+  color:var(--gold);
+  letter-spacing:0.02em;
+}
+
+/* counters and little UI */
+.top-right {
+  position:absolute;
+  top:18px;
+  right:18px;
+  text-align:right;
+  z-index:7;
+  font-size:12px;
+  line-height:1;
+}
+.top-right .live-counter{
+  font-weight:700;
+  color:var(--gold);
+}
+.top-right .countdown{
+  margin-top:6px;
+  color:#ff5b5b;
+  font-weight:600;
+  font-size:11px;
+}
+
+/* testimonial bottom-left */
+.testimonial{
+  position:absolute;
+  left:14px;
+  bottom:86px;
+  z-index:6;
+  max-width:60%;
+  text-align:left;
+  font-size:13px;
+  color:var(--gold);
+  opacity:0.95;
+}
+
+/* CTA area centered bottom */
+.cta-area{
+  position:absolute;
+  bottom:36px;
+  left:50%;
+  transform:translateX(-50%);
+  z-index:8;
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+  width:90%;
+  max-width:420px;
+  align-items:center;
+}
+.btn{
+  width:100%;
+  padding:14px 20px;
+  border-radius:10px;
+  background:transparent;
+  border:2px solid var(--gold);
+  color:var(--gold);
+  font-weight:700;
+  font-size:15px;
+  letter-spacing:0.04em;
+  cursor:pointer;
+  transition: all .22s ease;
+}
+.btn.primary{
+  background:var(--black);
+}
+.btn.primary:hover,
+.btn.primary:focus{
+  background:var(--blood);
+  color:var(--gold);
+  border-color:var(--blood);
+  outline:none;
+}
+.btn.secondary{
+  background:transparent;
+  font-size:13px;
+  padding:10px 16px;
+  opacity:0.95;
+}
+.small-note{
+  margin-top:6px;
+  font-size:11px;
+  opacity:0.7;
+}
+
+/* particles */
+.particle{
+  position:absolute;
+  bottom:-10%;
+  width:6px;
+  height:18px;
+  background:linear-gradient(180deg,var(--gold), rgba(212,175,55,0.6));
+  border-radius:3px;
+  opacity:0.18;
+  transform-origin:center;
+  will-change: transform, opacity;
+  z-index:2;
+  filter: blur(.2px);
+}
+
+/* sign modal (sheet) */
+.modal-backdrop{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,0.6);
+  display:none;
+  align-items:center;
+  justify-content:center;
+  z-index:40;
+  padding:18px;
+}
+.modal{
+  width:100%;
+  max-width:420px;
+  background:linear-gradient(180deg, #070707, #0b0b0b);
+  border-radius:12px;
+  border:1px solid rgba(212,175,55,0.08);
+  padding:18px;
+  color:var(--gold);
+  box-shadow:0 12px 50px rgba(0,0,0,0.8);
+}
+.modal h2{ margin:0 0 8px 0; font-size:18px; font-family:var(--font-word)}
+.modal form{ display:flex; flex-direction:column; gap:10px; margin-top:8px }
+.input{
+  width:100%;
+  padding:12px;
+  border-radius:8px;
+  background:#080808;
+  border:1px solid rgba(255,255,255,0.04);
+  color:var(--gold);
+}
+.row{display:flex; gap:8px}
+.toggle-auth{ font-size:13px; color:var(--gold); text-decoration:underline; cursor:pointer; background:none; border:none; padding:0}
+.error{color:#ff6b6b; font-size:13px}
+
+/* video modal (vertical phone mockup) */
+.phone-mock{
+  width:240px;
+  height:480px;
+  border-radius:28px;
+  overflow:hidden;
+  background:#000;
+  border:6px solid rgba(255,255,255,0.04);
+  box-shadow: 0 10px 60px rgba(0,0,0,0.8);
+}
+.phone-mock video{ width:100%; height:100%; object-fit:cover }
+
+/* small screens adjustments */
+@media(min-width:700px){
+  .line-center{width:3px}
+  .crown{width:120px;height:120px}
+  .wordmark{font-size:2.6rem}
+  .tagline{font-size:14px}
+  .testimonial{font-size:14px; left:32px; bottom:120px}
+  .top-right{top:22px; right:22px; font-size:13px}
+  .cta-area{bottom:52px}
+}
+
+/* hidden util */
+.hidden{display:none}
+.fadeIn{
+  animation:fadeUp .6s cubic-bezier(.2,.9,.28,1) forwards;
+}
+@keyframes fadeUp{
+  from{opacity:0; transform:translateY(6px)}
+  to{opacity:1; transform:translateY(0)}
+}
+</style>
+</head>
+<body>
+<div class="stage" id="stage" role="main" aria-live="polite">
+  <div class="line-center" id="lineCenter"></div>
+
+  <!-- dynamic flash will be injected -->
+
+  <div class="logo-wrap" aria-hidden="false">
+    <!-- simple crown svg with purple gem -->
+    <svg class="crown" id="crownSvg" viewBox="0 0 128 128" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <defs>
+        <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+          <feGaussianBlur stdDeviation="4" result="b"/>
+          <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+        </filter>
+      </defs>
+      <g filter="url(#glow)">
+        <path d="M12 96 L24 40 L44 64 L64 28 L84 64 L104 40 L116 96 Z" fill="#8c6239" stroke="rgba(0,0,0,0.35)" stroke-width="2"/>
+        <rect x="12" y="96" width="92" height="12" rx="6" fill="#4b2b1f"/>
+        <!-- matte gold overlay -->
+        <path d="M12 96 L24 40 L44 64 L64 28 L84 64 L104 40 L116 96 Z" fill="none" stroke="url(#g)" stroke-width="0"/>
+      </g>
+      <!-- purple gem -->
+      <circle cx="64" cy="44" r="8" fill="#a74ee8" opacity="0.95" />
+      <circle cx="64" cy="44" r="14" fill="rgba(167,78,232,0.07)" />
+    </svg>
+
+    <div class="wordmark" id="wordmark" aria-label="LUX SCEPTER"></div>
+    <div class="tagline" id="tagline">Rule the feed. Own the crown.</div>
+  </div>
+
+  <div class="top-right" id="topRight">
+    <div class="live-counter" id="liveCounter">— people ruling right now</div>
+    <div class="countdown" id="countdown">Founding Bloodline closes in —</div>
+  </div>
+
+  <div class="testimonial" id="testimonial">“Founding Bloodline #127 – worth 40x already” – @kingvault</div>
+
+  <div class="cta-area" id="ctaArea" aria-hidden="true">
+    <button class="btn primary" id="claimBtn">CLAIM YOUR CROWN</button>
+    <button class="btn secondary" id="watchBtn">Watch the Throne</button>
+    <div class="small-note">Founding Bloodline exclusive access</div>
+  </div>
+
+  <!-- particles injected by JS -->
+</div>
+
+<!-- Sign modal -->
+<div class="modal-backdrop" id="modalBackdrop" role="dialog" aria-modal="true">
+  <div class="modal" role="document">
+    <h2 id="modalTitle">Sign Up</h2>
+    <div class="error" id="modalError"></div>
+    <form id="authForm" autocomplete="on">
+      <input class="input" id="emailInput" type="email" placeholder="Email" required />
+      <input class="input" id="passwordInput" type="password" placeholder="Password" required />
+      <div class="row" style="margin-top:4px">
+        <button class="btn primary" id="submitAuth" type="submit">Sign Up</button>
+        <button class="btn" id="closeModal" type="button">Close</button>
+      </div>
+      <div style="margin-top:8px;display:flex;justify-content:space-between;align-items:center">
+        <div style="font-size:13px;opacity:.9">Already have an account?</div>
+        <button type="button" class="toggle-auth" id="toggleAuth">Sign In</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Video modal -->
+<div class="modal-backdrop" id="videoBackdrop" style="display:none">
+  <div class="phone-mock" role="dialog" aria-modal="true">
+    <video id="demoVideo" playsinline muted loop controls preload="metadata">
+      <!-- replace demo.mp4 with your real demo file -->
+      <source src="demo.mp4" type="video/mp4">
+      Your browser does not support the video tag.
+    </video>
+  </div>
+</div>
+
+<!-- Supabase and main script -->
+<script type="module">
+import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
+
+/* ============ CONFIG ============ */
+const supabaseUrl = 'https://uewvmldolwgihfkxwlsl.supabase.co'
+const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVld3ZtbGRvbHdnaWhma3h3bHNsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjM5MzQ1MjksImV4cCI6MjA3OTUxMDUyOX0.b9C00OjIkAUDPztC8RtdHcwjdgX4OrShNW_pp6r-_qI'
+const supabase = createClient(supabaseUrl, supabaseKey)
+
+/* ============ PAGE ELEMENTS ============ */
+const stage = document.getElementById('stage')
+const lineCenter = document.getElementById('lineCenter')
+const wordmarkEl = document.getElementById('wordmark')
+const tagline = document.getElementById('tagline')
+const crownSvg = document.getElementById('crownSvg')
+const topRightCounter = document.getElementById('liveCounter')
+const countdownEl = document.getElementById('countdown')
+const testimonialEl = document.getElementById('testimonial')
+const ctaArea = document.getElementById('ctaArea')
+const claimBtn = document.getElementById('claimBtn')
+const watchBtn = document.getElementById('watchBtn')
+const modalBackdrop = document.getElementById('modalBackdrop')
+const videoBackdrop = document.getElementById('videoBackdrop')
+const demoVideo = document.getElementById('demoVideo')
+
+/* auth modal elements */
+const authForm = document.getElementById('authForm')
+const modalTitle = document.getElementById('modalTitle')
+const submitAuth = document.getElementById('submitAuth')
+const toggleAuth = document.getElementById('toggleAuth')
+const closeModal = document.getElementById('closeModal')
+const modalError = document.getElementById('modalError')
+const emailInput = document.getElementById('emailInput')
+const passwordInput = document.getElementById('passwordInput')
+
+let isSignUp = true
+
+/* ============ INITIAL SEQUENCE ============ */
+const WORD = 'LUX SCEPTER'
+function buildWordmark(){
+  wordmarkEl.innerHTML = ''
+  for(let i=0;i<WORD.length;i++){
+    const ch = WORD[i]
+    const span = document.createElement('span')
+    span.textContent = ch === ' ' ? '\u00A0' : ch
+    span.style.transition = 'transform .28s cubic-bezier(.2,.9,.28,1), opacity .28s'
+    span.style.display = 'inline-block'
+    span.style.opacity = 0
+    wordmarkEl.appendChild(span)
+  }
+}
+buildWordmark()
+
+function showFlashAndReveal(){
+  // flash overlay
+  const flash = document.createElement('div')
+  flash.className = 'flash'
+  document.body.appendChild(flash)
+  setTimeout(()=> flash.remove(), 220)
+
+  // after flash, animate wordmark letters staggered
+  const spans = wordmarkEl.querySelectorAll('span')
+  wordmarkEl.style.opacity = 1
+  spans.forEach((s,i)=>{
+    setTimeout(()=>{
+      s.style.opacity = 1
+      s.style.transform = 'translateY(0)'
+    }, 120 + i*80)
+  })
+  // tagline fade
+  setTimeout(()=> {
+    tagline.classList.add('fadeIn')
+    tagline.style.opacity = 1
+  }, 120 + spans.length*80 + 120)
+  // show CTA and small UI
+  setTimeout(()=>{
+    ctaArea.classList.add('fadeIn')
+    ctaArea.setAttribute('aria-hidden','false')
+    document.getElementById('topRight').classList.add('fadeIn')
+  }, 120 + spans.length*80 + 420)
+}
+
+/* when line draw finishes -> flash -> reveal */
+lineCenter.addEventListener('animationend', (e) => {
+  // flash (already invoked below) - keep subtle pulses afterwards
+  showFlashAndReveal()
+  lineCenter.classList.add('pulse')
+})
+
+/* crown parallax follow */
+let crownOffset = {x:0,y:0}
+const maxFollow = 6
+document.addEventListener('pointermove', (ev)=>{
+  const rect = crownSvg.getBoundingClientRect()
+  const cx = rect.left + rect.width/2
+  const cy = rect.top + rect.height/2
+  const dx = (ev.clientX - cx)/rect.width * maxFollow
+  const dy = (ev.clientY - cy)/rect.height * maxFollow
+  crownSvg.style.transform = `translate(${dx}px, ${dy}px) scale(1) rotate(360deg)`
+})
+// gentle reset when pointer leaves
+document.addEventListener('pointerleave', ()=> {
+  crownSvg.style.transform = ''
+})
+
+/* ============ Particles ============ */
+function spawnParticles(n = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--particle-count'))){
+  const rng = (a,b)=>Math.random()*(b-a)+a
+  for(let i=0;i<n;i++){
+    const p = document.createElement('div')
+    p.className = 'particle'
+    const left = Math.random()*100
+    p.style.left = left + '%'
+    p.style.bottom = (-5 - Math.random()*10) + '%'
+    const scale = rng(0.5,1.6)
+    p.style.transform = `translateY(0) scale(${scale})`
+    p.style.opacity = rng(0.06,0.20)
+    p.style.width = (2 + Math.random()*8) + 'px'
+    p.style.height = (8 + Math.random()*26) + 'px'
+    p.style.transition = 'transform linear, bottom linear, opacity linear'
+    document.body.appendChild(p)
+    animateParticle(p, i)
+  }
+}
+function animateParticle(el, idx){
+  const dur = 18000 + Math.random()*20000
+  const leftDrift = (Math.random()*40 - 20)
+  const endBottom = 120 + Math.random()*40
+  const startDelay = Math.random()*8000
+  el.animate([
+    { transform: el.style.transform, bottom: el.style.bottom, opacity: el.style.opacity },
+    { transform: `translateX(${leftDrift}px) scale(${(Math.random()*1.2)+0.5})`, bottom: endBottom+'%', opacity: 0.02 }
+  ], {
+    duration: dur,
+    easing: 'linear',
+    delay: startDelay,
+    iterations: Infinity
+  })
+}
+
+/* ============ Testimonials ============ */
+const testimonials = [
+  'Just made $4,200 in 3 hours – @emperorwave',
+  'They begged to license my 15-second Edict – @duchessluxe',
+  'Founding Bloodline #127 – worth 40x already – @kingvault'
+]
+let ti = 0
+function rotateTestimonial(){
+  testimonialEl.style.opacity = 0
+  setTimeout(()=>{
+    testimonialEl.textContent = testimonials[ti % testimonials.length]
+    testimonialEl.style.opacity = 0.95
+    ti++
+  }, 400)
+}
+setInterval(rotateTestimonial, 4000)
+rotateTestimonial()
+
+/* ============ Live Counter (Supabase) ============ */
+/* Strategy: count profiles table rows (exact count). If your schema differs, replace query. */
+let displayedCount = 0
+async function fetchLiveCount(){
+  try{
+    // head:true returns no rows but gives count for select
+    const res = await supabase.from('profiles').select('id', { count: 'exact', head: true })
+    if(res.error && res.status !== 406){
+      console.warn('Supabase count error', res.error)
+      return
+    }
+    const count = res.count || 0
+    animateCounterTo(count)
+  }catch(err){
+    console.warn('Count fetch failed', err)
+  }
+}
+function animateCounterTo(target){
+  target = Math.max(0, parseInt(target))
+  const start = displayedCount
+  const delta = target - start
+  const steps = 28
+  let i = 0
+  if(delta === 0) {
+    topRightCounter.textContent = `${numberWithCommas(start)} people ruling right now`
+    return
+  }
+  const ticker = setInterval(()=>{
+    i++
+    const progress = i/steps
+    const eased = Math.pow(progress,0.8)
+    const cur = Math.round(start + delta*eased)
+    displayedCount = cur
+    topRightCounter.textContent = `${numberWithCommas(cur)} people ruling right now`
+    if(i>=steps){ clearInterval(ticker); displayedCount = target }
+  }, 70)
+}
+function numberWithCommas(x){
+  return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+}
+fetchLiveCount()
+setInterval(fetchLiveCount, 9000)
+
+/* ============ Countdown ============ */
+/* Per spec: show "Founding Bloodline closes in 11 days 4h 12m"
+   We'll set target = now + 11d4h12m so it's live and updates. */
+const now = Date.now()
+const target = new Date(now + (11*24*60*60*1000) + (4*60*60*1000) + (12*60*1000))
+function updateCountdown(){
+  const diff = target - Date.now()
+  if(diff <= 0){
+    countdownEl.textContent = 'Founding Bloodline closed'
+    return
+  }
+  const d = Math.floor(diff / (1000*60*60*24))
+  const h = Math.floor((diff % (1000*60*60*24)) / (1000*60*60))
+  const m = Math.floor((diff % (1000*60*60)) / (1000*60))
+  countdownEl.textContent = `Founding Bloodline closes in ${d} days ${h}h ${m}m`
+}
+updateCountdown()
+setInterval(updateCountdown, 60*1000)
+
+/* ============ CTA actions ============ */
+claimBtn.addEventListener('click', ()=> openAuthModal(true))
+watchBtn.addEventListener('click', ()=> openVideoModal())
+
+function openAuthModal(signUp=true){
+  isSignUp = signUp
+  modalTitle.textContent = isSignUp ? 'Sign Up' : 'Sign In'
+  submitAuth.textContent = isSignUp ? 'Sign Up' : 'Sign In'
+  modalError.textContent = ''
+  emailInput.value = ''
+  passwordInput.value = ''
+  modalBackdrop.style.display = 'flex'
+  emailInput.focus()
+}
+function closeAuthModal(){
+  modalBackdrop.style.display = 'none'
+}
+function openVideoModal(){
+  videoBackdrop.style.display = 'flex'
+  demoVideo.currentTime = 0
+  demoVideo.muted = true
+  demoVideo.play().catch(()=>{})
+}
+function closeVideoModal(){
+  videoBackdrop.style.display = 'none'
+  demoVideo.pause()
+}
+
+/* toggle auth mode */
+toggleAuth.addEventListener('click', ()=>{
+  isSignUp = !isSignUp
+  modalTitle.textContent = isSignUp ? 'Sign Up' : 'Sign In'
+  submitAuth.textContent = isSignUp ? 'Sign Up' : 'Sign In'
+  modalError.textContent = ''
+})
+
+closeModal.addEventListener('click', closeAuthModal)
+modalBackdrop.addEventListener('click', (ev)=>{ if(ev.target === modalBackdrop) closeAuthModal() })
+videoBackdrop.addEventListener('click', (ev)=>{ if(ev.target === videoBackdrop) closeVideoModal() })
+
+/* ============ Auth form handling ============ */
+authForm.addEventListener('submit', async (ev)=>{
+  ev.preventDefault()
+  modalError.textContent = ''
+  const email = emailInput.value.trim()
+  const password = passwordInput.value.trim()
+  if(!email || !password){
+    modalError.textContent = 'Email and password required'
+    return
+  }
+  submitAuth.disabled = true
+  try{
+    if(isSignUp){
+      const { data, error } = await supabase.auth.signUp({ email, password })
+      if(error){ modalError.textContent = error.message || 'Sign up failed'; submitAuth.disabled = false; return }
+      // Insert profile row (make sure table exists)
+      try{
+        await supabase.from('profiles').insert({ id: data.user.id, email, is_creator: false })
+      }catch(e){}
+      // redirect to home (per original behavior)
+      window.location.href = 'home.html'
+    } else {
+      const { data, error } = await supabase.auth.signInWithPassword({ email, password })
+      if(error){ modalError.textContent = error.message || 'Sign in failed'; submitAuth.disabled = false; return }
+      window.location.href = 'home.html'
+    }
+  }catch(err){
+    modalError.textContent = 'Unexpected error'
+    console.error(err)
+  } finally {
+    submitAuth.disabled = false
+  }
+})
+
+/* ============ Build everything on load ============ */
+document.addEventListener('DOMContentLoaded', ()=>{
+  spawnParticles()
+  // show wordmark after crown animation end fallback
+  setTimeout(()=> {
+    // If drawLine animation ended already, showFlashAndReveal was called via event; if not, ensure reveal
+    if(!lineCenter.classList.contains('pulse')){
+      showFlashAndReveal()
+      lineCenter.classList.add('pulse')
+    }
+  }, 2400)
+})
+
+/* small helper: make the wordmark accessible by exposing to screen readers */
+wordmarkEl.setAttribute('aria-hidden','false')
+tagline.setAttribute('aria-hidden','false')
+
+</script>
+</body>
+</html>
