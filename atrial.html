@@ -4,633 +4,526 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Lux Scepter — Founding Bloodline</title>
+<link rel="preload" href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&display=swap" as="style">
 <style>
-/* --------- CONFIG COLORS / FONTS --------- */
+/* ===================== THEME / FONTS ===================== */
 :root{
-  --black:#050506;           /* deep charcoal, not flat black */
-  --gold:#D4AF37;            /* primary gold */
-  --tan:#D2C1A3;             /* warm tan accent */
-  --ivory:#F7F4EE;           /* elegant light text */
-  --muted-gold: rgba(212,175,55,0.12);
-  --blood:#8B0000;
-  --font-word: 'Playfair Display', 'Times New Roman', serif;
-  --ui-font: 'Times New Roman', serif;
-  --particle-count: 6;
+  --bg:#080808;            /* deep charcoal */
+  --paper:#0f0e0d;         /* slightly warmer background card */
+  --gold:#C9A84A;          /* dignified gold */
+  --ivory:#F6F2EA;         /* main text */
+  --tan:#CBB896;           /* secondary */
+  --accent:#9B7A3B;
+  --muted: rgba(201,168,74,0.08);
   --max-width: 1100px;
 }
 
-/* If you host Chomsky locally, uncomment and point to your file:
+/* If you host Chomsky.woff2, uncomment and point below for a perfect wordmark:
 @font-face{
   font-family: 'Chomsky';
   src: url('/fonts/Chomsky.woff2') format('woff2');
-  font-weight: 700;
-  font-style: normal;
-  font-display: swap;
+  font-weight:700;
+  font-style:normal;
+  font-display:swap;
 }
-Then set --font-word to 'Chomsky', 'Playfair Display', serif;
+Then change --word-font to 'Chomsky', 'Playfair Display', serif;
 */
+:root{ --word-font: 'Playfair Display', 'Times New Roman', serif; --ui-font: 'Times New Roman', serif; }
 
-/* Mobile-first base */
+/* mobile-first reset */
 *{box-sizing:border-box}
 html,body{height:100%}
 body{
   margin:0;
+  min-height:100vh;
   background:
-    radial-gradient(1200px 600px at 20% 10%, rgba(212,175,55,0.02), transparent 6%),
-    radial-gradient(1000px 500px at 85% 90%, rgba(210,193,163,0.02), transparent 8%),
-    var(--black);
+    radial-gradient(800px 400px at 10% 10%, rgba(155,122,59,0.035), transparent 8%),
+    radial-gradient(900px 420px at 90% 90%, rgba(200,185,140,0.02), transparent 8%),
+    var(--bg);
   color:var(--ivory);
   font-family:var(--ui-font);
   -webkit-font-smoothing:antialiased;
   -moz-osx-font-smoothing:grayscale;
-  overflow:hidden;
-  min-height:100vh;
   display:flex;
   align-items:center;
   justify-content:center;
   padding:20px;
+  overflow:hidden;
 }
 
-/* stage container */
+/* container / stage */
 .stage{
   width:100%;
   height:100vh;
   max-width:var(--max-width);
-  position:relative;
   display:flex;
+  flex-direction:column;
   align-items:center;
   justify-content:center;
-  flex-direction:column;
+  position:relative;
   text-align:center;
-  pointer-events:auto;
-  gap:12px;
   padding:28px;
+  gap:18px;
 }
 
-/* refined vertical line */
-.line-center{
+/* centered vertical gold hairline */
+.hairline {
   position:absolute;
   left:50%;
   top:0;
   transform:translateX(-50%) scaleY(0);
   width:1px;
   height:100%;
-  background:linear-gradient(180deg, rgba(212,175,55,0.95), rgba(210,193,163,0.65));
+  background:linear-gradient(180deg,var(--gold), rgba(201,168,74,0.6));
   transform-origin:top;
-  box-shadow:0 0 28px rgba(212,175,55,0.12);
-  animation:drawLine 1.25s ease forwards 0.05s;
+  box-shadow:0 0 36px rgba(201,168,74,0.08);
+  animation:drawHair 1.2s ease forwards 0.06s;
 }
-@keyframes drawLine{
-  from{transform:translateX(-50%) scaleY(0)}
-  to{transform:translateX(-50%) scaleY(1)}
-}
-.line-center.pulse{ opacity:0.08; animation: pulseLine 10s infinite ease-in-out; }
-@keyframes pulseLine{ 0%{opacity:0.06} 50%{opacity:0.14} 100%{opacity:0.06} }
+@keyframes drawHair{ from{transform:translateX(-50%) scaleY(0)} to{transform:translateX(-50%) scaleY(1)} }
 
-/* very gentle flash (short and warm) */
-.flash{
-  position:absolute;
-  inset:0;
-  background:rgba(212,175,55,0.14);
+/* soft flash */
+.flash {
+  position:absolute; inset:0;
+  background:rgba(201,168,74,0.12);
   opacity:0;
   pointer-events:none;
-  animation: flashIn .18s linear forwards;
+  animation:flashIn .18s linear forwards;
 }
-@keyframes flashIn{ 0%{opacity:1} 100%{opacity:0} }
+@keyframes flashIn{ from{opacity:1} to{opacity:0} }
 
-/* central logo area - more breathing room */
-.logo-wrap{
-  position:relative;
-  z-index:8;
+/* logo block */
+.logo {
+  z-index:6;
   display:flex;
-  align-items:center;
   flex-direction:column;
+  align-items:center;
   gap:10px;
-  transform:translateY(3vh);
   pointer-events:none;
 }
-
-/* crown: simpler, matte gold, tiny rotation wobble */
-.crown {
-  width:96px;
-  height:96px;
-  transform-origin:center;
-  transform:scale(0.96) rotate(0deg);
-  filter: drop-shadow(0 8px 22px rgba(0,0,0,0.6));
-  animation: crownRise 900ms cubic-bezier(.2,.9,.28,1) .25s forwards;
+.crown{
+  width:108px;
+  height:108px;
+  transform:translateY(6px);
+  opacity:0;
+  filter: drop-shadow(0 12px 36px rgba(0,0,0,0.6));
+  transition:transform 700ms cubic-bezier(.2,.9,.28,1), opacity .6s ease;
 }
-@keyframes crownRise{ from{opacity:0; transform:translateY(8px) scale(0.92)} to{opacity:1; transform:translateY(0) scale(1)} }
-/* slight breathing rotation to feel alive but dignified */
-.crown.wobble{ animation: wobble 6s ease-in-out infinite; transform-origin:center; }
-@keyframes wobble{
-  0%{ transform:translateY(0) rotate(-2deg) }
-  50%{ transform:translateY(0) rotate(2deg) }
-  100%{ transform:translateY(0) rotate(-2deg) }
-}
+.crown--visible{ transform:translateY(0); opacity:1; }
 
-/* wordmark: elegant, slow reveal letter-by-letter */
+/* wordmark */
 .wordmark{
-  display:inline-block;
-  letter-spacing:0.06em;
-  font-family:var(--font-word);
+  font-family: var(--word-font);
   color:var(--gold);
-  font-size:1.9rem;
+  font-size:2rem;
+  letter-spacing:0.06em;
   font-weight:700;
-  line-height:1;
   opacity:0;
   transform:translateY(6px);
-  pointer-events:none;
+  display:inline-block;
+  will-change:transform,opacity;
 }
 .wordmark span{
-  opacity:0;
   display:inline-block;
-  transform:translateY(8px);
-  will-change: transform, opacity;
-}
-
-/* tagline: ivory with tan accent */
-.tagline{
-  font-size:13px;
-  margin-top:4px;
   opacity:0;
   transform:translateY(6px);
+  transition: transform .36s cubic-bezier(.2,.9,.28,1), opacity .36s;
+  font-variant: small-caps;
+}
+
+/* tagline */
+.tag{
+  margin-top:4px;
   color:var(--tan);
-  letter-spacing:0.02em;
-}
-
-/* top right small UI - minimal, elegant */
-.top-right{
-  position:absolute;
-  top:20px;
-  right:20px;
-  text-align:right;
-  z-index:7;
   font-size:13px;
-  line-height:1.05;
-  color:var(--ivory);
-  background:linear-gradient(180deg, rgba(255,255,255,0.01), rgba(0,0,0,0.02));
-  padding:10px 12px;
-  border-radius:10px;
-  border:1px solid rgba(212,175,55,0.06);
-  backdrop-filter: blur(3px);
+  opacity:0;
+  transform:translateY(6px);
+  transition: all .45s ease;
 }
-.top-right .live-counter{ font-weight:700; color:var(--gold); font-size:15px }
-.top-right .countdown{ margin-top:6px; color:var(--tan); font-weight:600 }
 
-/* testimonial bottom-left: minimal and reserved */
-.testimonial{
+/* UI blocks: top-right panel, testimonial */
+.topRight {
+  position:absolute;
+  top:22px;
+  right:22px;
+  background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.02));
+  border-radius:10px;
+  padding:10px 12px;
+  border:1px solid rgba(201,168,74,0.06);
+  backdrop-filter:blur(6px);
+  z-index:8;
+  text-align:right;
+  font-size:13px;
+  color:var(--ivory);
+}
+.topRight .count{
+  color:var(--gold);
+  font-weight:700;
+  font-size:15px;
+}
+.topRight .countdown{ margin-top:6px; color:var(--tan); font-weight:600; font-size:12px }
+
+/* testimonial */
+.testimonial {
   position:absolute;
   left:18px;
-  bottom:96px;
-  z-index:6;
-  max-width:60%;
-  text-align:left;
-  font-size:13px;
+  bottom:110px;
+  max-width:58%;
   color:var(--ivory);
-  opacity:0.95;
-  background:transparent;
-  line-height:1.12;
+  font-size:13px;
+  opacity:.95;
+  z-index:6;
 }
 
-/* CTA area: centered, generous spacing, refined buttons */
-.cta-area{
+/* CTAs */
+.cta {
   position:absolute;
   bottom:48px;
   left:50%;
   transform:translateX(-50%);
-  z-index:8;
   display:flex;
   flex-direction:column;
   gap:12px;
   width:92%;
-  max-width:460px;
+  max-width:520px;
   align-items:center;
+  z-index:7;
 }
-.btn{
+.btn {
   width:100%;
-  padding:14px 22px;
   border-radius:12px;
+  padding:14px 18px;
+  border:2px solid rgba(201,168,74,0.95);
   background:transparent;
-  border:2px solid rgba(212,175,55,0.95);
   color:var(--gold);
   font-weight:700;
-  font-size:15px;
   letter-spacing:0.04em;
   cursor:pointer;
-  transition: all .28s ease;
+  transition: background .22s ease, transform .18s ease, box-shadow .18s ease;
   backdrop-filter: blur(2px);
+  text-transform:uppercase;
 }
+.btn:hover{ transform:translateY(-3px); box-shadow:0 8px 28px rgba(0,0,0,0.45) }
 .btn.primary{
-  background:transparent;
-}
-.btn.primary:hover,
-.btn.primary:focus{
-  background:linear-gradient(180deg, rgba(210,193,163,0.12), rgba(212,175,55,0.06));
+  background:linear-gradient(180deg, rgba(201,168,74,0.06), rgba(201,168,74,0.02));
   color:var(--gold);
-  border-color:var(--gold);
-  transform:translateY(-2px);
 }
 .btn.secondary{
   background:transparent;
-  font-size:13px;
-  padding:10px 16px;
   color:var(--ivory);
   border:1px solid rgba(255,255,255,0.04);
+  text-transform:none;
+  font-weight:600;
 }
 
-/* small note */
-.small-note{ margin-top:6px; font-size:12px; color:var(--tan); opacity:0.95 }
-
-/* particles: much fewer, softer */
-.particle{
-  position:absolute;
-  bottom:-8%;
-  width:6px;
-  height:16px;
-  background:linear-gradient(180deg,var(--gold), rgba(212,175,55,0.5));
-  border-radius:3px;
-  opacity:0.12;
-  transform-origin:center;
-  will-change: transform, opacity;
-  z-index:2;
-  filter: blur(.6px) saturate(.9);
-}
-
-/* modal (auth) - clean sheet style */
+/* modal (signup) */
 .modal-backdrop{
-  position:fixed;
-  inset:0;
-  background:rgba(0,0,0,0.55);
-  display:none;
-  align-items:center;
-  justify-content:center;
-  z-index:40;
-  padding:18px;
+  position:fixed; inset:0;
+  display:none; align-items:center; justify-content:center;
+  background:rgba(0,0,0,0.6); z-index:50; padding:20px;
 }
 .modal{
-  width:100%;
-  max-width:460px;
-  background:linear-gradient(180deg, #070707, #0b0b0b);
-  border-radius:12px;
-  border:1px solid rgba(212,175,55,0.06);
-  padding:18px;
-  color:var(--ivory);
-  box-shadow:0 10px 50px rgba(0,0,0,0.8);
-}
-.modal h2{ margin:0 0 8px 0; font-size:18px; font-family:var(--font-word) }
-.modal form{ display:flex; flex-direction:column; gap:10px; margin-top:8px }
-.input{
-  width:100%;
-  padding:12px;
-  border-radius:8px;
-  background:#070707;
-  border:1px solid rgba(255,255,255,0.04);
+  width:100%; max-width:520px; border-radius:12px;
+  padding:22px; background:linear-gradient(180deg, #0b0b0b, #0f0f0f);
+  border:1px solid rgba(201,168,74,0.06);
+  box-shadow:0 20px 60px rgba(0,0,0,0.8);
   color:var(--ivory);
 }
-.row{display:flex; gap:8px}
-.toggle-auth{ font-size:13px; color:var(--tan); text-decoration:underline; cursor:pointer; background:none; border:none; padding:0}
-.error{color:#ff6b6b; font-size:13px}
+.modal h2{ margin:0 0 10px 0; font-family:var(--word-font); font-size:20px }
+.input{ width:100%; padding:12px; border-radius:8px; background:#0b0b0b; color:var(--ivory); border:1px solid rgba(255,255,255,0.04) }
+.row{ display:flex; gap:10px; margin-top:8px }
 
-/* phone mock (video) - softer frame */
-.phone-mock{
-  width:260px;
-  height:520px;
-  border-radius:28px;
-  overflow:hidden;
-  background:#000;
-  border:8px solid rgba(255,255,255,0.03);
-  box-shadow: 0 12px 70px rgba(0,0,0,0.7);
+/* video phone mock (subtle frame) */
+.phone {
+  width:260px; height:520px; border-radius:28px; overflow:hidden;
+  background:#000; border:8px solid rgba(255,255,255,0.03); box-shadow:0 12px 70px rgba(0,0,0,0.6);
 }
-.phone-mock video{ width:100%; height:100%; object-fit:cover }
+
+/* shimmer trim: subtle animated sheen on gold elements */
+.shimmer {
+  position:absolute; inset:0; pointer-events:none; z-index:2;
+  background: linear-gradient(120deg, rgba(255,255,255,0.00) 0%, rgba(255,255,255,0.02) 20%, rgba(255,255,255,0.06) 45%, rgba(255,255,255,0.02) 60%, rgba(255,255,255,0.00) 100%);
+  mix-blend-mode:overlay; opacity:0.06;
+  transform:translateX(-30%);
+  animation: shimmer 9s linear infinite;
+}
+@keyframes shimmer{ 0%{transform:translateX(-30%)} 100%{transform:translateX(120%)} }
+
+/* reduced motion */
+@media (prefers-reduced-motion: reduce){
+  .hairline, .wordmark span, .crown, .tag { transition: none !important; animation: none !important; transform:none !important; }
+}
 
 /* larger screens */
-@media(min-width:740px){
-  .crown{width:128px;height:128px}
-  .wordmark{font-size:2.8rem}
-  .tagline{font-size:14px}
-  .testimonial{left:28px; bottom:140px}
-  .top-right{top:26px; right:26px}
-  .cta-area{bottom:72px}
+@media(min-width:780px){
+  .wordmark{ font-size:2.8rem }
+  .crown{ width:140px; height:140px }
+  .testimonial{ left:28px; bottom:152px }
+  .cta{ bottom:72px }
 }
-
-/* utility & gentle entrance */
-.hidden{display:none}
-.fadeIn{ animation:fadeUp .6s cubic-bezier(.2,.9,.28,1) forwards; }
-@keyframes fadeUp{ from{opacity:0; transform:translateY(6px)} to{opacity:1; transform:translateY(0)} }
 </style>
 </head>
 <body>
-<div class="stage" id="stage" role="main" aria-live="polite">
-  <div class="line-center" id="lineCenter"></div>
-  <!-- flash overlay injected dynamically -->
+  <div class="stage" id="stage" role="main" aria-live="polite">
+    <div class="hairline" id="hairline"></div>
 
-  <div class="logo-wrap" aria-hidden="false">
-    <!-- simplified, elegant crown -->
-    <svg class="crown" id="crownSvg" viewBox="0 0 128 128" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-      <defs>
-        <linearGradient id="g1" x1="0" x2="1">
-          <stop offset="0" stop-color="#E6C88A"/>
-          <stop offset="1" stop-color="#C99A45"/>
-        </linearGradient>
-      </defs>
-      <g>
-        <path d="M12 92 L28 46 L48 64 L64 36 L80 64 L100 46 L116 92 Z" fill="url(#g1)" stroke="rgba(0,0,0,0.14)" stroke-width="2" />
-        <rect x="12" y="92" width="92" height="14" rx="6" fill="#2d241c"/>
-        <circle cx="64" cy="50" r="7" fill="#c08cff" opacity="0.95" />
-        <circle cx="64" cy="50" r="14" fill="rgba(192,140,255,0.06)" />
-      </g>
-    </svg>
+    <!-- soft shimmer overlay (very subtle) -->
+    <div class="shimmer" aria-hidden="true"></div>
 
-    <div class="wordmark" id="wordmark" aria-label="LUX SCEPTER"></div>
-    <div class="tagline" id="tagline">Rule the feed. Own the crown.</div>
+    <div class="logo" id="logo">
+      <!-- dignified crown SVG (matte gold; simple, elegant) -->
+      <svg class="crown" id="crown" viewBox="0 0 128 128" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img">
+        <defs>
+          <linearGradient id="goldGrad" x1="0" x2="1">
+            <stop offset="0" stop-color="#E9D6A0"/>
+            <stop offset="1" stop-color="#B68F3A"/>
+          </linearGradient>
+          <filter id="soft" x="-50%" y="-50%" width="200%" height="200%">
+            <feGaussianBlur stdDeviation="2.0" result="b"/>
+            <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+          </filter>
+        </defs>
+        <g filter="url(#soft)">
+          <path d="M12 90 L28 46 L46 66 L64 36 L82 66 L100 46 L116 90 Z" fill="url(#goldGrad)" stroke="rgba(0,0,0,0.14)" stroke-width="2"/>
+          <rect x="12" y="90" width="92" height="12" rx="6" fill="#2d241c"/>
+          <circle cx="64" cy="52" r="7" fill="#b68aff" opacity="0.95"></circle>
+        </g>
+      </svg>
+
+      <div id="wordmark" class="wordmark" aria-label="LUX SCEPTER" role="heading"></div>
+      <div id="tagline" class="tag">Rule the feed. Own the crown.</div>
+    </div>
+
+    <div class="topRight" id="topRight" aria-hidden="false">
+      <div class="count" id="liveCount">— people ruling right now</div>
+      <div class="countdown" id="countdown">Founding Bloodline closes in —</div>
+    </div>
+
+    <div class="testimonial" id="testimonial" aria-live="polite">“Founding Bloodline #127 — appreciation up 40x” — @kingvault</div>
+
+    <div class="cta" id="cta">
+      <button class="btn primary" id="claim">Claim Your Crown</button>
+      <button class="btn secondary" id="watch">Watch the Throne</button>
+      <div style="font-size:12px;color:var(--tan);opacity:.95">Founding Bloodline — exclusive access</div>
+    </div>
   </div>
 
-  <div class="top-right" id="topRight">
-    <div class="live-counter" id="liveCounter">— people ruling right now</div>
-    <div class="countdown" id="countdown">Founding Bloodline closes in —</div>
+  <!-- sign modal -->
+  <div class="modal-backdrop" id="modal" role="dialog" aria-modal="true" aria-hidden="true">
+    <div class="modal" role="document">
+      <h2 id="modalTitle">Sign Up</h2>
+      <div id="modalError" style="color:#ff6b6b;margin-top:6px"></div>
+      <form id="auth" autocomplete="on">
+        <input class="input" id="email" type="email" placeholder="Email" required>
+        <input class="input" id="password" type="password" placeholder="Password" required>
+        <div class="row">
+          <button type="submit" class="btn primary" id="submitAuth">Sign Up</button>
+          <button type="button" class="btn" id="closeModal">Close</button>
+        </div>
+        <div style="margin-top:10px;display:flex;justify-content:space-between;align-items:center">
+          <div style="font-size:13px;color:var(--tan)">Already have an account?</div>
+          <button type="button" id="toggleAuth" style="background:none;border:none;color:var(--tan);text-decoration:underline;cursor:pointer">Sign In</button>
+        </div>
+      </form>
+    </div>
   </div>
 
-  <div class="testimonial" id="testimonial">Founding Bloodline #127 — @kingvault</div>
-
-  <div class="cta-area" id="ctaArea" aria-hidden="true">
-    <button class="btn primary" id="claimBtn">Claim your Crown</button>
-    <button class="btn secondary" id="watchBtn">Watch the Throne</button>
-    <div class="small-note">Founding Bloodline exclusive access</div>
+  <!-- video modal -->
+  <div class="modal-backdrop" id="videoModal" style="display:none" aria-hidden="true">
+    <div class="phone" role="dialog" aria-modal="true">
+      <video id="demo" playsinline muted loop controls preload="metadata" style="width:100%;height:100%;object-fit:cover">
+        <source src="demo.mp4" type="video/mp4">
+        Your browser doesn't support video.
+      </video>
+    </div>
   </div>
-</div>
-
-<!-- auth modal -->
-<div class="modal-backdrop" id="modalBackdrop" role="dialog" aria-modal="true">
-  <div class="modal" role="document">
-    <h2 id="modalTitle">Sign Up</h2>
-    <div class="error" id="modalError"></div>
-    <form id="authForm" autocomplete="on">
-      <input class="input" id="emailInput" type="email" placeholder="Email" required />
-      <input class="input" id="passwordInput" type="password" placeholder="Password" required />
-      <div class="row" style="margin-top:4px">
-        <button class="btn primary" id="submitAuth" type="submit">Sign Up</button>
-        <button class="btn" id="closeModal" type="button">Close</button>
-      </div>
-      <div style="margin-top:8px;display:flex;justify-content:space-between;align-items:center">
-        <div style="font-size:13px;opacity:.9">Already have an account?</div>
-        <button type="button" class="toggle-auth" id="toggleAuth">Sign In</button>
-      </div>
-    </form>
-  </div>
-</div>
-
-<!-- video modal -->
-<div class="modal-backdrop" id="videoBackdrop" style="display:none">
-  <div class="phone-mock" role="dialog" aria-modal="true">
-    <video id="demoVideo" playsinline muted loop controls preload="metadata">
-      <source src="demo.mp4" type="video/mp4">
-      Your browser does not support the video tag.
-    </video>
-  </div>
-</div>
 
 <script type="module">
+/* =========== SUPABASE SETUP (unchanged wiring) =========== */
 import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
-
-/* ============ CONFIG ============ */
 const supabaseUrl = 'https://uewvmldolwgihfkxwlsl.supabase.co'
 const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVld3ZtbGRvbHdnaWhma3h3bHNsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjM5MzQ1MjksImV4cCI6MjA3OTUxMDUyOX0.b9C00OjIkAUDPztC8RtdHcwjdgX4OrShNW_pp6r-_qI'
 const supabase = createClient(supabaseUrl, supabaseKey)
 
-/* ============ ELEMENTS ============ */
-const lineCenter = document.getElementById('lineCenter')
-const wordmarkEl = document.getElementById('wordmark')
+/* ====== ELEMENTS ====== */
+const hairline = document.getElementById('hairline')
+const crown = document.getElementById('crown')
+const wordmark = document.getElementById('wordmark')
 const tagline = document.getElementById('tagline')
-const crownSvg = document.getElementById('crownSvg')
-const topRightCounter = document.getElementById('liveCounter')
-const countdownEl = document.getElementById('countdown')
-const testimonialEl = document.getElementById('testimonial')
-const ctaArea = document.getElementById('ctaArea')
-const claimBtn = document.getElementById('claimBtn')
-const watchBtn = document.getElementById('watchBtn')
-const modalBackdrop = document.getElementById('modalBackdrop')
-const videoBackdrop = document.getElementById('videoBackdrop')
-const demoVideo = document.getElementById('demoVideo')
-const authForm = document.getElementById('authForm')
+const liveCount = document.getElementById('liveCount')
+const countdown = document.getElementById('countdown')
+const testimonial = document.getElementById('testimonial')
+const claim = document.getElementById('claim')
+const watch = document.getElementById('watch')
+const modal = document.getElementById('modal')
+const videoModal = document.getElementById('videoModal')
+const demo = document.getElementById('demo')
+const authForm = document.getElementById('auth')
 const modalTitle = document.getElementById('modalTitle')
 const submitAuth = document.getElementById('submitAuth')
-const toggleAuth = document.getElementById('toggleAuth')
 const closeModal = document.getElementById('closeModal')
+const toggleAuth = document.getElementById('toggleAuth')
 const modalError = document.getElementById('modalError')
-const emailInput = document.getElementById('emailInput')
-const passwordInput = document.getElementById('passwordInput')
+const emailInput = document.getElementById('email')
+const passwordInput = document.getElementById('password')
 
-let isSignUp = true
-
-/* ============ WORDMARK BUILD ============ */
-const WORD = 'LUX SCEPTER'
-function buildWordmark(){
-  wordmarkEl.innerHTML = ''
-  for(let i=0;i<WORD.length;i++){
-    const ch = WORD[i]
-    const span = document.createElement('span')
-    span.textContent = ch === ' ' ? '\u00A0' : ch
-    span.style.transition = 'transform .34s cubic-bezier(.2,.9,.28,1), opacity .34s'
-    span.style.display = 'inline-block'
-    span.style.opacity = 0
-    span.style.fontVariant = 'small-caps'
-    wordmarkEl.appendChild(span)
+/* ====== WORDMARK BUILD & REVEAL ====== */
+const TEXT = 'LUX SCEPTER'
+function buildWord(){
+  wordmark.innerHTML = ''
+  for(let i=0;i<TEXT.length;i++){
+    const ch = TEXT[i]
+    const s = document.createElement('span')
+    s.textContent = ch === ' ' ? '\u00A0' : ch
+    s.style.transitionDelay = `${i*0.08}s`
+    wordmark.appendChild(s)
   }
 }
-buildWordmark()
+buildWord()
 
-function revealWordmark(){
-  const spans = wordmarkEl.querySelectorAll('span')
-  wordmarkEl.style.opacity = 1
-  spans.forEach((s,i)=>{
-    setTimeout(()=>{
-      s.style.opacity = 1
-      s.style.transform = 'translateY(0)'
-    }, 160 + i*90)
+function reveal(){
+  // show crown with dignified easing
+  crown.classList.add('crown--visible')
+  // reveal letters with small stagger
+  const spans = wordmark.querySelectorAll('span')
+  wordmark.style.opacity = 1
+  spans.forEach((sp, i)=>{
+    setTimeout(()=>{ sp.style.opacity=1; sp.style.transform='translateY(0)'; }, 160 + i*72)
   })
+  // tagline fade
+  setTimeout(()=> { tagline.style.opacity=1; tagline.style.transform='translateY(0)'; }, 160 + spans.length*72 + 120)
+  // show CTA & UI gently
   setTimeout(()=> {
-    tagline.classList.add('fadeIn')
-    tagline.style.opacity = 1
-  }, 160 + spans.length*90 + 120)
-  setTimeout(()=>{
-    ctaArea.classList.add('fadeIn'); ctaArea.setAttribute('aria-hidden','false')
-    document.getElementById('topRight').classList.add('fadeIn')
-  }, 160 + spans.length*90 + 420)
+    document.getElementById('cta').classList.add('fade')
+    document.getElementById('topRight').classList.add('fade')
+  }, 160 + spans.length*72 + 300)
 }
 
-/* line finish -> flash -> soft reveal */
-lineCenter.addEventListener('animationend', ()=>{
-  const flash = document.createElement('div'); flash.className='flash'; document.body.appendChild(flash)
-  setTimeout(()=> flash.remove(), 220)
-  revealWordmark()
-  lineCenter.classList.add('pulse')
-  // start crown wobble after initial reveal
-  setTimeout(()=> crownSvg.classList.add('wobble'), 800)
+/* hairline animation end triggers flash + reveal */
+hairline.addEventListener('animationend', ()=>{
+  const f = document.createElement('div'); f.className='flash'; document.body.appendChild(f)
+  setTimeout(()=> f.remove(), 220)
+  reveal()
 })
 
-/* crown gentle parallax (max 4px) */
-const maxFollow = 4
-document.addEventListener('pointermove', (ev)=>{
-  const rect = crownSvg.getBoundingClientRect()
-  const cx = rect.left + rect.width/2
-  const cy = rect.top + rect.height/2
-  const dx = (ev.clientX - cx)/rect.width * maxFollow
-  const dy = (ev.clientY - cy)/rect.height * maxFollow
-  crownSvg.style.transform = `translate(${dx}px, ${dy}px)`
+/* Crown subtle parallax (tiny) */
+const MAX = 4
+document.addEventListener('pointermove', (e)=>{
+  const r = crown.getBoundingClientRect()
+  const cx = r.left + r.width/2
+  const cy = r.top + r.height/2
+  const dx = (e.clientX - cx)/r.width * MAX
+  const dy = (e.clientY - cy)/r.height * MAX
+  crown.style.transform = `translate(${dx}px, ${dy}px)`
 })
-document.addEventListener('pointerleave', ()=> crownSvg.style.transform = '')
+document.addEventListener('pointerleave', ()=> crown.style.transform = '')
 
-/* ============ Particles (reduced, soft) ============ */
-function spawnParticles(n = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--particle-count'))){
-  const rng = (a,b)=>Math.random()*(b-a)+a
-  for(let i=0;i<n;i++){
-    const p = document.createElement('div'); p.className='particle'
-    const left = 8 + Math.random()*84
-    p.style.left = left + '%'
-    p.style.bottom = (-8 - Math.random()*8) + '%'
-    p.style.opacity = rng(0.06,0.14)
-    p.style.width = (2 + Math.random()*6) + 'px'
-    p.style.height = (8 + Math.random()*22) + 'px'
-    document.body.appendChild(p)
-    animateParticle(p)
-  }
-}
-function animateParticle(el){
-  const dur = 26000 + Math.random()*22000
-  const leftDrift = (Math.random()*30 - 15)
-  const endBottom = 110 + Math.random()*40
-  const startDelay = Math.random()*9000
-  el.animate([
-    { transform: 'translateX(0) scale(1)', bottom: el.style.bottom, opacity: el.style.opacity },
-    { transform: `translateX(${leftDrift}px) scale(${(Math.random()*0.6)+0.7})`, bottom: endBottom+'%', opacity: 0.02 }
-  ], { duration: dur, easing: 'linear', delay: startDelay, iterations: Infinity })
-}
-
-/* ============ Testimonials (soft rotation) ============ */
-const testimonials = [
+/* ====== Testimonials rotation (dignified) ====== */
+const TESTS = [
   '“Just made $4,200 in 3 hours” — @emperorwave',
   '“They licensed my 15s Edict” — @duchessluxe',
   '“Founding Bloodline #127 — appreciation up 40x” — @kingvault'
 ]
-let ti = 0
-function rotateTestimonial(){
-  testimonialEl.style.opacity = 0
-  setTimeout(()=>{
-    testimonialEl.textContent = testimonials[ti % testimonials.length]
-    testimonialEl.style.opacity = 0.95
-    ti++
-  }, 520)
+let tIndex=0
+function rotate(){
+  testimonial.style.opacity=0
+  setTimeout(()=>{ testimonial.textContent = TESTS[tIndex%TESTS.length]; testimonial.style.opacity=0.95; tIndex++ }, 520)
 }
-setInterval(rotateTestimonial, 4200)
-rotateTestimonial()
+rotate(); setInterval(rotate, 4200)
 
-/* ============ Live Counter (Supabase) ============ */
-let displayedCount = 0
-async function fetchLiveCount(){
+/* ====== Live counter ====== */
+let displayed = 0
+async function fetchCount(){
   try{
-    const res = await supabase.from('profiles').select('id', { count: 'exact', head: true })
+    const res = await supabase.from('profiles').select('id', { head: true, count: 'exact' })
     if(res.error && res.status !== 406) return
     const count = res.count || 0
-    animateCounterTo(count)
-  }catch(err){}
+    animateCount(count)
+  }catch(e){}
 }
-function animateCounterTo(target){
+function animateCount(target){
   target = Math.max(0, parseInt(target))
-  const start = displayedCount
+  const start = displayed
   const delta = target - start
-  const steps = 28
-  let i = 0
-  if(delta === 0) {
-    topRightCounter.textContent = `${numberWithCommas(start)} people ruling right now`
-    return
-  }
-  const ticker = setInterval(()=>{
+  if(delta===0){ liveCount.textContent = `${numberWithCommas(start)} people ruling right now`; return }
+  const steps = 24; let i=0
+  const timer = setInterval(()=>{
     i++
-    const progress = i/steps
-    const eased = Math.pow(progress,0.9)
-    const cur = Math.round(start + delta*eased)
-    displayedCount = cur
-    topRightCounter.textContent = `${numberWithCommas(cur)} people ruling right now`
-    if(i>=steps){ clearInterval(ticker); displayedCount = target }
+    const progress = Math.pow(i/steps,0.9)
+    const cur = Math.round(start + delta*progress)
+    displayed = cur
+    liveCount.textContent = `${numberWithCommas(cur)} people ruling right now`
+    if(i>=steps){ clearInterval(timer); displayed = target }
   }, 70)
 }
 function numberWithCommas(x){ return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") }
-fetchLiveCount(); setInterval(fetchLiveCount, 10000)
+fetchCount(); setInterval(fetchCount, 11000)
 
-/* ============ Countdown (now + 11d 4h 12m) ============ */
-const now = Date.now()
-const target = new Date(now + (11*24*60*60*1000) + (4*60*60*1000) + (12*60*1000))
+/* ====== Countdown (now + 11d 4h 12m) ====== */
+const target = new Date(Date.now() + (11*24*60*60*1000) + (4*60*60*1000) + (12*60*1000))
 function updateCountdown(){
   const diff = target - Date.now()
-  if(diff <= 0){ countdownEl.textContent = 'Founding Bloodline closed'; return }
+  if(diff<=0){ countdown.textContent = 'Founding Bloodline closed'; return }
   const d = Math.floor(diff / (1000*60*60*24))
-  const h = Math.floor((diff % (1000*60*60*24)) / (1000*60*60))
-  const m = Math.floor((diff % (1000*60*60)) / (1000*60))
-  countdownEl.textContent = `Founding Bloodline closes in ${d}d ${h}h ${m}m`
+  const h = Math.floor((diff % (1000*60*60*24))/(1000*60*60))
+  const m = Math.floor((diff % (1000*60*60))/(1000*60))
+  countdown.textContent = `Founding Bloodline closes in ${d}d ${h}h ${m}m`
 }
 updateCountdown(); setInterval(updateCountdown, 60*1000)
 
-/* ============ CTA / Modals ============ */
-claimBtn.addEventListener('click', ()=> openAuthModal(true))
-watchBtn.addEventListener('click', ()=> openVideoModal())
-function openAuthModal(signUp=true){
-  isSignUp = signUp
-  modalTitle.textContent = isSignUp ? 'Sign Up' : 'Sign In'
-  submitAuth.textContent = isSignUp ? 'Sign Up' : 'Sign In'
-  modalError.textContent = ''
-  emailInput.value = ''; passwordInput.value = ''
-  modalBackdrop.style.display = 'flex'
-  emailInput.focus()
-}
-function closeAuthModal(){ modalBackdrop.style.display = 'none' }
-function openVideoModal(){ videoBackdrop.style.display = 'flex'; demoVideo.currentTime = 0; demoVideo.muted = true; demoVideo.play().catch(()=>{}) }
-function closeVideoModal(){ videoBackdrop.style.display = 'none'; demoVideo.pause() }
-toggleAuth.addEventListener('click', ()=>{
-  isSignUp = !isSignUp
-  modalTitle.textContent = isSignUp ? 'Sign Up' : 'Sign In'
-  submitAuth.textContent = isSignUp ? 'Sign Up' : 'Sign In'
-  modalError.textContent = ''
-})
-closeModal.addEventListener('click', closeAuthModal)
-modalBackdrop.addEventListener('click', (ev)=>{ if(ev.target === modalBackdrop) closeAuthModal() })
-videoBackdrop.addEventListener('click', (ev)=>{ if(ev.target === videoBackdrop) closeVideoModal() })
+/* ====== CTA behaviors & modals ====== */
+claim.addEventListener('click', ()=> openAuth(true))
+watch.addEventListener('click', ()=> openDemo())
 
-/* ============ Auth handling (Supabase) ============ */
+function openAuth(signUp=true){
+  modal.style.display='flex'; modal.setAttribute('aria-hidden','false')
+  modalTitle.textContent = signUp ? 'Sign Up' : 'Sign In'
+  submitAuth.textContent = signUp ? 'Sign Up' : 'Sign In'
+  emailInput.value=''; passwordInput.value=''
+  setTimeout(()=> emailInput.focus(), 120)
+}
+function closeAuth(){ modal.style.display='none'; modal.setAttribute('aria-hidden','true') }
+function openDemo(){ videoModal.style.display='flex'; videoModal.setAttribute('aria-hidden','false'); demo.currentTime=0; demo.muted=true; demo.play().catch(()=>{}) }
+function closeDemo(){ videoModal.style.display='none'; videoModal.setAttribute('aria-hidden','true'); demo.pause() }
+
+closeModal.addEventListener('click', closeAuth)
+document.getElementById('modal').addEventListener('click', (e)=>{ if(e.target === document.getElementById('modal')) closeAuth() })
+document.getElementById('videoModal').addEventListener('click', (e)=>{ if(e.target === document.getElementById('videoModal')) closeDemo() })
+
+toggleAuth.addEventListener('click', ()=>{
+  const isSignUp = submitAuth.textContent.trim().toLowerCase().includes('sign up')
+  submitAuth.textContent = isSignUp ? 'Sign In' : 'Sign Up'
+  modalTitle.textContent = submitAuth.textContent
+})
+
+/* ====== Auth handling (supabase) ====== */
 authForm.addEventListener('submit', async (ev)=>{
-  ev.preventDefault(); modalError.textContent = ''
-  const email = emailInput.value.trim(); const password = passwordInput.value.trim()
-  if(!email || !password){ modalError.textContent = 'Email and password required'; return }
+  ev.preventDefault(); modalError.textContent=''
+  const email = emailInput.value.trim(), pwd = passwordInput.value.trim()
+  if(!email || !pwd){ modalError.textContent = 'Email and password required'; return }
   submitAuth.disabled = true
   try{
+    const isSignUp = submitAuth.textContent.trim().toLowerCase().includes('sign up')
     if(isSignUp){
-      const { data, error } = await supabase.auth.signUp({ email, password })
-      if(error){ modalError.textContent = error.message || 'Sign up failed'; submitAuth.disabled = false; return }
-      try{ await supabase.from('profiles').insert({ id: data.user.id, email, is_creator: false }) }catch(e){}
+      const { data, error } = await supabase.auth.signUp({ email, password: pwd })
+      if(error){ modalError.textContent = error.message || 'Sign up failed'; submitAuth.disabled=false; return }
+      try{ await supabase.from('profiles').insert({ id: data.user.id, email, is_creator:false }) }catch(e){}
       window.location.href = 'home.html'
     } else {
-      const { data, error } = await supabase.auth.signInWithPassword({ email, password })
-      if(error){ modalError.textContent = error.message || 'Sign in failed'; submitAuth.disabled = false; return }
+      const { data, error } = await supabase.auth.signInWithPassword({ email, password: pwd })
+      if(error){ modalError.textContent = error.message || 'Sign in failed'; submitAuth.disabled=false; return }
       window.location.href = 'home.html'
     }
-  }catch(err){ modalError.textContent = 'Unexpected error'; console.error(err) }
-  finally{ submitAuth.disabled = false }
+  }catch(e){ modalError.textContent='Unexpected error'; console.error(e) } finally{ submitAuth.disabled=false }
 })
 
-/* ============ Boot sequence ============ */
+/* ====== boot fallback ====== */
 document.addEventListener('DOMContentLoaded', ()=>{
-  spawnParticles()
-  setTimeout(()=> {
-    // fallback reveal if animation not triggered
-    if(!lineCenter.classList.contains('pulse')){
-      const flash = document.createElement('div'); flash.className='flash'; document.body.appendChild(flash)
-      setTimeout(()=> flash.remove(), 220)
-      revealWordmark(); lineCenter.classList.add('pulse'); setTimeout(()=> crownSvg.classList.add('wobble'), 800)
-    }
-  }, 2200)
+  // If hairline animation didn't trigger (rare), force reveal after 2s
+  setTimeout(()=>{ if(!crown.classList.contains('crown--visible')) reveal() }, 2200)
 })
 
-/* small accessibility notes */
-wordmarkEl.setAttribute('aria-hidden','false'); tagline.setAttribute('aria-hidden','false')
+/* small accessibility */
+wordmark.setAttribute('aria-hidden','false'); tagline.setAttribute('aria-hidden','false')
 </script>
 </body>
 </html>
