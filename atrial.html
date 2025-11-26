@@ -269,6 +269,10 @@ body{
   .testimonial{ left:28px; bottom:152px }
   .cta{ bottom:72px }
 }
+  input::placeholder {
+  color: #D4AF37; /* gold */
+  opacity: 1; /* keep it fully visible */
+}
 </style>
 </head>
 <body>
@@ -308,8 +312,8 @@ body{
       <h2 id="modalTitle">Sign Up</h2>
       <div id="modalError" style="color:#ff6b6b;margin-top:6px"></div>
       <form id="auth" autocomplete="on">
-        <input class="input" id="email" type="email" placeholder="Email" required>
-        <input class="input" id="password" type="password" placeholder="Password" required>
+        <input type="text" id="email" placeholder="Email">
+        <input type="password" id="password" placeholder="Password">
         <div class="row">
           <button type="submit" class="btn primary" id="submitAuth">Sign Up</button>
           <button type="button" class="btn" id="closeModal">Close</button>
@@ -326,7 +330,7 @@ body{
   <div class="modal-backdrop" id="videoModal" style="display:none" aria-hidden="true">
     <div class="phone" role="dialog" aria-modal="true">
       <video id="demo" playsinline muted loop controls preload="metadata" style="width:100%;height:100%;object-fit:cover">
-        <source src="demo.mp4" type="video/mp4">
+        <source src="grok-video-5c35aad5-a59c-46f9-b7f8-b335ad6b8b94-2.mp4" type="video/mp4">
         Your browser doesn't support video.
       </video>
     </div>
