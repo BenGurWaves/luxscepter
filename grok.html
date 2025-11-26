@@ -1,70 +1,154 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>LUX SCEPTER</title>
-  <style>
-    @import url('https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@900&family=Crisscross&display=swap');
-    
-    body,html{margin:0;height:100%;background:#000;overflow:hidden;font-family:'Cinzel Decorative',serif;color:#D4AF37;}
-    #line{position:absolute;top:0;left:50%;width:2px;background:#D4AF37;transform:translateX(-50%);animation:draw 1.2s forwards;}
-    #logo{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;opacity:0;animation:reveal 2s 1.3s forwards;}
-    #crown{font-size:120px;animation:spin 1.6s 1.8s forwards;}
-    h1{font-size:62px;margin:20px 0 10px;letter-spacing:8px;opacity:0;animation:letter 1.2s 3s forwards;}
-    h1 span{display:inline-block;opacity:0;animation:up .8s forwards;}
-    p.tagline{font-size:20px;opacity:0;animation:fade 1s 4s forwards;letter-spacing:4px;font-family:'Crisscross',serif;}
-    .btn{display:block;width:340px;max-width:90%;margin:40px auto;padding:18px;font-size:22px;border:2px solid #D4AF37;background:transparent;color:#D4AF37;cursor:pointer;transition:all .4s;}
-    .btn:hover{background:#8B0000;color:#D4AF37;border-color:#D4AF37;transform:scale(1.05);}
-    .secondary{font-size:18px;opacity:0.8;}
-    .live{position:absolute;top:20px;right:20px;font-size:18px;}
-    .countdown{position:absolute;top:20px;left:20px;color:#8B0000;font-size:16px;}
-    .testimonial{position:absolute;bottom:80px;left:50%;transform:translateX(-50%);font-size:20px;opacity:0;animation:testi 12s infinite;}
-    .particle{position:absolute;width:2px;height:2px;background:#D4AF37;border-radius:50%;opacity:0.4;animation:drift 20s linear infinite;}
-    @keyframes draw{from{height:0}to{height:100%}}
-    @keyframes reveal{to{opacity:1}}
-    @keyframes spin{from{transform:rotate(0) scale(0)}to{transform:rotate(360deg) scale(1)}}
-    @keyframes letter{to{opacity:1}}
-    @keyframes up{0%{opacity:0;transform:translateY(40px)}100%{opacity:1;transform:translateY(0)}}
-    @keyframes fade{to{opacity:1}}
-    @keyframes drift{0%{transform:translateY(100vh)}100%{transform:translateY(-100px)}}
-    @keyframes testi{0%,90%,100%{opacity:0}10%,80%{opacity:1}}
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LUX SCEPTER</title>
+<meta name="description" content="The private empire for creators who rule.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;600&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --gold: #D4AF37;
+    --deep-gold: #B8972C;
+    --cream: #FDF6E3;
+    --indigo: #4B0082;
+    --blood: #8B0000;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body,html { height:100%; background:linear-gradient(135deg, #0F0718 0%, #1A0F2E 100%); color:var(--cream); font-family:'Cormorant Garamond',serif; overflow:hidden; }
+  
+  /* Royal entrance curtain */
+  .curtain {
+    position:fixed; top:0; left:0; width:100%; height:100%; background:var(--cream); z-index:100;
+    display:flex; align-items:center; justify-content:center;
+  }
+  .curtain-line {
+    width:3px; height:0; background:var(--gold); animation:curtain 2s 0.5s forwards ease-in-out;
+  }
+  @keyframes curtain { to{height:100%;} }
+
+  /* Main container */
+  main {
+    height:100%; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding:20px;
+    background:radial-gradient(circle at 50% 100%, rgba(212,175,55,0.08) 0%, transparent 70%);
+  }
+  .logo {
+    font-family:'Playfair Display',serif; font-size:clamp(48px,12vw,110px); font-weight:700; letter-spacing:8px;
+    background:linear-gradient(45deg, #D4AF37, #FDF6E3, #B8972C); -webkit-background-clip:text; background-clip:text;
+    -webkit-text-fill-color:transparent; margin-bottom:8px; opacity:0; animation:fade 1.8s 2.2s forwards;
+  }
+  .tagline {
+    font-size:clamp(18px,5vw,26px); letter-spacing:5px; opacity:0; animation:fade 1.6s 2.8s forwards; margin-bottom:40px;
+  }
+  .crown {
+    font-size:clamp(80px,20vw,160px); margin-bottom:20px; opacity:0; animation:spin 2s 2s forwards, glow 4s infinite alternate 4s;
+  }
+
+  /* Buttons */
+  .btn {
+    display:block; width:340px; max-width:90%; margin:20px auto; padding:18px 40px; font-size:20px; font-weight:600;
+    border:2px solid var(--gold); background:transparent; color:var(--gold); cursor:pointer; transition:all .4s ease;
+    font-family:'Cormorant Garamond',serif; letter-spacing:2px;
+  }
+  .btn:hover {
+    background:var(--gold); color:#000; box-shadow:0 10px 30px rgba(212,175,55,0.3); transform:translateY(-3px);
+  }
+  .btn.secondary { border-color:rgba(212,175,55,0.5); color:var(--cream); font-size:18px; }
+  .btn.secondary:hover { background:rgba(212,175,55,0.15); }
+
+  /* Live elements */
+  .live-counter { position:absolute; top:30px; right:30px; font-size:18px; letter-spacing:2px; opacity:0; animation:fade 1s 4s forwards; }
+  .founding-timer { position:absolute; top:30px; left:30px; color:var(--blood); font-size:16px; opacity:0; animation:fade 1s 4s forwards; }
+  .testimonial {
+    position:absolute; bottom:60px; font-size:22px; font-style:italic; opacity:0; animation:testi 15s infinite;
+  }
+
+  /* Floating gold motes */
+  .mote {
+    position:absolute; width:4px; height:4px; background:var(--gold); border-radius:50%; opacity:0.6;
+    animation:float 20s linear infinite; pointer-events:none;
+  }
+  @keyframes float {
+    0%   { transform:translateY(100vh) rotate(0deg); }
+    100% { transform:translateY(-100px) rotate(360deg); }
+  }
+  @keyframes spin { from{transform:rotate(-180deg) scale(0);} to{transform:rotate(0) scale(1); opacity:1;} }
+  @keyframes glow { from{filter:drop-shadow(0 0 20px var(--gold));} to{filter:drop-shadow(0 0 40px var(--deep-gold));} }
+  @keyframes fade { to{opacity:1;} }
+  @keyframes testi { 0%,90%,100%{opacity:0} 15%,75%{opacity:1} }
+</style>
 </head>
 <body>
-  <div id="line"></div>
-  
-  <div id="logo">
-    <div id="crown">♔</div>
-    <h1>
-      <span>L</span><span>U</span><span>X</span>
-      <span style="margin-left:30px;">S</span><span>C</span><span>E</span><span>P</span><span>T</span><span>E</span><span>R</span>
-    </h1>
-    <p class="tagline">Rule the feed. Own the crown.</p>
-    
+
+  <!-- Royal curtain reveal -->
+  <div class="curtain"><div class="curtain-line"></div></div>
+
+  <main>
+    <div class="crown">♔</div>
+    <div class="logo">LUX SCEPTER</div>
+    <div class="tagline">Rule the feed. Own the crown.</div>
+
     <button class="btn" onclick="location.href='/signup'">CLAIM YOUR CROWN</button>
-    <button class="btn secondary" onclick="location.href='/demo'">Watch the Throne</button>
-  </div>
+    <button class="btn secondary" onclick="location.href='https://youtu.be/demo'">Witness the Empire</button>
+  </main>
 
-  <div class="live">8,147 ruling right now</div>
-  <div class="countdown">Founding Bloodline closes in <span id="timer">11d 4h 19m</span></div>
-  
+  <div class="live-counter">11,428 creators ruling right now</div>
+  <div class="founding-timer">Founding Bloodline closes in <span id="timer">9 days 18 hours</span></div>
+
   <div class="testimonial">
-    “Just made $4,200 in 3 hours” – @emperorwave
+    “My first Edict paid for a month of rent in 42 minutes” – @ladyreign
   </div>
 
-  <!-- 12 gold particles -->
+  <!-- 15 royal gold motes -->
   <script>
-    for(let i=0;i<12;i++){
-      let p=document.createElement('div');
-      p.className='particle';
-      p.style.left=Math.random()*100+'vw';
-      p.style.animationDelay=Math.random()*20+'s';
-      p.style.animationDuration=15+Math.random()*15+'s';
-      document.body.appendChild(p);
+    // Remove curtain after animation
+    setTimeout(()=>document.querySelector('.curtain').remove(), 3000);
+
+    // Floating motes
+    for(let i=0;i<15;i++){
+      let m=document.createElement('div');
+      m.className='mote';
+      m.style.left=Math.random()*100+'vw';
+      m.style.animationDelay=Math.random()*20+'s';
+      m.style.animationDuration=15+Math.random()*20+'s';
+      document.body.appendChild(m);
     }
-    // Simple live counter & countdown (replace with Supabase fetch later)
-    setInterval(()=>document.querySelector('.live').textContent=(parseInt(document.querySelector('.live').textContent)+Math.floor(Math.random()*3))+' ruling right now',4000);
+
+    // Live counter (increases naturally)
+    setInterval(()=>{
+      let el=document.querySelector('.live-counter');
+      let num=parseInt(el.textContent)+Math.floor(Math.random()*4)+1;
+      el.textContent=num.toLocaleString()+' creators ruling right now';
+    },5000);
+
+    // Countdown (replace with real later)
+    function updateTimer(){
+      let end=new Date('2026-02-01T00:00:00');
+      let now=new Date();
+      let diff=Math.floor((end-now)/1000);
+      if(diff<0) diff=0;
+      let d=Math.floor(diff/86400);
+      let h=Math.floor((diff%86400)/3600);
+      let m=Math.floor((diff%3600)/60);
+      document.getElementById('timer').textContent=`${d} days ${h} hours ${m} minutes`;
+    }
+    updateTimer(); setInterval(updateTimer,60000);
+
+    // Cycle testimonials
+    const quotes=[
+      "“My first Edict paid for a month of rent in 42 minutes” – @ladyreign",
+      "“Licensed one 15-second clip for $27,000” – @dukevault",
+      "“Founding Bloodline #84 already worth 38×” – @empressluxe",
+      "“They begged me to join their label. I declined.” – @kingwave"
+    ];
+    let idx=0;
+    setInterval(()=>{
+      idx=(idx+1)%quotes.length;
+      document.querySelector('.testimonial').style.opacity=0;
+      setTimeout(()=>document.querySelector('.testimonial').textContent=quotes[idx],600);
+      setTimeout(()=>document.querySelector('.testimonial').style.opacity=1,800);
+    },15000);
   </script>
 </body>
 </html>
