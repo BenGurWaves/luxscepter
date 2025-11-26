@@ -3,375 +3,107 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Lux Scepter — Home (Uploader + Feed)</title>
+<title>Lux Scepter – Home</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
-  /* Minimal royal UI (single-file) */
-  @font-face { font-family: 'Chomsky'; src: local('Chomsky'), local('Georgia'); }
-  :root{
-    --bg:#0f0f10; --gold:#bd8e20; --maroon:#571728; --violet:#5600a1; --muted:#9b8b6d;
-  }
-  html,body{height:100%;margin:0;background:linear-gradient(180deg,#0b0610,#120616);color:var(--gold);font-family:"Times New Roman",serif}
-  header{display:flex;align-items:center;justify-content:space-between;padding:18px 28px;background:linear-gradient(90deg,var(--violet),#35005a);box-shadow:0 6px 30px rgba(0,0,0,0.6)}
-  header h1{font-family:Chomsky,serif;margin:0;font-size:22px}
-  header .meta{color:var(--muted);font-size:13px}
-  main{display:grid;grid-template-columns:360px 1fr;gap:20px;padding:22px}
-  .panel{background:linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.02));border-radius:12px;padding:14px;border:1px solid rgba(255,255,255,0.03)}
-  label{display:block;margin-top:10px;color:var(--muted);font-size:13px}
-  input[type="text"], input[type="email"], input[type="password"], textarea, select {
-    width:100%;padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.03);background:#0b0b0b;color:var(--gold);box-sizing:border-box;margin-top:6px
-  }
-  input[type="file"]{margin-top:8px;color:var(--gold)}
-  button{padding:10px 12px;border-radius:8px;border:none;cursor:pointer}
-  .btn-primary{background:var(--violet);color:#fff}
-  .btn-ghost{background:transparent;border:1px solid rgba(255,255,255,0.03);color:var(--gold)}
-  .small{font-size:13px;color:var(--muted)}
-  .feed{display:flex;flex-direction:column;gap:16px}
-  .post{background:linear-gradient(180deg, rgba(255,255,255,0.01), rgba(0,0,0,0.04));padding:12px;border-radius:10px;border:1px solid rgba(255,255,255,0.02)}
-  .post video{width:100%;border-radius:8px;background:#000}
-  footer{padding:12px;text-align:center;color:var(--muted);font-size:12px}
-  .notice{color:#ffb3a7;font-size:13px;margin-top:8px}
-  .error{color:#ff7b7b}
-  .ok{color:#9fe6a0}
-  .muted-2{color:#c9b57a;font-size:12px}
+body {
+  background:#0a0a0a;
+  color:white;
+  font-family: "Times New Roman", serif;
+  padding:40px;
+}
+#feed video {
+  width:400px;
+  margin:20px 0;
+  display:block;
+}
+input, button {
+  display:block;
+  margin:10px 0;
+  padding:10px;
+  width:300px;
+  background:#111;
+  color:white;
+  border:1px solid #444;
+}
+button { cursor:pointer; }
 </style>
 </head>
 <body>
-<header>
-  <div>
-    <h1>Lux Scepter</h1>
-    <div class="meta">Rule the feed. Own the crown.</div>
-  </div>
-  <div>
-    <span class="meta" id="who">Checking session...</span>
-    <button id="signout" class="btn-ghost" style="margin-left:12px">Sign out</button>
-  </div>
-</header>
 
-<main>
-  <!-- LEFT: Auth status + uploader -->
-  <section class="panel" id="left-panel">
-    <div style="font-family:Chomsky;font-size:18px">Creator Upload</div>
-    <div class="small" style="margin-top:6px">Sign in on index.html first. If you are already signed in, this page will pick up that session and load your profile. Uploader appears for users where <code>profiles.is_creator = true</code>.</div>
+<h1 style="font-family: Chomsky, serif;">Lux Scepter</h1>
 
-    <div id="session-area" style="margin-top:12px">
-      <div style="margin-top:6px"><strong>Session:</strong></div>
-      <div id="session-info" class="small" style="margin-top:6px">Checking session…</div>
-      <div id="profile-info" class="small muted-2" style="margin-top:6px"></div>
-    </div>
+<button id="logout">Sign Out</button>
 
-    <hr style="border-color:rgba(255,255,255,0.03);margin:12px 0">
+<h2>Upload Video</h2>
+<input id="file" type="file" accept="video/*">
+<button id="upload_btn">Upload</button>
 
-    <!-- Creator uploader - shown only when profiles.is_creator === true -->
-    <div id="uploader" style="display:none">
-      <div style="font-family:Chomsky;font-size:16px">Upload Video</div>
-      <label>Title</label>
-      <input id="title" type="text" placeholder="Short title (optional)">
-      <label>Choose video file</label>
-      <input id="file" type="file" accept="video/*">
-      <label>Filename on R2 (optional)</label>
-      <input id="r2name" type="text" placeholder="leave blank to auto-generate">
-      <label>Visibility</label>
-      <select id="visibility"><option value="public">Public</option><option value="unlisted">Unlisted</option></select>
-      <button id="upload-btn" class="btn-primary" style="margin-top:12px;width:100%">Upload to Cloudflare & Save to Feed</button>
-      <div id="upload-status" class="small" style="margin-top:8px"></div>
-      <div class="notice" style="margin-top:8px">Dev-only: page contains Cloudflare keys for signing. Move to serverless presigner for production.</div>
-    </div>
+<h2>Feed</h2>
+<div id="feed"></div>
 
-    <div id="not-creator" style="display:none;margin-top:10px">
-      <div class="small">You are not a creator. Use invite code during signup on <code>index.html</code> (which should set <code>profiles.is_creator = true</code>).</div>
-    </div>
-  </section>
+<script>
+const supabase = supabase.createClient(
+  "https://uewvmldolwgihfkxwlsl.supabase.co",
+  "YOUR_PUBLIC_SUPABASE_ANON_KEY"
+);
 
-  <!-- RIGHT: Feed -->
-  <section>
-    <div style="display:flex;justify-content:space-between;align-items:center;">
-      <div style="font-family:Chomsky;font-size:18px">Realm Feed</div>
-      <div>
-        <button id="reload" class="btn-ghost">Reload</button>
-      </div>
-    </div>
+async function checkAuth() {
+  const { data } = await supabase.auth.getUser();
+  if (!data.user) window.location = "index.html";
+}
+checkAuth();
 
-    <div id="feed" class="feed" style="margin-top:12px"><div class="small">Loading feed…</div></div>
-  </section>
-</main>
+document.getElementById("logout").onclick = async () => {
+  await supabase.auth.signOut();
+  window.location = "index.html";
+};
 
-<footer>
-  <div class="small">If PUT fails with NetworkError, enable CORS on Cloudflare R2 (allow your origin, methods PUT/GET/OPTIONS, and headers Content-Type and x-amz-*).</div>
-</footer>
+document.getElementById("upload_btn").onclick = async () => {
+  const file = document.getElementById("file").files[0];
+  if (!file) return alert("Pick a file.");
 
-<script type="module">
-/* home.html single-file:
-   - Reads Supabase session created by index.html (no redirect)
-   - Shows uploader if profiles.is_creator === true
-   - Signs PUT to Cloudflare R2 (SigV4 in-browser) and inserts post record into 'posts' table with public dev URL
-   - Loads feed from 'posts' table and shows video elements with uploader name
-   NOTE: Client-side Cloudflare secret keys are for dev only.
-*/
+  const form = new FormData();
+  form.append("file", file);
 
-import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
+  // Send video to your secure server endpoint
+  const upload = await fetch("/upload", {
+    method: "POST",
+    body: form
+  });
 
-// ---------------- CONFIG (from you) ----------------
-const SUPABASE_URL = 'https://uewvmldolwgihfkxwlsl.supabase.co'
-const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVld3ZtbGRvbHdnaWhma3h3bHNsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjM5MzQ1MjksImV4cCI6MjA3OTUxMDUyOX0.b9C00OjIkAUDPztC8RtdHcwjdgX4OrShNW_pp6r-_qI'
+  if (!upload.ok) {
+    alert("Upload failed.");
+    return;
+  }
 
-const R2_ACCOUNT_HOST = '4aefdc871e931f0ca228941ee1599c02.r2.cloudflarestorage.com' // signing host (PUT)
-const R2_BUCKET = 'luxscepter-uploads'
-const PUB_DEV_BASE = 'https://pub-896ac4804d024c16a6eddd0fcc22782e.r2.dev' // public dev base used for GET
-const R2_ACCESS_KEY = 'e99af04b068a9a23ce46845e3ecf8efa'
-const R2_SECRET_KEY = '154bf5eaf1516e58c9055f8df68bd80640b848d498872b23e1eab43589559f4f'
+  alert("Uploaded.");
+  loadFeed();
+};
 
-// ---------------- Supabase client ----------------
-const supabase = createClient(SUPABASE_URL, SUPABASE_KEY)
+async function loadFeed() {
+  // FEED FROM PUBLIC R2 FOLDER
+  const feed = document.getElementById("feed");
+  feed.innerHTML = "";
 
-// ---------------- DOM refs ----------------
-const who = document.getElementById('who')
-const signoutBtn = document.getElementById('signout')
-const sessionInfo = document.getElementById('session-info')
-const profileInfo = document.getElementById('profile-info')
-const uploader = document.getElementById('uploader')
-const notCreator = document.getElementById('not-creator')
-const uploadBtn = document.getElementById('upload-btn')
-const fileInput = document.getElementById('file')
-const titleInput = document.getElementById('title')
-const r2nameInput = document.getElementById('r2name')
-const visibilitySelect = document.getElementById('visibility')
-const uploadStatus = document.getElementById('upload-status')
-const reloadBtn = document.getElementById('reload')
-const feedEl = document.getElementById('feed')
+  // Public R2 listing (JSON)
+  const res = await fetch("https://pub-896ac4804d024c16a6eddd0fcc22782e.r2.dev/?format=json");
+  if (!res.ok) return;
+  const list = await res.json();
 
-// ---------------- WebCrypto helpers ----------------
-const enc = new TextEncoder()
-function toHex(buffer){ return Array.from(new Uint8Array(buffer)).map(b=>b.toString(16).padStart(2,'0')).join('') }
-async function sha256(data){ if (typeof data === 'string') data = enc.encode(data); const h = await crypto.subtle.digest('SHA-256', data); return h }
-async function hmac(key, data){ const cryptoKey = await crypto.subtle.importKey('raw', key, { name:'HMAC', hash:'SHA-256' }, false, ['sign']); const sig = await crypto.subtle.sign('HMAC', cryptoKey, (typeof data === 'string') ? enc.encode(data) : data); return sig }
-async function getSigningKey(secretKey, dateStamp, region='auto', service='s3'){ const kDate = await hmac(enc.encode('AWS4' + secretKey), dateStamp); const kRegion = await hmac(kDate, region); const kService = await hmac(kRegion, service); const kSigning = await hmac(kService, 'aws4_request'); return kSigning }
-
-// Build SigV4 headers for PUT to R2
-async function buildSigV4Headers({ method='PUT', bucket, objectKey, payloadArrayBuffer }) {
-  const host = R2_ACCOUNT_HOST
-  const now = new Date()
-  const amzDate = now.toISOString().replace(/[:-]|\.\d{3}/g,'') + 'Z' // YYYYMMDDTHHMMSSZ
-  const dateStamp = amzDate.slice(0,8)
-  const payloadHash = toHex(await sha256(payloadArrayBuffer || ''))
-  const canonicalHeaders = `host:${host}\n` + `x-amz-content-sha256:${payloadHash}\n` + `x-amz-date:${amzDate}\n`
-  const signedHeaders = 'host;x-amz-content-sha256;x-amz-date'
-  const canonicalRequest = [
-    method,
-    `/${bucket}/${objectKey}`,
-    '',
-    canonicalHeaders,
-    signedHeaders,
-    payloadHash
-  ].join('\n')
-  const canonicalHash = toHex(await sha256(canonicalRequest))
-  const credentialScope = `${dateStamp}/auto/s3/aws4_request`
-  const stringToSign = ['AWS4-HMAC-SHA256', amzDate, credentialScope, canonicalHash].join('\n')
-  const signingKey = await getSigningKey(R2_SECRET_KEY, dateStamp, 'auto', 's3')
-  const signature = toHex(await hmac(signingKey, stringToSign))
-  const authorization = `AWS4-HMAC-SHA256 Credential=${R2_ACCESS_KEY}/${credentialScope}, SignedHeaders=${signedHeaders}, Signature=${signature}`
-  return { Authorization: authorization, 'x-amz-date': amzDate, 'x-amz-content-sha256': payloadHash }
+  list.objects.forEach(obj => {
+    const url = `https://pub-896ac4804d024c16a6eddd0fcc22782e.r2.dev/${obj.key}`;
+    if (url.endsWith(".mp4") || url.endsWith(".mov") || url.endsWith(".mkv")) {
+      const vid = document.createElement("video");
+      vid.src = url;
+      vid.controls = true;
+      feed.appendChild(vid);
+    }
+  });
 }
 
-// ---------------- Auth/session handling (no redirect) ----------------
-async function initSession() {
-  // read session (if any) from Supabase local storage
-  const { data } = await supabase.auth.getSession()
-  if (!data?.session) {
-    who.textContent = 'No active session. Sign in on index.html to continue.'
-    sessionInfo.textContent = 'No session present in localStorage.'
-    uploader.style.display = 'none'
-    notCreator.style.display = 'block'
-    await loadFeed() // still load feed for anonymous viewers
-  } else {
-    const user = data.session.user
-    who.textContent = user.email || user.id
-    sessionInfo.textContent = `Signed in as ${user.email || user.id}`
-    await updateProfileAndUI(user)
-    await loadFeed()
-  }
-
-  // subscribe to auth changes so page reflects sign-in/sign-out from other tab
-  supabase.auth.onAuthStateChange(async (event, session) => {
-    if (!session || !session.user) {
-      who.textContent = 'Signed out'
-      sessionInfo.textContent = 'No session'
-      uploader.style.display = 'none'
-      notCreator.style.display = 'block'
-      await loadFeed()
-    } else {
-      who.textContent = session.user.email || session.user.id
-      sessionInfo.textContent = `Signed in as ${session.user.email || session.user.id}`
-      await updateProfileAndUI(session.user)
-      await loadFeed()
-    }
-  })
-}
-initSession()
-
-// Update profile info and decide whether uploader appears
-async function updateProfileAndUI(user) {
-  try {
-    const { data: profile, error } = await supabase.from('profiles').select('id,username,is_creator').eq('id', user.id).single()
-    if (error) {
-      profileInfo.textContent = 'No profile row (profiles table). Create profile on signup.'
-      uploader.style.display = 'none'
-      notCreator.style.display = 'block'
-      return
-    }
-    profileInfo.textContent = profile.username ? `@${profile.username}` : profile.id
-    if (profile.is_creator) {
-      uploader.style.display = 'block'
-      notCreator.style.display = 'none'
-    } else {
-      uploader.style.display = 'none'
-      notCreator.style.display = 'block'
-    }
-  } catch (err) {
-    console.error('Profile load error', err)
-    profileInfo.textContent = 'Failed to load profile (check console).'
-    uploader.style.display = 'none'
-  }
-}
-
-// Sign out button (keeps user on page)
-document.getElementById('signout').addEventListener('click', async () => {
-  await supabase.auth.signOut()
-  who.textContent = 'Signed out'
-  sessionInfo.textContent = 'No session'
-  uploader.style.display = 'none'
-  notCreator.style.display = 'block'
-})
-
-// ---------------- Upload flow ----------------
-uploadBtn.addEventListener('click', async () => {
-  uploadStatus.textContent = ''
-  const file = fileInput.files[0]
-  if (!file) { uploadStatus.textContent = 'Choose a file first'; return }
-
-  // ensure user and profile
-  const { data: sessionData } = await supabase.auth.getSession()
-  if (!sessionData?.session) { uploadStatus.textContent = 'No session. Sign in on index.html first.'; return }
-  const user = sessionData.session.user
-
-  const { data: profile, error: profErr } = await supabase.from('profiles').select('id,username,is_creator').eq('id', user.id).single()
-  if (profErr || !profile) { uploadStatus.textContent = 'Profile missing. Did you sign up?'; console.error(profErr); return }
-  if (!profile.is_creator) { uploadStatus.textContent = 'You are not a creator (must use invite at signup).'; return }
-
-  // build object key (safe)
-  const nameProvided = (r2nameInput.value || '').trim()
-  const safeName = nameProvided ? nameProvided.replace(/\s+/g,'_') : `${(profile.username||user.id).replace(/[^a-zA-Z0-9_\-]/g,'_')}_${Date.now()}_${file.name.replace(/\s+/g,'_')}`
-  const objectKey = encodeURIComponent(safeName)
-
-  // read file buffer (be mindful of large files)
-  uploadStatus.textContent = 'Reading file into memory...'
-  let arrayBuffer
-  try {
-    arrayBuffer = await file.arrayBuffer()
-  } catch (err) {
-    console.error(err)
-    uploadStatus.innerHTML = `<span class="error">Failed to read file: ${err.message}</span>`
-    return
-  }
-
-  // build SigV4 headers
-  uploadStatus.textContent = 'Building signature...'
-  let sigHeaders
-  try {
-    sigHeaders = await buildSigV4Headers({ method:'PUT', bucket: R2_BUCKET, objectKey, payloadArrayBuffer: arrayBuffer })
-  } catch (err) {
-    console.error('Signing error', err)
-    uploadStatus.innerHTML = `<span class="error">Signing failed: ${err.message || err}</span>`
-    return
-  }
-
-  // PUT to R2
-  const putUrl = `https://${R2_ACCOUNT_HOST}/${R2_BUCKET}/${objectKey}`
-  uploadStatus.textContent = 'Uploading to Cloudflare R2... (watch console if it fails)'
-  try {
-    const res = await fetch(putUrl, {
-      method: 'PUT',
-      headers: {
-        'Content-Type': file.type || 'application/octet-stream',
-        'x-amz-date': sigHeaders['x-amz-date'],
-        'x-amz-content-sha256': sigHeaders['x-amz-content-sha256'],
-        'Authorization': sigHeaders['Authorization'],
-      },
-      body: arrayBuffer
-    })
-    if (!res.ok) {
-      const txt = await res.text().catch(()=>res.statusText)
-      throw new Error('R2 PUT failed: ' + res.status + ' ' + txt)
-    }
-  } catch (err) {
-    console.error('Upload error', err)
-    uploadStatus.innerHTML = `<span class="error">Upload failed: ${err.message}. Likely CORS or signature mismatch. See console.</span>`
-    return
-  }
-
-  // Construct public URL (pub dev domain)
-  const publicUrl = `${PUB_DEV_BASE}/${R2_BUCKET}/${objectKey}`
-
-  // Insert into posts
-  uploadStatus.textContent = 'Saving post record to Supabase...'
-  try {
-    const { error: insertErr } = await supabase.from('posts').insert([{
-      owner_id: user.id,
-      owner_username: profile.username || user.email.split('@')[0],
-      title: titleInput.value.slice(0,200),
-      file_url: publicUrl
-    }])
-    if (insertErr) throw insertErr
-    uploadStatus.innerHTML = `<span class="ok">Upload + save successful. ${publicUrl}</span>`
-    // reset inputs
-    fileInput.value = ''
-    titleInput.value = ''
-    r2nameInput.value = ''
-    // reload feed
-    await loadFeed()
-  } catch (err) {
-    console.error('Insert post error', err)
-    uploadStatus.innerHTML = `<span class="error">Saved to R2 but failed to insert post: ${err.message}</span>`
-  }
-})
-
-// ---------------- Load feed ----------------
-async function loadFeed(){
-  feedEl.innerHTML = '<div class="small">Loading feed…</div>'
-  try {
-    const { data, error } = await supabase.from('posts').select('*').order('created_at', { ascending:false }).limit(200)
-    if (error) throw error
-    if (!data || data.length === 0) { feedEl.innerHTML = '<div class="small">No posts yet.</div>'; return }
-    feedEl.innerHTML = ''
-    for (const post of data) {
-      const div = document.createElement('div')
-      div.className = 'post'
-      const username = escapeHtml(post.owner_username || 'unknown')
-      const title = escapeHtml(post.title || '')
-      const url = post.file_url
-      div.innerHTML = `
-        <div style="display:flex;justify-content:space-between;align-items:center">
-          <div>
-            <div class="small" style="color:var(--muted)">@${username}</div>
-            <div style="font-weight:600;margin-top:4px">${title}</div>
-          </div>
-          <div class="small" style="color:var(--muted)">${new Date(post.created_at).toLocaleString()}</div>
-        </div>
-        <div style="margin-top:8px">
-          ${url ? `<video controls preload="metadata" src="${escapeHtml(url)}"></video>` : '<div class="small">No media</div>'}
-        </div>
-      `
-      feedEl.appendChild(div)
-    }
-  } catch (err) {
-    console.error('Load feed error', err)
-    feedEl.innerHTML = '<div class="small error">Failed to load feed. See console.</div>'
-  }
-}
-reloadBtn.addEventListener('click', loadFeed)
-
-// ---------------- Helpers ----------------
-function escapeHtml(s){ if(!s) return ''; return String(s).replace(/[&<>"']/g, c=>({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' })[c]) }
-
+loadFeed();
 </script>
+
 </body>
 </html>
