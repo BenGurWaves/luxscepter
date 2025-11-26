@@ -6,9 +6,7 @@
 <title>Lux Scepter — Realm</title>
 <style>
   @font-face{font-family:Chomsky;src:local('Chomsky'),local('Georgia')}
-  :root{
-    --bg:#0f1111;--maroon:#571728;--deepviolet:#35005a;--royal:#5600a1;--gold:#bd8e20;--muted:#9b8b6d;--glass:rgba(255,255,255,0.03)
-  }
+  :root{--bg:#0f1111;--maroon:#571728;--deepviolet:#35005a;--royal:#5600a1;--gold:#bd8e20;--muted:#9b8b6d;--glass:rgba(255,255,255,0.03)}
   html,body{height:100%;margin:0;background:linear-gradient(180deg,var(--bg),#09080a);color:var(--gold);font-family:"Times New Roman",serif;font-size:15px}
   .topbar{display:flex;align-items:center;gap:12px;padding:18px 20px 0 20px}
   .brand{font-family:Chomsky;color:var(--gold);font-size:20px}
@@ -35,10 +33,10 @@
   #player.show{display:flex}
   .player-card{width:92%;max-width:1000px;padding:18px;border-radius:12px;background:linear-gradient(180deg,#0b0b0b,#150815);border:1px solid rgba(255,255,255,0.03)}
   @media(max-width:980px){.wrap{grid-template-columns:1fr;padding:12px}#oracle-bar{display:none}#oracle-full{display:none}}
-  /* small helpers */
   .small{font-size:13px;color:var(--muted)}
   .flex-between{display:flex;justify-content:space-between;align-items:center}
   .row{display:flex;gap:8px;align-items:center}
+  a.signin{color:var(--gold);text-decoration:underline;font-weight:600}
 </style>
 </head>
 <body>
@@ -56,8 +54,8 @@
       <div class="profile-row">
         <div class="avatar" id="avatar">✠</div>
         <div>
-          <div style="font-family:Chomsky;font-size:18px" id="display-name">—</div>
-          <div class="muted small" id="username">@—</div>
+          <div style="font-family:Chomsky;font-size:18px" id="display-name">Guest</div>
+          <div class="muted small" id="username">@guest</div>
           <div style="margin-top:8px"><span class="small muted">Crowns</span> <strong id="crown-count">0</strong> &nbsp; <span class="small muted">Scepters</span> <strong id="scepter-count">0</strong>/10</div>
         </div>
       </div>
@@ -69,6 +67,7 @@
         <input id="invite-code" placeholder="XXXXXX" />
         <button id="activate-code" class="btn-primary" style="margin-top:8px">Activate Invite</button>
         <div id="invite-status" class="muted small" style="margin-top:6px"></div>
+        <div id="signin-hint" class="muted small" style="margin-top:6px">Not signed in? <a class="signin" href="index.html">Sign in or sign up</a> to activate a code and upload.</div>
       </div>
 
       <div id="uploader" style="margin-top:12px;display:none">
@@ -174,7 +173,7 @@
     </div>
   </div></div>
 
-  <!-- Inbox modal (simple) -->
+  <!-- Inbox modal -->
   <div id="inbox-modal" style="display:none;position:fixed;inset:0;align-items:center;justify-content:center;background:rgba(0,0,0,0.8);z-index:1300">
     <div style="width:92%;max-width:900px;background:#0b0b0b;border-radius:10px;padding:16px;border:1px solid rgba(255,255,255,0.03);color:var(--gold);">
       <div class="flex-between"><div style="font-family:Chomsky;font-size:18px">Inbox</div><button id="close-inbox" class="btn-plain">Close</button></div>
@@ -183,18 +182,21 @@
   </div>
 
 <script type="module">
+/* Minimal, focused fix: do NOT redirect to index.html when user is not authenticated.
+   Instead show a guest view and require sign-in for protected actions. */
+
 import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
 
-/* ----------------- CONFIG ----------------- */
+/* Supabase config (same as index) */
 const SUPABASE_URL = 'https://uewvmldolwgihfkxwlsl.supabase.co'
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVld3ZtbGRvbHdnaWhmaWhma3h3bHNsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjM5MzQ1MjksImV4cCI6MjA3OTUxMDUyOX0.b9C00OjIkAUDPztC8RtdHcwjdgX4OrShNW_pp6r-_qI'
 const supabase = createClient(SUPABASE_URL, SUPABASE_KEY)
 
-/* ---------- STATE ---------- */
+/* STATE */
 let me = null
 let posts = []
 
-/* ---------- DOM refs ---------- */
+/* DOM refs */
 const banner = document.getElementById('banner'), avatar = document.getElementById('avatar'), displayName = document.getElementById('display-name'), usernameEl = document.getElementById('username')
 const crownCount = document.getElementById('crown-count'), scepterCount = document.getElementById('scepter-count')
 const uploader = document.getElementById('uploader'), inviteStatus = document.getElementById('invite-status')
@@ -205,60 +207,94 @@ const player = document.getElementById('player'), playerArea = document.getEleme
 const crownBtn = document.getElementById('crown-btn'), scepterBtn = document.getElementById('scepter-btn')
 const inboxBtn = document.getElementById('inbox'), inboxModal = document.getElementById('inbox-modal'), inboxContent = document.getElementById('inbox-content'), closeInbox = document.getElementById('close-inbox')
 
-/* ---------- AUTH CHECK ---------- */
+/* SIGN-OUT */
+document.getElementById('signout').addEventListener('click', async () => {
+  try { await supabase.auth.signOut() } catch(e){ /* ignore */ }
+  // keep user on home.html but switch to guest view
+  me = null
+  renderGuest()
+})
+
+/* INIT: do not redirect if not signed in. Instead load guest or user view */
 window.addEventListener('load', async () => {
   const { data } = await supabase.auth.getUser()
-  if (!data.user) { location.href = 'index.html'; return }
-  // ensure profile exists; if not, create minimal
+  if (!data.user) {
+    // Guest flow: render guest UI and still load public feed and stories
+    me = null
+    renderGuest()
+    await loadPublicData()
+    return
+  }
+  // user is signed in; load profile or create if missing
   const { data: profile } = await supabase.from('profiles').select('*').eq('id', data.user.id).maybeSingle()
   if (!profile) {
     await supabase.from('profiles').insert([{ id: data.user.id, email: data.user.email }])
-    me = { id: data.user.id, email: data.user.email }
+    const { data: newProfile } = await supabase.from('profiles').select('*').eq('id', data.user.id).single()
+    me = newProfile
   } else me = profile
   renderProfile()
-  await loadFeed()
-  await loadStories()
-  await loadProfiles()
+  await loadPublicData()
   subscribeRealtime()
 })
 
-/* ---------- RENDER PROFILE ---------- */
+/* RENDER GUEST */
+function renderGuest(){
+  banner.style.background = ''
+  avatar.textContent = '✠'
+  displayName.textContent = 'Guest'
+  usernameEl.textContent = '@guest'
+  crownCount.textContent = '0'
+  scepterCount.textContent = '0'
+  uploader.style.display = 'none'
+  document.getElementById('invite-activation').style.display = 'block'
+  document.getElementById('signin-hint').style.display = 'block'
+  document.getElementById('founder-status').textContent = 'Not a founder'
+  document.getElementById('signed-info').textContent = 'Guest'
+}
+
+/* RENDER SIGNED-IN PROFILE */
 function renderProfile(){
   banner.style.background = me.banner_url ? `url(${me.banner_url}) center/cover` : ''
-  avatar.textContent = me.display_name ? me.display_name[0].toUpperCase() : '✠'
+  avatar.textContent = me.display_name ? me.display_name[0].toUpperCase() : me.username ? me.username[0].toUpperCase() : '✠'
   displayName.textContent = me.display_name || me.email.split('@')[0]
-  usernameEl.textContent = me.username ? `@${me.username}` : '@guest'
+  usernameEl.textContent = me.username ? `@${me.username}` : '@' + (me.email ? me.email.split('@')[0] : 'user')
   crownCount.textContent = me.crown_count || 0
   scepterCount.textContent = me.scepter_count_today || 0
   document.getElementById('signed-info').textContent = me.username || me.email.split('@')[0]
-  // show uploader + stories only for creators
-  document.getElementById('uploader').style.display = me.is_creator ? 'block' : 'none'
+  document.getElementById('invite-activation').style.display = 'block'
+  document.getElementById('signin-hint').style.display = 'none'
+  uploader.style.display = me.is_creator ? 'block' : 'none'
   document.getElementById('founder-status').textContent = me.is_founder ? `Founder #${me.founder_badge}` : 'Not a founder'
 }
 
-/* ---------- INVITE ACTIVATE ---------- */
+/* LOAD PUBLIC DATA (feed, stories, profiles) */
+async function loadPublicData(){
+  await loadFeed()
+  await loadStories()
+  await loadProfiles()
+}
+
+/* INVITE ACTIVATION - requires sign-in */
 document.getElementById('activate-code').addEventListener('click', async () => {
+  if (!me) { inviteStatus.textContent = 'Sign in first: '; inviteStatus.innerHTML += '<a class="signin" href="index.html">Sign in</a>'; return }
   const raw = document.getElementById('invite-code').value.trim()
   const code = raw.toUpperCase()
   if (!code) { inviteStatus.textContent = 'Enter a code.'; return }
   inviteStatus.textContent = 'Checking...'
-  // check invite_codes table
   const { data, error } = await supabase.from('invite_codes').select('*').eq('code', code).single()
   if (error || !data) { inviteStatus.textContent = 'Invalid code.'; return }
   if (data.used) { inviteStatus.textContent = 'Code already used.'; return }
-  // mark used + make user creator
   await supabase.from('invite_codes').update({ used: true, used_by: me.id, used_at: new Date().toISOString() }).eq('code', code)
   await supabase.from('profiles').update({ is_creator: true }).eq('id', me.id)
-  // refresh profile locally
   const { data:profile } = await supabase.from('profiles').select('*').eq('id', me.id).single()
-  me = profile
-  renderProfile()
+  me = profile; renderProfile()
   inviteStatus.textContent = 'Activated. You are now a creator.'
 })
 
-/* ---------- UPLOAD (Supabase Storage) ---------- */
-uploadBtn.addEventListener('click', async () => {
-  if (!me || !me.is_creator) { uploadFeedback.textContent = 'You must activate a creator invite.'; return }
+/* UPLOAD -> Supabase storage. If guest, prompt sign-in */
+document.getElementById('upload-btn').addEventListener('click', async () => {
+  if (!me) { uploadFeedback.textContent = 'Sign in to upload. Click here to <a class="signin" href="index.html">sign in</a>'; return }
+  if (!me.is_creator) { uploadFeedback.textContent = 'Activate a creator invite to upload.'; return }
   const fileEl = document.getElementById('post-file')
   const title = document.getElementById('post-title').value.trim()
   const desc = document.getElementById('post-desc').value.trim()
@@ -268,11 +304,9 @@ uploadBtn.addEventListener('click', async () => {
   const file = fileEl.files[0]
   uploadFeedback.textContent = 'Uploading to Supabase Storage...'
   try {
-    // prefer path: uploads/<userId>/<timestamp>_<name>
     const path = `${me.id}/${Date.now()}_${file.name.replace(/\s+/g,'_')}`
     const { data:uploadData, error:uploadErr } = await supabase.storage.from('uploads').upload(path, file, { cacheControl: '3600', upsert: false })
     if (uploadErr) throw uploadErr
-    // get public url
     const { data:publicUrlData } = supabase.storage.from('uploads').getPublicUrl(uploadData.path)
     const publicURL = publicUrlData.publicUrl
     uploadFeedback.textContent = 'Saving post...'
@@ -285,7 +319,6 @@ uploadBtn.addEventListener('click', async () => {
     }]).select().single()
     if (postErr) throw postErr
     uploadFeedback.textContent = 'Uploaded and saved.'
-    // clear inputs
     fileEl.value = ''; document.getElementById('post-title').value = ''; document.getElementById('post-desc').value = ''
     await loadFeed()
   } catch (err) {
@@ -294,9 +327,10 @@ uploadBtn.addEventListener('click', async () => {
   }
 })
 
-/* ---------- STORIES (Proclamations) ---------- */
+/* STORIES (Proclamations) */
 document.getElementById('post-story').addEventListener('click', async () => {
-  if (!me || !me.is_creator) { document.getElementById('story-feedback').textContent = 'Creators only.'; return }
+  if (!me) { document.getElementById('story-feedback').textContent = 'Sign in to post a proclamation.'; return }
+  if (!me.is_creator) { document.getElementById('story-feedback').textContent = 'Creators only.'; return }
   const title = document.getElementById('story-title').value.trim()
   const body = document.getElementById('story-body').value.trim()
   if (!title || !body) { document.getElementById('story-feedback').textContent = 'Title + body required.'; return }
@@ -308,24 +342,13 @@ document.getElementById('post-story').addEventListener('click', async () => {
   await loadStories()
 })
 
-async function loadStories(){
-  const { data } = await supabase.from('stories').select('*').gte('expires_at', new Date().toISOString()).order('created_at',{ascending:false})
-  const container = document.getElementById('stories'); container.innerHTML = ''
-  (data||[]).forEach(s => {
-    const el = document.createElement('div'); el.className='post'; el.innerHTML = `<div style="font-family:Chomsky">${escapeHtml(s.title)}</div><div class="muted small">${s.owner_username}</div><div class="muted small" style="margin-top:6px">${escapeHtml(s.body)}</div>`
-    container.appendChild(el)
-  })
-  document.getElementById('stories-count').textContent = (data||[]).length
-}
-
-/* ---------- FEED ---------- */
+/* LOAD FEED */
 async function loadFeed(){
   const { data, error } = await supabase.from('posts').select('*').order('created_at',{ascending:false}).limit(200)
   if (error) { console.error(error); feedEmpty.style.display='block'; return }
   posts = data || []
   renderFeed(posts)
 }
-
 function renderFeed(list){
   feedEl.innerHTML = ''
   if (!list.length) { feedEmpty.style.display='block'; return } else feedEmpty.style.display='none'
@@ -355,7 +378,7 @@ function renderFeed(list){
   })
 }
 
-/* ---------- PLAYER ---------- */
+/* PLAYER */
 function openPlayer(post){
   player.classList.add('show'); playerTitle.textContent = post.title; playerMeta.textContent = `by ${post.owner_username || '—'} • ${post.post_type}`
   playerArea.innerHTML = ''
@@ -368,9 +391,7 @@ function openPlayer(post){
       if (ratio >= 0.95) scepterBtn.classList.add('active')
     })
     if (document.getElementById('auto-advance').checked) {
-      v.addEventListener('ended', () => {
-        const idx = posts.findIndex(x=>x.id===post.id); const next = posts[idx+1]; if (next) setTimeout(()=>openPlayer(next), parseInt(document.getElementById('reign').value||8)*1000)
-      })
+      v.addEventListener('ended', () => { const idx = posts.findIndex(x=>x.id===post.id); const next = posts[idx+1]; if (next) setTimeout(()=>openPlayer(next), parseInt(document.getElementById('reign').value||8)*1000) })
     }
     crownBtn.onclick = () => doCrown(post)
     scepterBtn.onclick = () => doScepter(post)
@@ -378,8 +399,9 @@ function openPlayer(post){
 }
 document.getElementById('close-player').addEventListener('click', ()=>{ player.classList.remove('show'); playerArea.innerHTML = '' })
 
-/* ---------- CROWN / SCEPTER ---------- */
+/* CROWN / SCEPTER */
 async function doCrown(post){
+  if (!me) { alert('Sign in to Crown (like).'); return }
   try {
     await supabase.from('posts').update({ crown_count: (post.crown_count||0)+1 }).eq('id', post.id)
     await supabase.from('profiles').update({ crown_count: (me.crown_count||0)+1 }).eq('id', me.id)
@@ -387,8 +409,8 @@ async function doCrown(post){
     me = updated; renderProfile(); await loadFeed()
   } catch(e){ console.error(e) }
 }
-
 async function doScepter(post){
+  if (!me) { alert('Sign in to use Scepter.'); return }
   if ((me.scepter_count_today||0) >= 10) { alert('No scepters left today'); return }
   try {
     await supabase.from('posts').update({ scepter_count: (post.scepter_count||0)+1 }).eq('id', post.id)
@@ -398,22 +420,27 @@ async function doScepter(post){
   } catch(e){ console.error(e) }
 }
 
-/* ---------- ORACLE SEARCH (fixed + debounced) ---------- */
+/* STORIES */
+async function loadStories(){
+  const { data } = await supabase.from('stories').select('*').gte('expires_at', new Date().toISOString()).order('created_at',{ascending:false})
+  const container = document.getElementById('stories'); container.innerHTML = ''
+  (data||[]).forEach(s => {
+    const el = document.createElement('div'); el.className='post'; el.innerHTML = `<div style="font-family:Chomsky">${escapeHtml(s.title)}</div><div class="muted small">${s.owner_username}</div><div class="muted small" style="margin-top:6px">${escapeHtml(s.body)}</div>`
+    container.appendChild(el)
+  })
+  document.getElementById('stories-count').textContent = (data||[]).length
+}
+
+/* ORACLE SEARCH (debounced) */
 let oracleTimer = null
 oracleBar.addEventListener('click', ()=>{ oracleFull.classList.add('open'); document.body.style.transform='translateX(-220px)'; setTimeout(()=>oracleQ.focus(),260) })
 oracleClose.addEventListener('click', ()=>{ oracleFull.classList.remove('open'); document.body.style.transform=''; oracleResults.innerHTML=''; oracleQ.value='' })
-
-oracleQ.addEventListener('input', (e)=>{
-  clearTimeout(oracleTimer)
-  oracleTimer = setTimeout(()=>oracleSearch(e.target.value.trim()), 220)
-})
-
+oracleQ.addEventListener('input', (e)=>{ clearTimeout(oracleTimer); oracleTimer = setTimeout(()=>oracleSearch(e.target.value.trim()), 220) })
 async function oracleSearch(q){
   oracleResults.innerHTML = ''
   if (!q) return
-  // Search title OR description OR owner_username (case-insensitive)
-  // Use ilike for each field, combine via or
   const ilike = `%${q}%`
+  // search title, description, owner_username
   const { data, error } = await supabase.from('posts').select('*').or(`title.ilike.${ilike},description.ilike.${ilike},owner_username.ilike.${ilike}`).limit(50)
   if (error) { console.error(error); oracleResults.innerHTML = '<div class="muted small">Search failed</div>'; return }
   if (!data || data.length===0) { oracleResults.innerHTML = '<div class="muted small">No results</div>'; return }
@@ -424,21 +451,19 @@ async function oracleSearch(q){
   })
 }
 
-/* ---------- MESSAGES (Missives) + INBOX (fixed) ---------- */
+/* MESSAGES (missives) and inbox */
 document.getElementById('send-dm').addEventListener('click', async () => {
-  const toRaw = document.getElementById('dm-to').value.trim()
-  const to = toRaw.replace('@','')
-  const body = document.getElementById('dm-msg').value.trim()
+  const toRaw = document.getElementById('dm-to').value.trim(); const to = toRaw.replace('@',''); const body = document.getElementById('dm-msg').value.trim()
   if (!to || !body) { document.getElementById('dm-status').textContent='Fill both fields'; return }
+  if (!me) { document.getElementById('dm-status').textContent = 'Sign in to send missives.'; return }
   const { data: recip } = await supabase.from('profiles').select('*').eq('username', to).maybeSingle()
   if (!recip) { document.getElementById('dm-status').textContent = 'No such user'; return }
   await supabase.from('messages').insert([{ from_id: me.id, to_id: recip.id, body, created_at: new Date().toISOString() }])
   document.getElementById('dm-status').textContent = 'Missive sent'
   document.getElementById('dm-msg').value = ''
 })
-
 inboxBtn.addEventListener('click', async () => {
-  // load messages to me and from me
+  if (!me) { alert('Sign in to view inbox'); return }
   inboxContent.innerHTML = '<div class="muted small">Loading…</div>'
   const { data } = await supabase.from('messages').select('*,from:from_id(username,display_name),to:to_id(username,display_name)').or(`from_id.eq.${me.id},to_id.eq.${me.id}`).order('created_at',{ascending:false}).limit(200)
   inboxContent.innerHTML = ''
@@ -452,7 +477,16 @@ inboxBtn.addEventListener('click', async () => {
 })
 closeInbox.addEventListener('click', ()=>{ inboxModal.style.display = 'none'; inboxContent.innerHTML = '' })
 
-/* ---------- PROFILES list ---------- */
+/* FEED interactions */
+feedEl.addEventListener('click', (e)=>{
+  const play = e.target.closest('.play'), crown = e.target.closest('.crown'), scep = e.target.closest('.scepter'), share = e.target.closest('.share')
+  if (play){ const id = play.dataset.id; const p = posts.find(x=>x.id===id); if (p) openPlayer(p) }
+  if (crown){ const id = crown.dataset.id; const p = posts.find(x=>x.id===id); if (p) doCrown(p) }
+  if (scep){ const id = scep.dataset.id; const p = posts.find(x=>x.id===id); if (p) doScepter(p) }
+  if (share){ const url = share.dataset.url; navigator.clipboard.writeText(url); alert('Link copied') }
+})
+
+/* PROFILES list */
 async function loadProfiles(){
   const { data } = await supabase.from('profiles').select('id,username,display_name,is_creator,crown_count').limit(60)
   const dom = document.getElementById('profiles'); dom.innerHTML = ''
@@ -463,18 +497,19 @@ async function loadProfiles(){
   })
 }
 
-/* ---------- SUBSCRIPTIONS ---------- */
+/* SUBSCRIPTIONS */
 function subscribeRealtime(){
   supabase.channel('public:posts').on('postgres_changes', { event:'*', schema:'public', table:'posts' }, payload => { loadFeed() }).subscribe()
 }
 
-/* ---------- CHRONO / ALGO ---------- */
+/* CHRONO / ALGO */
 document.getElementById('chrono-btn').addEventListener('click', ()=>{ posts.sort((a,b)=>new Date(b.created_at)-new Date(a.created_at)); renderFeed(posts) })
 document.getElementById('algo-btn').addEventListener('click', ()=>{ posts.sort((a,b)=>((b.crown_count||0)+(b.scepter_count||0))-((a.crown_count||0)+(a.scepter_count||0)) || (new Date(b.created_at)-new Date(a.created_at))); renderFeed(posts) })
 
-/* ---------- FOUNDER PASS + REFERRAL (kept simple) ---------- */
+/* FOUNDER PASS & REFERRAL stubs (kept simple) */
 document.getElementById('buy-pass').addEventListener('click', async ()=>{
-  if (me.is_founder) { alert('You already own a Founding Pass'); return }
+  if (!me) { alert('Sign in to buy pass'); return }
+  if (me.is_founder) { alert('Already a founder'); return }
   const badge = Math.floor(Math.random()*5000)+1
   await supabase.from('profiles').update({ is_founder:true, founder_badge:badge }).eq('id', me.id)
   const { data } = await supabase.from('profiles').select('*').eq('id', me.id).single()
@@ -482,40 +517,45 @@ document.getElementById('buy-pass').addEventListener('click', async ()=>{
   alert('Purchased Founding Pass — Badge #' + badge)
 })
 document.getElementById('gen-ref').addEventListener('click', async ()=>{
+  if (!me) { alert('Sign in to generate referral'); return }
   const { data } = await supabase.from('referrals').insert([{ owner_id: me.id, created_at: new Date().toISOString(), count:0 }]).select().single()
   const url = `${location.origin}/index.html?ref=${data.id}`
   navigator.clipboard.writeText(url)
   document.getElementById('ref-info').textContent = 'Referral copied to clipboard'
 })
 
-/* ---------- INIT LOADS ---------- */
-async function initLoads(){
-  const { data: profile } = await supabase.from('profiles').select('*').eq('id', me.id).single()
-  me = profile; renderProfile()
-  await loadFeed(); await loadStories(); await loadProfiles()
-}
-async function loadInitial(){
+/* INITIAL LOAD helpers */
+async function loadInitialUser(){
   const { data } = await supabase.auth.getUser()
-  if (!data.user) return
-  const { data: profile } = await supabase.from('profiles').select('*').eq('id', data.user.id).maybeSingle()
-  me = profile || { id: data.user.id, email: data.user.email }
-  await initLoads()
+  if (data?.user) {
+    const { data: profile } = await supabase.from('profiles').select('*').eq('id', data.user.id).maybeSingle()
+    if (!profile) {
+      await supabase.from('profiles').insert([{ id: data.user.id, email: data.user.email }])
+      const { data: newProfile } = await supabase.from('profiles').select('*').eq('id', data.user.id).single()
+      me = newProfile
+    } else me = profile
+    renderProfile()
+    subscribeRealtime()
+  } else {
+    me = null
+    renderGuest()
+  }
+  await loadPublicData()
 }
-loadInitial()
 
-/* ---------- FEED BUTTON DELEGATION ---------- */
-feedEl.addEventListener('click', (e)=>{
-  const play = e.target.closest('.play'), crown = e.target.closest('.crown'), scep = e.target.closest('.scepter'), share = e.target.closest('.share')
-  if (play){ const id = play.dataset.id; const p = posts.find(x=>x.id===id); if (p) openPlayer(p) }
-  if (crown){ const id = crown.dataset.id; const p = posts.find(x=>x.id===id); if (p) doCrown(p) }
-  if (scep){ const id = scep.dataset.id; const p = posts.find(x=>x.id===id); if (p) doScepter(p) }
-  if (share){ const url = share.dataset.url; navigator.clipboard.writeText(url); alert('Link copied') }
-})
+/* LOAD PUBLIC data wrapper */
+async function loadPublicData(){
+  await loadFeed()
+  await loadStories()
+  await loadProfiles()
+}
 
-/* ---------- UTIL ---------- */
+/* INIT */
+loadInitialUser()
+
+/* UTIL */
 function escapeHtml(s){ if(!s) return ''; return String(s).replace(/[&<>"']/g, c=>({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' })[c]) }
 
-document.getElementById('signout').addEventListener('click', async ()=>{ await supabase.auth.signOut(); location.href='index.html' })
 </script>
 </body>
 </html>
