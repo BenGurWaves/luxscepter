@@ -81,33 +81,86 @@
   <div class="toggle" id="toggle-auth">Already have an account? Sign In</div>
 </div>
 
-<!-- index.html snippet (put into your existing index page) -->
 <script type="module">
 import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
-const SUPABASE_URL = 'https://uewvmldolwgihfkxwlsl.supabase.co'
-const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVld3ZtbGRvbHdnaWhma3h3bHNsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjM5MzQ1MjksImV4cCI6MjA3OTUxMDUyOX0.b9C00OjIkAUDPztC8RtdHcwjdgX4OrShNW_pp6r-_qI'
-const supabase = createClient(SUPABASE_URL, SUPABASE_KEY)
 
-const signIn = async (email, password) => {
-  const { data, error } = await supabase.auth.signInWithPassword({ email, password })
-  if (error) {
-    console.error('Sign in failed', error)
-    return { ok:false, error }
-  }
-  // session persisted automatically in browser storage
-  return { ok:true, data }
-}
+const supabaseUrl = 'https://uewvmldolwgihfkxwlsl.supabase.co'
+const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVld3ZtbGRvbHdnaWhma3h3bHNsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjM5MzQ1MjksImV4cCI6MjA3OTUxMDUyOX0.b9C00OjIkAUDPztC8RtdHcwjdgX4OrShNW_pp6r-_qI'
+const supabase = createClient(supabaseUrl, supabaseKey)
 
-// Example usage: wired to your form
-document.getElementById('signin-btn').addEventListener('click', async () => {
-  const email = document.getElementById('email').value
-  const password = document.getElementById('password').value
-  const r = await signIn(email, password)
-  if (r.ok) {
-    // optional: go to home immediately
+let isSignUp = true
+
+const form = document.getElementById('auth-form')
+const toggle = document.getElementById('toggle-auth')
+const errorMsg = document.getElementById('error-msg')
+const submitBtn = document.getElementById('submit-btn')
+
+toggle.addEventListener('click', () => {
+  isSignUp = !isSignUp
+  submitBtn.textContent = isSignUp ? 'Sign Up' : 'Sign In'
+  toggle.textContent = isSignUp ? 'Already have an account? Sign In' : "Don't have an account? Sign Up"
+  errorMsg.textContent = ''
+})
+
+form.addEventListener('submit', async (e) => {
+  e.preventDefault()
+  errorMsg.textContent = ''
+
+  const email = document.getElementById('email').value.trim()
+  const password = document.getElementById('password').value.trim()
+  const invite = document.getElementById('invite').value.trim().toUpperCase()
+
+  if (isSignUp) {
+    // Check invite code if provided
+    let isCreator = false
+    if (invite) {
+      const { data: codeData, error: codeError } = await supabase
+        .from('invite_codes')
+        .select('*')
+        .eq('code', invite)
+        .single()
+      if (codeError || !codeData) {
+        errorMsg.textContent = 'Invalid invite code'
+        return
+      } else {
+        isCreator = true
+        // Delete used code
+        await supabase.from('invite_codes').delete().eq('code', invite)
+      }
+    }
+
+    // Sign up
+    const { data, error } = await supabase.auth.signUp({
+      email: email,
+      password: password
+    })
+
+    if (error) {
+      errorMsg.textContent = error.message
+      return
+    }
+
+    // Insert profile
+    await supabase.from('profiles').insert({
+      id: data.user.id,
+      email: email,
+      is_creator: isCreator
+    })
+
+    // Redirect to home
     window.location.href = 'home.html'
+
   } else {
-    alert('Sign in failed: ' + r.error.message)
+    // Sign in
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email: email,
+      password: password
+    })
+    if (error) {
+      errorMsg.textContent = error.message
+      return
+    }
+    window.location.href = 'home.html'
   }
 })
 </script>
