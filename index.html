@@ -1,168 +1,72 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Lux Scepter — Founding Bloodline</title>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Lux Scepter – Sign In</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Chomsky&display=swap');
-  body {
-    margin: 0;
-    font-family: 'Times New Roman', serif;
-    background-color: #0e0e0e;
-    color: #bd8e20;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    min-height: 100vh;
-  }
-  h1 {
-    font-family: 'Chomsky', sans-serif;
-    font-size: 3em;
-    color: #bd8e20;
-    margin-bottom: 0.5em;
-  }
-  .container {
-    background: #0e0e0e;
-    border: 2px solid #571728;
-    padding: 2em;
-    border-radius: 12px;
-    width: 100%;
-    max-width: 400px;
-    box-shadow: 0 0 30px rgba(189,142,32,0.5);
-  }
-  input {
-    width: 100%;
-    padding: 0.8em;
-    margin: 0.5em 0;
-    border-radius: 6px;
-    border: 1px solid #35005a;
-    background: #0e0e0e;
-    color: #bd8e20;
-  }
-  button {
-    width: 100%;
-    padding: 0.8em;
-    margin-top: 0.5em;
-    border-radius: 6px;
-    border: none;
-    background: #5600a1;
-    color: #fff;
-    font-weight: bold;
-    cursor: pointer;
-    transition: 0.2s;
-  }
-  button:hover {
-    background: #35005a;
-  }
-  .toggle {
-    text-align: center;
-    margin-top: 1em;
-    color: #bd8e20;
-    cursor: pointer;
-  }
-  .error {
-    color: #ff5555;
-    margin-top: 0.5em;
-  }
+body {
+  background:#0a0a0a;
+  color:white;
+  font-family: "Times New Roman", serif;
+  padding:40px;
+}
+input, button {
+  display:block;
+  margin:10px 0;
+  padding:10px;
+  width:250px;
+  background:#111;
+  color:white;
+  border:1px solid #444;
+}
+button { cursor:pointer; }
 </style>
 </head>
 <body>
-<h1>Lux Scepter</h1>
-<div class="container">
-  <form id="auth-form">
-    <input type="text" id="email" placeholder="Email" required>
-    <input type="password" id="password" placeholder="Password" required>
-    <input type="text" id="invite" placeholder="Invite Code (optional)">
-    <button type="submit" id="submit-btn">Sign Up</button>
-    <div class="error" id="error-msg"></div>
-  </form>
-  <div class="toggle" id="toggle-auth">Already have an account? Sign In</div>
+
+<h1 style="font-family: Chomsky, serif; color:white;">Lux Scepter</h1>
+
+<div>
+  <h2>Sign Up</h2>
+  <input id="su_email" placeholder="Email">
+  <input id="su_pass" placeholder="Password" type="password">
+  <button id="su_btn">Create Account</button>
 </div>
 
-<script type="module">
-import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
+<div>
+  <h2>Sign In</h2>
+  <input id="si_email" placeholder="Email">
+  <input id="si_pass" placeholder="Password" type="password">
+  <button id="si_btn">Sign In</button>
+</div>
 
-const supabaseUrl = 'https://uewvmldolwgihfkxwlsl.supabase.co'
-const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVld3ZtbGRvbHdnaWhma3h3bHNsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjM5MzQ1MjksImV4cCI6MjA3OTUxMDUyOX0.b9C00OjIkAUDPztC8RtdHcwjdgX4OrShNW_pp6r-_qI'
-const supabase = createClient(supabaseUrl, supabaseKey)
+<script>
+const supabase = supabase.createClient(
+  "https://uewvmldolwgihfkxwlsl.supabase.co",
+  "YOUR_PUBLIC_SUPABASE_ANON_KEY"
+);
 
-let isSignUp = true
+document.getElementById("su_btn").onclick = async () => {
+  const email = document.getElementById("su_email").value;
+  const password = document.getElementById("su_pass").value;
 
-const form = document.getElementById('auth-form')
-const toggle = document.getElementById('toggle-auth')
-const errorMsg = document.getElementById('error-msg')
-const submitBtn = document.getElementById('submit-btn')
+  const { error } = await supabase.auth.signUp({ email, password });
+  if (error) { alert(error.message); return; }
+  alert("Account created. Please sign in.");
+};
 
-toggle.addEventListener('click', () => {
-  isSignUp = !isSignUp
-  submitBtn.textContent = isSignUp ? 'Sign Up' : 'Sign In'
-  toggle.textContent = isSignUp ? 'Already have an account? Sign In' : "Don't have an account? Sign Up"
-  errorMsg.textContent = ''
-})
+document.getElementById("si_btn").onclick = async () => {
+  const email = document.getElementById("si_email").value;
+  const password = document.getElementById("si_pass").value;
 
-form.addEventListener('submit', async (e) => {
-  e.preventDefault()
-  errorMsg.textContent = ''
+  const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+  if (error) { alert(error.message); return; }
 
-  const email = document.getElementById('email').value.trim()
-  const password = document.getElementById('password').value.trim()
-  const invite = document.getElementById('invite').value.trim().toUpperCase()
-
-  if (isSignUp) {
-    // Check invite code if provided
-    let isCreator = false
-    if (invite) {
-      const { data: codeData, error: codeError } = await supabase
-        .from('invite_codes')
-        .select('*')
-        .eq('code', invite)
-        .single()
-      if (codeError || !codeData) {
-        errorMsg.textContent = 'Invalid invite code'
-        return
-      } else {
-        isCreator = true
-        // Delete used code
-        await supabase.from('invite_codes').delete().eq('code', invite)
-      }
-    }
-
-    // Sign up
-    const { data, error } = await supabase.auth.signUp({
-      email: email,
-      password: password
-    })
-
-    if (error) {
-      errorMsg.textContent = error.message
-      return
-    }
-
-    // Insert profile
-    await supabase.from('profiles').insert({
-      id: data.user.id,
-      email: email,
-      is_creator: isCreator
-    })
-
-    // Redirect to home
-    window.location.href = 'home.html'
-
-  } else {
-    // Sign in
-    const { data, error } = await supabase.auth.signInWithPassword({
-      email: email,
-      password: password
-    })
-    if (error) {
-      errorMsg.textContent = error.message
-      return
-    }
-    window.location.href = 'home.html'
-  }
-})
+  window.location = "home.html";
+};
 </script>
+
 </body>
 </html>
