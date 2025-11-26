@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LUX SCEPTER</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@900&family=Crisscross&display=swap');
+    
+    body,html{margin:0;height:100%;background:#000;overflow:hidden;font-family:'Cinzel Decorative',serif;color:#D4AF37;}
+    #line{position:absolute;top:0;left:50%;width:2px;background:#D4AF37;transform:translateX(-50%);animation:draw 1.2s forwards;}
+    #logo{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;opacity:0;animation:reveal 2s 1.3s forwards;}
+    #crown{font-size:120px;animation:spin 1.6s 1.8s forwards;}
+    h1{font-size:62px;margin:20px 0 10px;letter-spacing:8px;opacity:0;animation:letter 1.2s 3s forwards;}
+    h1 span{display:inline-block;opacity:0;animation:up .8s forwards;}
+    p.tagline{font-size:20px;opacity:0;animation:fade 1s 4s forwards;letter-spacing:4px;font-family:'Crisscross',serif;}
+    .btn{display:block;width:340px;max-width:90%;margin:40px auto;padding:18px;font-size:22px;border:2px solid #D4AF37;background:transparent;color:#D4AF37;cursor:pointer;transition:all .4s;}
+    .btn:hover{background:#8B0000;color:#D4AF37;border-color:#D4AF37;transform:scale(1.05);}
+    .secondary{font-size:18px;opacity:0.8;}
+    .live{position:absolute;top:20px;right:20px;font-size:18px;}
+    .countdown{position:absolute;top:20px;left:20px;color:#8B0000;font-size:16px;}
+    .testimonial{position:absolute;bottom:80px;left:50%;transform:translateX(-50%);font-size:20px;opacity:0;animation:testi 12s infinite;}
+    .particle{position:absolute;width:2px;height:2px;background:#D4AF37;border-radius:50%;opacity:0.4;animation:drift 20s linear infinite;}
+    @keyframes draw{from{height:0}to{height:100%}}
+    @keyframes reveal{to{opacity:1}}
+    @keyframes spin{from{transform:rotate(0) scale(0)}to{transform:rotate(360deg) scale(1)}}
+    @keyframes letter{to{opacity:1}}
+    @keyframes up{0%{opacity:0;transform:translateY(40px)}100%{opacity:1;transform:translateY(0)}}
+    @keyframes fade{to{opacity:1}}
+    @keyframes drift{0%{transform:translateY(100vh)}100%{transform:translateY(-100px)}}
+    @keyframes testi{0%,90%,100%{opacity:0}10%,80%{opacity:1}}
+  </style>
+</head>
+<body>
+  <div id="line"></div>
+  
+  <div id="logo">
+    <div id="crown">♔</div>
+    <h1>
+      <span>L</span><span>U</span><span>X</span>
+      <span style="margin-left:30px;">S</span><span>C</span><span>E</span><span>P</span><span>T</span><span>E</span><span>R</span>
+    </h1>
+    <p class="tagline">Rule the feed. Own the crown.</p>
+    
+    <button class="btn" onclick="location.href='/signup'">CLAIM YOUR CROWN</button>
+    <button class="btn secondary" onclick="location.href='/demo'">Watch the Throne</button>
+  </div>
+
+  <div class="live">8,147 ruling right now</div>
+  <div class="countdown">Founding Bloodline closes in <span id="timer">11d 4h 19m</span></div>
+  
+  <div class="testimonial">
+    “Just made $4,200 in 3 hours” – @emperorwave
+  </div>
+
+  <!-- 12 gold particles -->
+  <script>
+    for(let i=0;i<12;i++){
+      let p=document.createElement('div');
+      p.className='particle';
+      p.style.left=Math.random()*100+'vw';
+      p.style.animationDelay=Math.random()*20+'s';
+      p.style.animationDuration=15+Math.random()*15+'s';
+      document.body.appendChild(p);
+    }
+    // Simple live counter & countdown (replace with Supabase fetch later)
+    setInterval(()=>document.querySelector('.live').textContent=(parseInt(document.querySelector('.live').textContent)+Math.floor(Math.random()*3))+' ruling right now',4000);
+  </script>
+</body>
+</html>
