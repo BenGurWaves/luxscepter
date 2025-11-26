@@ -7,44 +7,57 @@
 <style>
   body {
     margin: 0;
-    font-family: 'Times New Roman', serif;
-    background-color: #0a0a0a;
-    color: #f0d07b;
+    font-family: Arial, sans-serif;
+    background-color: #111;
+    color: #ffd700;
   }
   header {
     padding: 1em;
-    background: #35005a;
+    background: #222;
     display: flex;
     justify-content: space-between;
     align-items: center;
   }
-  header h1 { margin: 0; font-family: 'Chomsky', sans-serif; }
-  header button {
-    background: #bd8e20;
-    border: none;
-    padding: 0.5em 1em;
-    border-radius: 5px;
-    cursor: pointer;
+  header h1 {
+    margin: 0;
+    color: #ffd700;
   }
   #upload-section {
-    padding: 2em;
-    border-bottom: 2px solid #bd8e20;
-  }
-  #feed {
-    padding: 2em;
+    padding: 1em;
+    background: #1a1a1a;
     display: flex;
     flex-direction: column;
-    gap: 2em;
+    gap: 0.5em;
+  }
+  input[type="file"] {
+    padding: 0.5em;
+  }
+  button {
+    padding: 0.5em 1em;
+    background: #444;
+    border: none;
+    color: #ffd700;
+    cursor: pointer;
+  }
+  button:hover {
+    background: #666;
+  }
+  #feed {
+    padding: 1em;
+    display: flex;
+    flex-direction: column;
+    gap: 1em;
   }
   .feed-item {
-    background: #1a0a2e;
-    padding: 1em;
+    background: #222;
+    padding: 0.5em;
+    border: 1px solid #555;
     border-radius: 8px;
   }
-  video {
+  .feed-item video {
     width: 100%;
-    border-radius: 5px;
     margin-top: 0.5em;
+    border-radius: 5px;
   }
 </style>
 </head>
@@ -52,13 +65,11 @@
 
 <header>
   <h1>Lux Scepter Feed</h1>
-  <button id="logout">Logout</button>
 </header>
 
 <div id="upload-section">
-  <h2>Upload Video</h2>
   <input type="file" id="video-file" accept="video/*">
-  <button id="upload-btn">Upload</button>
+  <button id="upload-btn">Upload Video</button>
   <div id="status"></div>
 </div>
 
@@ -69,74 +80,81 @@
 <script type="module">
 import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
 
-// Supabase credentials
 const supabaseUrl = 'YOUR_SUPABASE_URL';
 const supabaseKey = 'YOUR_SUPABASE_ANON_KEY';
 const supabase = createClient(supabaseUrl, supabaseKey);
 
-// Check auth
-async function checkAuth() {
-  const user = supabase.auth.user();
-  if (!user) window.location.href = 'index.html';
-  else loadFeed();
+// Cloudflare R2 URL
+const CLOUDFLARE_BUCKET_URL = 'https://<YOUR_CLOUDFLARE_R2_BUCKET_URL>/';
+
+let currentUser = null;
+
+// Simulate login (replace with Supabase auth if you want)
+async function fakeLogin() {
+  const { data: user } = await supabase.auth.getUser(); 
+  if (user) {
+    currentUser = user.user;
+  } else {
+    // For demo, just pick first profile
+    const { data } = await supabase.from('profiles').select('*').limit(1).single();
+    currentUser = data;
+  }
 }
-checkAuth();
 
-// Logout
-document.getElementById('logout').addEventListener('click', async () => {
-  await supabase.auth.signOut();
-  window.location.href = 'index.html';
-});
+await fakeLogin();
+loadFeed();
 
-// Upload
 document.getElementById('upload-btn').addEventListener('click', async () => {
-  const file = document.getElementById('video-file').files[0];
-  if (!file) return alert('Select a video');
+  const fileInput = document.getElementById('video-file');
+  const file = fileInput.files[0];
+  if (!file) return alert('Select a video file');
 
-  const user = supabase.auth.user();
+  const statusDiv = document.getElementById('status');
+  statusDiv.innerText = 'Uploading...';
 
-  // Upload to Cloudflare R2
   try {
-    const res = await fetch(`https://YOUR_CLOUDFLARE_R2_BUCKET_URL/${file.name}`, {
+    // Upload to Cloudflare
+    const res = await fetch(CLOUDFLARE_BUCKET_URL + file.name, {
       method: 'PUT',
       body: file
     });
+
     if (!res.ok) throw new Error('Upload failed');
 
-    const videoUrl = `https://YOUR_CLOUDFLARE_R2_BUCKET_URL/${file.name}`;
+    const videoUrl = CLOUDFLARE_BUCKET_URL + file.name;
 
-    // Add feed record to Supabase
+    // Save to Supabase feed
     await supabase.from('feed').insert([{
-      user_id: user.id,
-      username: user.user_metadata.username || 'Creator',
+      user_id: currentUser.id,
       url: videoUrl,
       created_at: new Date()
     }]);
 
-    document.getElementById('status').innerText = 'Upload successful!';
+    statusDiv.innerText = 'Upload successful!';
+    fileInput.value = '';
     loadFeed();
   } catch (err) {
-    document.getElementById('status').innerText = 'Upload failed: ' + err.message;
+    statusDiv.innerText = 'Upload failed: ' + err.message;
   }
 });
 
-// Load feed
 async function loadFeed() {
-  const { data: videos } = await supabase
+  const { data: feed } = await supabase
     .from('feed')
-    .select('*')
+    .select('*, profiles(username)')
     .order('created_at', { ascending: false });
 
-  const container = document.getElementById('feed');
-  container.innerHTML = '<h2>Video Feed</h2>';
-  videos.forEach(v => {
+  const feedContainer = document.getElementById('feed');
+  feedContainer.innerHTML = '<h2>Video Feed</h2>';
+
+  feed.forEach(item => {
     const div = document.createElement('div');
     div.className = 'feed-item';
     div.innerHTML = `
-      <strong>@${v.username}</strong>
-      <video src="${v.url}" controls></video>
+      <div><strong>@${item.profiles.username || 'Unknown'}</strong></div>
+      <video src="${item.url}" controls></video>
     `;
-    container.appendChild(div);
+    feedContainer.appendChild(div);
   });
 }
 </script>
