@@ -11,142 +11,150 @@
     font-family: 'Times New Roman', serif;
     background-color: #0e0e0e;
     color: #bd8e20;
+    overflow-x: hidden;
   }
   header {
-    background: linear-gradient(90deg, #35005a, #5600a1);
-    padding: 1em;
     display: flex;
-    align-items: center;
     justify-content: space-between;
-    box-shadow: 0 0 15px rgba(189,142,32,0.5);
+    align-items: center;
+    padding: 1em 2em;
+    background: linear-gradient(90deg, #35005a, #5600a1);
+    box-shadow: 0 0 20px rgba(189,142,32,0.5);
   }
   header h1 {
     font-family: 'Chomsky', sans-serif;
-    font-size: 2.2em;
-    margin: 0;
+    font-size: 2em;
+    color: #bd8e20;
   }
-  .container {
+  header button {
+    padding: 0.5em 1em;
+    border: none;
+    border-radius: 6px;
+    background: #bd8e20;
+    color: #0e0e0e;
+    cursor: pointer;
+    font-weight: bold;
+  }
+  #realm-feed {
     display: flex;
-    padding: 1em;
+    flex-direction: column;
+    padding: 2em;
     gap: 2em;
   }
-  .feed {
-    flex: 3;
-    display: flex;
-    flex-direction: column;
-    gap: 1.5em;
-  }
-  .sidebar {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    gap: 1em;
-  }
-  .video-card {
+  .feed-item {
     background: #0e0e0e;
     border: 2px solid #571728;
     border-radius: 12px;
+    padding: 1em;
+    box-shadow: 0 0 10px rgba(189,142,32,0.3);
+  }
+  .feed-item video {
+    width: 100%;
+    border-radius: 8px;
+    margin-top: 0.5em;
+  }
+  #upload-section {
+    margin: 2em;
+    padding: 1em;
+    border: 2px solid #5600a1;
+    border-radius: 12px;
+    background: #0e0e0e;
+  }
+  input, select {
+    width: 100%;
     padding: 0.5em;
-    box-shadow: 0 0 15px rgba(189,142,32,0.3);
-  }
-  video {
-    width: 100%;
-    border-radius: 6px;
-  }
-  input, select, textarea {
-    width: 100%;
-    padding: 0.6em;
-    margin: 0.3em 0;
+    margin: 0.5em 0;
     border-radius: 6px;
     border: 1px solid #35005a;
     background: #0e0e0e;
     color: #bd8e20;
   }
-  button {
-    padding: 0.6em;
-    border-radius: 6px;
-    border: none;
+  button.upload-btn {
     background: #5600a1;
     color: #fff;
     font-weight: bold;
-    cursor: pointer;
-    margin-top: 0.3em;
+    margin-top: 1em;
   }
-  button:hover {
+  button.upload-btn:hover {
     background: #35005a;
   }
-  .oracle {
+  #oracle {
     position: fixed;
+    top: 0;
     right: 0;
-    top: 50%;
-    transform: translateY(-50%);
     width: 40px;
-    height: 120px;
-    background: #bd8e20;
-    writing-mode: vertical-rl;
-    text-orientation: mixed;
-    font-weight: bold;
-    color: #0e0e0e;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    height: 100%;
+    background: linear-gradient(#bd8e20, transparent);
     cursor: pointer;
-    border-radius: 8px 0 0 8px;
   }
-  .oracle.active {
-    width: 300px;
-    height: auto;
-    writing-mode: horizontal-tb;
-    padding: 1em;
-    border-radius: 0 0 0 12px;
-    color: #bd8e20;
+  #oracle-bar {
+    position: fixed;
+    top: 0;
+    right: -400px;
+    width: 400px;
+    height: 100%;
+    background: #0e0e0e;
+    border-left: 3px solid #bd8e20;
+    padding: 2em;
+    box-shadow: -5px 0 30px rgba(189,142,32,0.3);
+    transition: right 0.5s ease;
+    overflow-y: auto;
   }
-  .oracle input {
+  #oracle-bar input {
     width: 100%;
-    margin-top: 0.5em;
+  }
+  .missives-section {
+    margin: 2em;
+    padding: 1em;
+    border: 2px solid #571728;
+    border-radius: 12px;
+  }
+  .message {
+    background: #35005a;
+    padding: 0.5em;
+    border-radius: 6px;
+    margin-bottom: 0.5em;
   }
 </style>
 </head>
 <body>
 
 <header>
-  <h1>Lux Scepter ♔</h1>
-  <div id="user-info"></div>
+  <h1>Lux Scepter</h1>
+  <button id="logout">Logout</button>
 </header>
 
-<div class="container">
-  <div class="feed" id="feed">
-    <!-- Realm feed videos will appear here -->
-  </div>
-
-  <div class="sidebar">
-    <div id="upload-section" style="display:none;">
-      <h3>Upload Content</h3>
-      <select id="content-type">
-        <option value="edict">Edict (vertical)</option>
-        <option value="dominion">Dominion (horizontal)</option>
-        <option value="throne">Throne (long-form)</option>
-        <option value="proclamation">Proclamation (24h story)</option>
-      </select>
-      <input type="file" id="video-file">
-      <textarea id="title" placeholder="Title"></textarea>
-      <button id="upload-btn">Upload</button>
-      <div id="upload-status"></div>
-    </div>
-
-    <div>
-      <h3>Missives</h3>
-      <textarea id="dm-message" placeholder="Write a message..."></textarea>
-      <button id="send-dm">Send</button>
-      <div id="dm-status"></div>
-      <div id="missives"></div>
-    </div>
-  </div>
+<div id="upload-section">
+  <h2>Upload Royal Content</h2>
+  <select id="upload-type">
+    <option value="edict">Edict (Vertical)</option>
+    <option value="dominion">Dominion (Horizontal)</option>
+    <option value="throne">Throne (Long Form)</option>
+    <option value="proclamation">Proclamation (Story)</option>
+  </select>
+  <input type="file" id="file-input" accept="video/*">
+  <button class="upload-btn" id="upload-btn">Upload</button>
+  <div id="upload-status"></div>
 </div>
 
-<div class="oracle" id="oracle">
-  🔮 Oracle
-  <input type="text" id="oracle-search" placeholder="Search Realm..." style="display:none;">
+<section id="realm-feed">
+  <h2>Realm Feed</h2>
+  <button id="toggle-feed">Toggle Chrono / Algo</button>
+</section>
+
+<div class="missives-section">
+  <h2>Missives (DMs)</h2>
+  <input type="text" id="dm-recipient" placeholder="Recipient @username">
+  <input type="text" id="dm-message" placeholder="Message">
+  <button id="send-dm">Send</button>
+  <div id="messages-container"></div>
+</div>
+
+<!-- Oracle Edge -->
+<div id="oracle"></div>
+<div id="oracle-bar">
+  <h3>Oracle Edge</h3>
+  <input type="text" id="oracle-input" placeholder="Search Edicts/Dominions/Thrones...">
   <div id="oracle-results"></div>
 </div>
 
@@ -154,148 +162,139 @@
 import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
 
 const supabaseUrl = 'https://uewvmldolwgihfkxwlsl.supabase.co'
-const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVld3ZtbGRvbHdnaWhma3h3bHNsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjM5MzQ1MjksImV4cCI6MjA3OTUxMDUyOX0.b9C00OjIkAUDPztC8RtdHcwjdgX4OrShNW_pp6r-_qI'
-const supabase = createClient(supabaseUrl, supabaseKey)
+const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVld3ZtbGRvbHdnaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhmaWhma';
+const supabase = createClient(supabaseUrl, supabaseKey);
 
-const feed = document.getElementById('feed')
-const uploadSection = document.getElementById('upload-section')
-const userInfo = document.getElementById('user-info')
-const uploadBtn = document.getElementById('upload-btn')
-const uploadStatus = document.getElementById('upload-status')
-const oracle = document.getElementById('oracle')
-const oracleSearch = document.getElementById('oracle-search')
-const oracleResults = document.getElementById('oracle-results')
-const dmMessage = document.getElementById('dm-message')
-const sendDM = document.getElementById('send-dm')
-const missives = document.getElementById('missives')
-
-let user, profile
-
-async function init() {
-  const { data } = await supabase.auth.getSession()
-  if (!data.session) {
-    window.location.href = 'index.html'
-    return
+// Redirect to index if not logged in
+async function checkAuth() {
+  const user = supabase.auth.user();
+  if (!user) {
+    window.location.href = 'index.html';
+  } else {
+    loadFeed();
+    loadMissives();
   }
-  user = data.session.user
-  const { data: prof } = await supabase
+}
+
+checkAuth();
+
+// LOGOUT
+document.getElementById('logout').addEventListener('click', async () => {
+  await supabase.auth.signOut();
+  window.location.href = 'index.html';
+});
+
+// UPLOAD
+document.getElementById('upload-btn').addEventListener('click', async () => {
+  const file = document.getElementById('file-input').files[0];
+  const type = document.getElementById('upload-type').value;
+  const user = supabase.auth.user();
+
+  if (!file) return alert('Select a file');
+
+  // Check if user is creator
+  const { data: profile } = await supabase
     .from('profiles')
     .select('*')
     .eq('id', user.id)
-    .single()
-  profile = prof
-  userInfo.innerHTML = `<span style="color:#bd8e20">@${profile.username||user.email}</span>`
-  
-  if(profile.is_creator) {
-    uploadSection.style.display = 'block'
-  }
+    .single();
 
-  loadFeed()
-  loadMissives()
-}
+  if (!profile.is_creator) return alert('Only invited creators can upload');
 
-async function loadFeed() {
-  feed.innerHTML = ''
-  const { data: posts } = await supabase
-    .from('uploads')
-    .select('*')
-    .order('created_at', { ascending: false })
-  posts.forEach(post => {
-    const card = document.createElement('div')
-    card.className = 'video-card'
-    card.innerHTML = `
-      <h4>${post.title} - @${post.username}</h4>
-      <video controls src="${post.url}"></video>
-    `
-    feed.appendChild(card)
-  })
-}
+  // Upload to Cloudflare R2
+  const formData = new FormData();
+  formData.append('file', file);
 
-uploadBtn.addEventListener('click', async () => {
-  if(!profile.is_creator) return alert("Only creators can upload.")
-  const file = document.getElementById('video-file').files[0]
-  const title = document.getElementById('title').value
-  if(!file || !title) return alert("Provide title and file.")
-  
-  uploadStatus.textContent = "Uploading..."
   try {
-    // Upload to Cloudflare R2
-    const formData = new FormData()
-    formData.append('file', file)
-    
-    const response = await fetch('https://4aefdc871e931f0ca228941ee1599c02.r2.cloudflarestorage.com/luxscepter-uploads/' + file.name, {
+    const res = await fetch('https://4aefdc871e931f0ca228941ee1599c02.r2.dev/luxscepter-uploads/' + file.name, {
       method: 'PUT',
-      headers: {
-        'x-amz-acl':'public-read'
-      },
-      body: file
-    })
-    if(!response.ok) throw new Error("Upload failed.")
-    const url = 'https://4aefdc871e931f0ca228941ee1599c02.r2.cloudflarestorage.com/luxscepter-uploads/' + file.name
-    
-    // Insert into Supabase uploads table
-    await supabase.from('uploads').insert({
+      body: file,
+    });
+    if (!res.ok) throw new Error('Upload failed');
+    document.getElementById('upload-status').innerText = 'Upload successful!';
+
+    // Insert record into Supabase feed table
+    await supabase.from('feed').insert([{
       user_id: user.id,
-      username: profile.username||user.email,
-      title: title,
-      url: url,
-      type: document.getElementById('content-type').value
-    })
-    
-    uploadStatus.textContent = "Upload successful!"
-    document.getElementById('video-file').value = ''
-    document.getElementById('title').value = ''
-    loadFeed()
-  } catch(err) {
-    console.error(err)
-    uploadStatus.textContent = "Upload failed: " + err.message
+      type: type,
+      url: `https://4aefdc871e931f0ca228941ee1599c02.r2.dev/luxscepter-uploads/${file.name}`,
+      created_at: new Date()
+    }]);
+
+    loadFeed();
+  } catch (err) {
+    document.getElementById('upload-status').innerText = 'Upload failed: ' + err.message;
   }
-})
+});
 
-// Oracle Edge toggle
-oracle.addEventListener('click', () => {
-  oracle.classList.toggle('active')
-  oracleSearch.style.display = oracleSearch.style.display === 'block' ? 'none' : 'block'
-})
-
-oracleSearch.addEventListener('input', async () => {
-  const term = oracleSearch.value
-  if(!term) { oracleResults.innerHTML = ''; return }
-  const { data } = await supabase
-    .from('uploads')
+// LOAD FEED
+async function loadFeed() {
+  const { data: feed } = await supabase
+    .from('feed')
     .select('*')
-    .ilike('title', `%${term}%`)
-  oracleResults.innerHTML = ''
-  data.forEach(post => {
-    const div = document.createElement('div')
-    div.textContent = `${post.title} - @${post.username}`
-    oracleResults.appendChild(div)
-  })
-})
+    .order('created_at', { ascending: false });
 
-// DM system
-sendDM.addEventListener('click', async () => {
-  const msg = dmMessage.value
-  if(!msg) return
-  await supabase.from('messages').insert({
+  const container = document.getElementById('realm-feed');
+  container.innerHTML = '<h2>Realm Feed</h2><button id="toggle-feed">Toggle Chrono / Algo</button>';
+
+  feed.forEach(item => {
+    const div = document.createElement('div');
+    div.className = 'feed-item';
+    div.innerHTML = `
+      <div><strong>@${item.user_id}</strong> - ${item.type}</div>
+      <video src="${item.url}" controls></video>
+    `;
+    container.appendChild(div);
+  });
+}
+
+// ORACLE EDGE
+const oracleBtn = document.getElementById('oracle');
+const oracleBar = document.getElementById('oracle-bar');
+oracleBtn.addEventListener('click', () => {
+  oracleBar.style.right = oracleBar.style.right === '0px' ? '-400px' : '0px';
+});
+
+document.getElementById('oracle-input').addEventListener('input', async (e) => {
+  const q = e.target.value;
+  if (!q) return document.getElementById('oracle-results').innerHTML = '';
+  const { data: results } = await supabase
+    .from('feed')
+    .select('*')
+    .ilike('type', `%${q}%`)
+    .order('created_at', { ascending: false });
+  const resContainer = document.getElementById('oracle-results');
+  resContainer.innerHTML = results.map(r => `<div>${r.type}: <a href="${r.url}" target="_blank">View</a></div>`).join('');
+});
+
+// MISSIVES
+document.getElementById('send-dm').addEventListener('click', async () => {
+  const recipient = document.getElementById('dm-recipient').value;
+  const message = document.getElementById('dm-message').value;
+  const user = supabase.auth.user();
+  if (!recipient || !message) return;
+  await supabase.from('missives').insert([{
     sender_id: user.id,
-    content: msg
-  })
-  dmMessage.value = ''
-  loadMissives()
-})
+    recipient,
+    message,
+    created_at: new Date()
+  }]);
+  document.getElementById('dm-message').value = '';
+  loadMissives();
+});
 
 async function loadMissives() {
-  const { data } = await supabase.from('messages').select('*').order('created_at',{ascending:false})
-  missives.innerHTML = ''
-  data.forEach(msg => {
-    const div = document.createElement('div')
-    div.textContent = `${msg.sender_id === user.id ? 'You' : msg.sender_id}: ${msg.content}`
-    missives.appendChild(div)
-  })
+  const user = supabase.auth.user();
+  const { data: msgs } = await supabase
+    .from('missives')
+    .select('*')
+    .or(`recipient.eq.${user.id},sender_id.eq.${user.id}`)
+    .order('created_at', { ascending: true });
+  const container = document.getElementById('messages-container');
+  container.innerHTML = msgs.map(m => `<div class="message"><strong>${m.sender_id}</strong>: ${m.message}</div>`).join('');
 }
 
-init()
 </script>
+
 </body>
 </html>
